@@ -6,6 +6,7 @@
 #include "game/stage/stage.h"
 #include "game/bosses/common.h"
 #include "game/title_screen.h"
+#include "game/unused_level_select.h"
 
 #include "animation_commands_bg.h"
 #include "data/tileset_language.h"
@@ -24,7 +25,7 @@ static void Task_8009854(void);
 static void Task_8009780(void);
 static void Task_80098C0(void);
 
-void sub_80096DC(void)
+void CreateUnusedLevelSelect(void)
 {
     struct Task *t = TaskCreate(Task_8009854, sizeof(LevelSelect), 0x2000, 0, NULL);
     gMultiplayerMissingHeartbeats[3] = 0;
