@@ -17,6 +17,7 @@
 #include "game/title_screen.h"
 #include "game/time_attack/lobby.h"
 #include "game/time_attack/mode_select.h"
+#include "game/unused_level_select.h"
 
 #include "constants/animations.h"
 #include "constants/songs.h"
@@ -1070,9 +1071,7 @@ static void Task_SelectionCompleteFadeOutAndExit(void)
             return;
         }
 
-        CreateCourseSelectionScreen(LEVEL_INDEX(ZONE_1, ACT_1),
-                                    gLoadedSaveGame->unlockedLevels[gSelectedCharacter],
-                                    COURSE_SELECT_CUT_SCENE_NONE);
+        CreateUnusedLevelSelect();
         return;
     }
 

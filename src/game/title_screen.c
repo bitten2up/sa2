@@ -23,7 +23,6 @@
 #include "malloc_vram.h"
 #include "game/time_attack/mode_select.h"
 #include "game/stage/demo_manager.h"
-#include "game/unused_level_select.h"
 
 #include "game/assets/compressed/roms.h"
 
@@ -1289,7 +1288,7 @@ static void Task_HandleTitleScreenExit(void)
                 break;
             case SinglePlayerMenuIndex(MENU_ITEM_OPTIONS):
                 gGameMode = GAME_MODE_SINGLE_PLAYER;
-                CreateUnusedLevelSelect();
+                CreateOptionsScreen(0);
                 break;
             case SinglePlayerMenuIndex(MENU_ITEM_TINY_CHAO_GARDEN):
                 LoadTinyChaoGarden();
