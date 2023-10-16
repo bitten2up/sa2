@@ -60,6 +60,7 @@ void CreateUnusedLevelSelect(void)
         gDispCnt &= ~(DISPCNT_OBJWIN_ON | DISPCNT_WIN1_ON | DISPCNT_WIN0_ON);
         gBgScrollRegs[0][0] = 0;
         gBgScrollRegs[0][1] = 0;
+        m4aSongNumStart(MUS_VS_2);
     }
 }
 
@@ -89,12 +90,6 @@ static void Task_8009780(void)
         gUnknown_03002280[0][2] = 0xFF;
         gUnknown_03002280[0][3] = 0x20;
     } else {
-        if (gRepeatedKeys & DPAD_LEFT) {
-            levelSelect->levelId--;
-        } else if (gRepeatedKeys & DPAD_RIGHT) {
-            levelSelect->levelId++;
-        }
-
         numToTileIndices(digits, levelSelect->levelId);
         sub_8004274(levelSelect->vram, Tileset_Language, 0xC, 0xE, 0, digits, 0);
     }
