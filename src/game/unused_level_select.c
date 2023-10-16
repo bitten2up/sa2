@@ -81,6 +81,7 @@ static void Task_8009780(void)
     } else if (gPressedKeys & B_BUTTON) {
         m4aSongNumStart(SE_RETURN);
         TaskDestroy(gCurTask);
+        CreateTitleScreen();
 
         gUnknown_03004D80[0] = 0;
         gUnknown_03002280[0][0] = 0;
