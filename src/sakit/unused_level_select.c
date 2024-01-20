@@ -6,6 +6,7 @@
 #include "game/stage/stage.h"
 #include "game/bosses/common.h"
 #include "game/title_screen.h"
+#include "game/unused_level_select.h"
 
 #include "animation_commands_bg.h"
 #include "data/tileset_language.h"
@@ -24,7 +25,7 @@ static void Task_8009854(void);
 static void Task_8009780(void);
 static void Task_80098C0(void);
 
-void sub_80096DC(void)
+void CreateUnusedLevelSelect(void)
 {
     struct Task *t = TaskCreate(Task_8009854, sizeof(LevelSelect), 0x2000, 0, NULL);
     gMultiplayerMissingHeartbeats[3] = 0;
@@ -59,6 +60,7 @@ void sub_80096DC(void)
         gDispCnt &= ~(DISPCNT_OBJWIN_ON | DISPCNT_WIN1_ON | DISPCNT_WIN0_ON);
         gBgScrollRegs[0][0] = 0;
         gBgScrollRegs[0][1] = 0;
+        m4aSongNumStart(MUS_VS_2);
     }
 }
 
@@ -80,6 +82,7 @@ static void Task_8009780(void)
     } else if (gPressedKeys & B_BUTTON) {
         m4aSongNumStart(SE_RETURN);
         TaskDestroy(gCurTask);
+        CreateTitleScreen();
 
         gUnknown_03004D80[0] = 0;
         gUnknown_03002280[0][0] = 0;
@@ -87,12 +90,6 @@ static void Task_8009780(void)
         gUnknown_03002280[0][2] = 0xFF;
         gUnknown_03002280[0][3] = 0x20;
     } else {
-        if (gRepeatedKeys & DPAD_LEFT) {
-            levelSelect->levelId--;
-        } else if (gRepeatedKeys & DPAD_RIGHT) {
-            levelSelect->levelId++;
-        }
-
         numToTileIndices(digits, levelSelect->levelId);
         sub_8004274(levelSelect->vram, Tileset_Language, 0xC, 0xE, 0, digits, 0);
     }
