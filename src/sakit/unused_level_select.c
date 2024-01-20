@@ -90,6 +90,11 @@ static void Task_8009780(void)
         gUnknown_03002280[0][2] = 0xFF;
         gUnknown_03002280[0][3] = 0x20;
     } else {
+        if (gRepeatedKeys & DPAD_LEFT) {
+            levelSelect->levelId--;
+        } else if (gRepeatedKeys & DPAD_RIGHT) {
+            levelSelect->levelId++;
+        }
         numToTileIndices(digits, levelSelect->levelId);
         sub_8004274(levelSelect->vram, Tileset_Language, 0xC, 0xE, 0, digits, 0);
     }
