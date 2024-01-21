@@ -129,6 +129,9 @@ static void Task_80098C0(void)
         gActiveBossTask = NULL;
         gCurrentLevel = levelId2 - 1;
         GameStageStart();
+    } else {
+        // Make sure the player can still do stuff if the above checks fail
+        TaskCreate(Task_8009854, sizeof(LevelSelect), 0x2000, 0, NULL);
     }
 }
 

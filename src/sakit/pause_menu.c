@@ -6,6 +6,7 @@
 #include "malloc_vram.h"
 
 #include "sakit/globals.h"
+#include "game/unused_level_select.h"
 
 #include "game/save.h"
 #include "game/time_attack/lobby.h"
@@ -130,7 +131,8 @@ void Task_PauseMenuUpdate(void)
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
         gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
-        CreateTitleScreenAndSkipIntro();
+        //CreateTitleScreenAndSkipIntro();
+        CreateUnusedLevelSelect();
         return;
     }
 
