@@ -23,7 +23,7 @@ typedef struct {
 
 static void Task_8009854(void);
 static void Task_8009780(void);
-static void Task_80098C0(void);
+static void UnusedLevelSelectLoadStage(void);
 
 void CreateUnusedLevelSelect(void)
 {
@@ -78,7 +78,7 @@ static void Task_8009780(void)
         gUnknown_03002280[0][1] = 0;
         gUnknown_03002280[0][2] = 0xFF;
         gUnknown_03002280[0][3] = 0x20;
-        gCurTask->main = Task_80098C0;
+        gCurTask->main = UnusedLevelSelectLoadStage;
     } else if (gPressedKeys & B_BUTTON) {
         m4aSongNumStart(SE_RETURN);
         TaskDestroy(gCurTask);
@@ -113,7 +113,7 @@ static void Task_8009854(void)
     gCurTask->main();
 }
 
-static void Task_80098C0(void)
+static void UnusedLevelSelectLoadStage(void)
 {
     LevelSelect *levelSelect = TASK_DATA(gCurTask);
 
