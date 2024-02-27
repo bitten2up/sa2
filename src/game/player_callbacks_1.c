@@ -1333,7 +1333,7 @@ void PlayerCB_8027190(Player *p)
 
 void PlayerCB_8027250(Player *p)
 {
-    p->unk2C = 0x78;
+    p->timerInvulnerability = 0x78;
     p->unk5A = 0;
 
     if (ABS(p->speedAirX) <= Q_24_8(2.5)) {
@@ -2885,10 +2885,10 @@ bool32 sub_8029DE8(Player *p)
 
     if (!(p->moveState & MOVESTATE_80000000)) {
         if (GRAVITY_IS_INVERTED) {
-            if (playerY <= Q_24_8(cam->unk28))
+            if (playerY <= Q_24_8(cam->minY))
                 return TRUE;
         } else {
-            if (playerY >= Q_24_8(cam->unk2C) - 1)
+            if (playerY >= Q_24_8(cam->maxY) - 1)
                 return TRUE;
         }
     }
@@ -2977,7 +2977,7 @@ void Player_ClearMovestate_IsInScriptedSequence(void)
     gPlayer.moveState &= ~MOVESTATE_IN_SCRIPTED;
 }
 
-void sub_802A018(void)
+void Player_DisableInputAndBossTimer(void)
 {
     gPlayer.transition = PLTRANS_PT10;
     gUnknown_03005424
@@ -2988,7 +2988,7 @@ void sub_802A018(void)
     }
 }
 
-void sub_802A050(void)
+void Player_DisableInputAndBossTimer_FinalBoss(void)
 {
     gUnknown_03005424
         |= (EXTRA_STATE__DISABLE_PAUSE_MENU | EXTRA_STATE__2 | EXTRA_STATE__ACT_START);
@@ -3216,8 +3216,8 @@ void sub_802A558(Player *p) { PLAYERFN_UPDATE_AIR_FALL_SPEED_B(p); }
 void sub_802A58C(Player *p)
 {
     if (p->unk64 != 20) {
-        if (p->unk2C > 0)
-            p->unk2C--;
+        if (p->timerInvulnerability > 0)
+            p->timerInvulnerability--;
     }
 }
 

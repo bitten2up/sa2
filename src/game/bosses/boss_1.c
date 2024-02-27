@@ -4,7 +4,7 @@
 #include "malloc_vram.h"
 #include "trig.h"
 
-#include "sakit/entities_0.h"
+#include "sakit/collision.h"
 
 #include "game/game.h"
 #include "game/save.h"
@@ -398,7 +398,8 @@ static void sub_803A8E4(EggHammerTankII *boss)
                 sub_800CA20(s, pos.x, pos.y, 0, &gPlayer);
             }
 
-            if (boss->unkB1 == 0 && sub_800C418(s, pos.x, pos.y, 0, &gPlayer) == 1) {
+            if (boss->unkB1 == 0
+                && IsColliding_Cheese(s, pos.x, pos.y, 0, &gPlayer) == TRUE) {
                 sub_803B6AC(boss);
             }
         }
@@ -1274,9 +1275,9 @@ static void sub_803C198(EggHammerTankII *boss)
         init.velocity = 0x40;
         init.rotation = PseudoRandom32() & (SIN_PERIOD - 1);
         init.speed = 0x600;
-        init.vram = (void *)OBJ_VRAM0 + (gUnknown_080D79D0[i][0] * TILE_SIZE_4BPP);
-        init.anim = gUnknown_080D79D0[i][1];
-        init.variant = gUnknown_080D79D0[i][2];
+        init.vram = (void *)OBJ_VRAM0 + (gTileInfoBossScrews[i][0] * TILE_SIZE_4BPP);
+        init.anim = gTileInfoBossScrews[i][1];
+        init.variant = gTileInfoBossScrews[i][2];
         init.unk4 = 1;
         CreateBossParticleWithExplosionUpdate(&init, &unkB4->unk2DD);
     }
@@ -1546,7 +1547,7 @@ static void Task_803C980(void)
     if (boss->unkB0 == 0) {
         sub_803BDB8();
         gCurTask->main = Task_803CA1C;
-        sub_802A018();
+        Player_DisableInputAndBossTimer();
     }
 }
 

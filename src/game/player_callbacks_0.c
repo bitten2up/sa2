@@ -2,6 +2,7 @@
 #include "trig.h"
 #include "lib/m4a.h"
 #include "malloc_vram.h"
+#include "sakit/collision.h"
 #include "game/game.h"
 #include "game/player_controls.h"
 #include "game/amy_attack_heart_effect.h"
@@ -666,8 +667,8 @@ void PlayerCB_80126B0(Player *p)
         p->speedAirY += Q_24_8(PLAYER_FLYING_END_GRAVITY);
     }
 
-    if (p->y < Q_24_8(gCamera.unk28)) {
-        p->y = Q_24_8(gCamera.unk28);
+    if (p->y < Q_24_8(gCamera.minY)) {
+        p->y = Q_24_8(gCamera.minY);
 
         if (p->speedAirY < 0)
             p->speedAirY = 0;
@@ -921,8 +922,8 @@ void PlayerCB_8012C2C(Player *p)
         p->speedAirY += Q_24_8(PLAYER_FLYING_END_GRAVITY);
     }
 
-    if (p->y < Q_24_8(gCamera.unk28)) {
-        p->y = Q_24_8(gCamera.unk28);
+    if (p->y < Q_24_8(gCamera.minY)) {
+        p->y = Q_24_8(gCamera.minY);
 
         if (p->speedAirY < 0)
             p->speedAirY = 0;
