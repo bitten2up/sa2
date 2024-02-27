@@ -71,6 +71,7 @@
 #define SA2_CHAR_ANIM_55                                     55
 #define SA2_CHAR_ANIM_56                                     56
 #define SA2_CHAR_ANIM_57                                     57
+#define SA2_CHAR_ANIM_63                                     63
 #define SA2_CHAR_ANIM_65                                     65
 #define SA2_CHAR_ANIM_66                                     66
 #define SA2_CHAR_ANIM_67                                     67
@@ -315,12 +316,22 @@
 #define SA2_ANIM_EGG_BOMBER_TANK_BODY       641
 #define SA2_ANIM_EGG_BOMBER_TANK_BODY_PARTS 642
 
-#define SA2_ANIM_EGG_BOMBER_TANK_WHEEL       644
-#define SA2_ANIM_EGG_BOMBER_TANK_WHEEL_PARTS 645
-#define SA2_ANIM_EGG_BOMBER_TANK_CANNON      646
-#define SA2_ANIM_EGG_BOMBER_TANK_PILOT       648
+#define SA2_ANIM_EGG_BOMBER_TANK_WHEEL_FOREGROUND 644
+#define SA2_ANIM_EGG_BOMBER_TANK_WHEEL_BACKGROUND 645
+#define SA2_ANIM_EGG_BOMBER_TANK_CANNON           646
+#define SA2_ANIM_EGG_BOMBER_TANK_BOMB             647
+#define SA2_ANIM_EGG_BOMBER_TANK_PILOT            648
 
 #define SA2_ANIM_TAILS_CAPTURED_COPY 659
+
+#define SA2_ANIM_AERO_EGG_BODY         661
+#define SA2_ANIM_AERO_EGG_PLATFORM     662
+#define SA2_ANIM_AERO_EGG_FIRE         663
+#define SA2_ANIM_AERO_EGG_BOMB         664
+#define SA2_ANIM_AERO_EGG_ELEMENT      665
+#define SA2_ANIM_AERO_EGG_DEBRIS_BIG   666
+#define SA2_ANIM_AERO_EGG_DEBRIS_SMALL 667
+#define SA2_ANIM_AERO_EGG_PILOT        668
 
 #define SA2_ANIM_EGG_SAUCER_PILOT_KNUCKLES 315
 #define SA2_ANIM_EGG_SAUCER_CABIN          669

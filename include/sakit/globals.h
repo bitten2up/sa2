@@ -35,6 +35,8 @@
 
 #define MAX_PLAYER_NAME_LENGTH 6
 
+#define GRAVITY_IS_INVERTED (gUnknown_03005424 & EXTRA_STATE__GRAVITY_INVERTED)
+
 typedef struct {
     u8 unk0;
     u8 unk1;
@@ -53,7 +55,7 @@ typedef struct {
 // Some Multiplayer struct
 struct UNK_3005510 {
     u8 unk0;
-    u8 unk1; // regionX (truncated)
+    u8 unk1; // regionX (truncated) [and sometimes ring-count(?)]
     u8 unk2; // regionY (truncated)
     u8 unk3; // spriteY (truncated) as per sub_800EDF8
     u8 unk4;
@@ -66,12 +68,13 @@ typedef struct {
     /* 0x04 */ struct Task *t;
 } SomeStruct_3005498; /* size: unknown (but >= 0x8) */
 
+// TODO: (MAJOR) switch usage to MultiplayerPlayer in mp_player.h
 struct MultiplayerPlayer {
     // TODO: Verify that this is Sprite!
     //       (Used in Task_Item_Invincibility @ 0x0802AC60)
     Sprite s;
-    s32 filler30;
-    s32 filler34;
+    Hitbox reserved; // Power-Up
+
     u16 unk38;
 
     u8 filler[0x20 - 10];
@@ -83,7 +86,8 @@ struct MultiplayerPlayer {
     u8 unk57;
     u8 unk58[4];
     u32 unk5C; // flags?
-};
+    u8 unk60;
+}; /* size: 0x6C */
 
 // Incomplete
 extern u8 gDemoPlayCounter;
@@ -182,11 +186,19 @@ extern SomeStruct_3005498 gUnknown_03005498;
 
 extern u8 gUnknown_030055D0[4];
 
+#if 0
 extern u8 gNewInputCountersIndex;
 extern u8 gNewInputCounters[128];
+#else
+
+struct InputCounters {
+    u8 unk0, unk1, unk2, unk3;
+};
+
+extern u8 gNewInputCountersIndex;
+extern struct InputCounters gNewInputCounters[32];
+#endif
 
 extern u8 gUnknown_030055D8;
-
-#define GRAVITY_IS_INVERTED (gUnknown_03005424 & EXTRA_STATE__GRAVITY_INVERTED)
 
 #endif // GUARD_SAKIT_GLOBALS_H

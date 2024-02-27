@@ -4,12 +4,13 @@
 #include "malloc_vram.h"
 #include "trig.h"
 
-#include "sakit/entities_0.h"
+#include "sakit/collision.h"
 
 #include "game/game.h"
 #include "game/save.h"
 #include "game/bosses/common.h"
 #include "game/bosses/eggmobile_escape_sequence.h"
+#include "game/stage/boss_results_transition.h"
 #include "game/player_callbacks_1.h"
 #include "game/stage/player.h"
 #include "game/stage/camera.h"
@@ -150,13 +151,12 @@ static const TileInfo gUnknown_080D7FB0[] = {
     { 4, SA2_ANIM_EGG_SAUCER_SMACK_PARTICLE_UP_RIGHT, 0 },
 };
 
-static const u16 gUnknown_080D7FF0[][0x10] = {
+static const u16 gUnknown_080D7FF0[][16] = {
     INCBIN_U16("graphics/80D7FF0.gbapal"),
     INCBIN_U16("graphics/80D8010.gbapal"),
 };
 
 // stage intro related
-extern void sub_802EF68(s16, s16, u8);
 extern void sub_802E784(u16, u16, u16, s16 x, s16 y, s16);
 
 void Task_EggSaucerIntro(void);
@@ -441,7 +441,7 @@ void sub_804352C(void)
 
     if (boss->unk10 == 0) {
         gBldRegs.bldCnt = 0;
-        sub_802A018();
+        Player_DisableInputAndBossTimer();
         sub_80436E4(boss);
         boss->unkC = Q_24_8(BOSS_SPEED);
         boss->unk11 = 0;
@@ -855,7 +855,7 @@ void HandleCollision(EggSaucer *boss)
 
     sub_80122DC(Q_24_8_NEW(x), Q_24_8_NEW(y));
 
-    if (boss->unk13 == 0 && sub_800C418(s, x, y, 0, &gPlayer) == 1) {
+    if (boss->unk13 == 0 && IsColliding_Cheese(s, x, y, 0, &gPlayer) == TRUE) {
         sub_8045368(boss);
         gUnknown_03005498.t->unk15 = 0;
     }
@@ -894,7 +894,7 @@ void HandleCollision(EggSaucer *boss)
         sub_80122DC(Q_24_8_NEW(x), Q_24_8_NEW(y));
 
         if (boss->unk1F == 0) {
-            if (sub_800C418(s, x, y, 0, &gPlayer) == 1) {
+            if (IsColliding_Cheese(s, x, y, 0, &gPlayer) == 1) {
                 boss->unk1F = 0x1E;
                 boss->unk11--;
 
@@ -1708,9 +1708,9 @@ NONMATCH("asm/non_matching/game/bosses/boss_5__sub_8045564.inc",
             rand = (PseudoRandom32() & ONE_CYCLE);
             e.rotation = rand;
             e.speed = 0x600;
-            e.vram = (void *)OBJ_VRAM0 + (gUnknown_080D79D0[val2][0] * 0x20);
-            e.anim = gUnknown_080D79D0[val2][1];
-            e.variant = gUnknown_080D79D0[val2][2];
+            e.vram = (void *)OBJ_VRAM0 + (gTileInfoBossScrews[val2][0] * 0x20);
+            e.anim = gTileInfoBossScrews[val2][1];
+            e.variant = gTileInfoBossScrews[val2][2];
             e.unk4 = 0;
             CreateBossParticleWithExplosionUpdate(&e, &boss->unk14);
         }
