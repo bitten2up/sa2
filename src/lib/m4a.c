@@ -62,6 +62,7 @@ void MPlayFadeOut(struct MusicPlayerInfo *mplayInfo, u16 speed)
 
 void m4aSoundInit(void)
 {
+    return;
     s32 i;
 
     CpuCopy32((void *)((intptr_t)SoundMainRAM & ~1), SoundMainRAM_Buffer,
@@ -456,6 +457,7 @@ void m4aSoundVSyncOn(void)
 void MPlayOpen(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *tracks,
                u8 trackCount)
 {
+    return;
     struct SoundInfo *soundInfo;
 
     if (trackCount == 0)
@@ -488,6 +490,7 @@ void MPlayOpen(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track
 
 void MPlayStart(struct MusicPlayerInfo *mplayInfo, struct SongHeader *songHeader)
 {
+    return;
     s32 i;
     u8 unk_B;
     struct MusicPlayerTrack *track;
@@ -535,6 +538,7 @@ void MPlayStart(struct MusicPlayerInfo *mplayInfo, struct SongHeader *songHeader
 
 void MPlayStop(struct MusicPlayerInfo *mplayInfo)
 {
+    return;
     s32 i;
     struct MusicPlayerTrack *track;
 

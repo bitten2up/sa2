@@ -2849,9 +2849,11 @@ void sub_8023748(Player *p)
         }
 
         // TODO: This could be a macro: IS_ACTICE_SONG(id)
+        #if 0
         if (gMPlayTable[0].info->songHeader == gSongTable[MUS_INVINCIBILITY].header) {
             m4aSongNumStartOrContinue(gLevelSongs[gCurrentLevel]);
         }
+        #endif
     }
 
     if ((p->itemEffect & PLAYER_ITEM_EFFECT__20) && (--p->unk34 == 0)) {
@@ -2931,10 +2933,12 @@ void sub_8023878(Player *p)
         p->unk87 = 60;
         p->unk86 = 30;
 
+        #if 0
         if (gMPlayTable[0].info->songHeader == gSongTable[MUS_DROWNING].header
             && p->unk60 == 0) {
             m4aSongNumStartOrContinue(gLevelSongs[gCurrentLevel]);
         }
+        #endif
     }
 
     if (p->itemEffect & PLAYER_ITEM_EFFECT__SPEED_UP) {
@@ -3190,6 +3194,7 @@ void Task_8023FC0(void)
         p->unk82 = 0x100;
 
         // TODO: macro IS_SONG_PLAYING(...)
+        #if 0
         if (gMPlayTable[0].info->songHeader == gSongTable[MUS_DROWNING].header) {
             m4aSongNumStartOrContinue(gLevelSongs[gCurrentLevel]);
         }
@@ -3212,6 +3217,7 @@ void Task_8023FC0(void)
         } else {
             m4aSongNumStart(SE_LIFE_LOST);
         }
+        #endif
     }
 }
 
@@ -6583,11 +6589,13 @@ void ContinueLevelSongAfterDrowning(Player *p)
     p->unk87 = 60;
     p->unk86 = 30;
 
+    #if 0
     if (gMPlayTable[0].info->songHeader == gSongTable[MUS_DROWNING].header) {
         if (p->unk60 == 0) {
             m4aSongNumStartOrContinue(gLevelSongs[gCurrentLevel]);
         }
     }
+#endif
 }
 
 void sub_8029FA4(Player *p)

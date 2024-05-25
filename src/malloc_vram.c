@@ -1,9 +1,22 @@
+#if PORTABLE
+#include <stdlib.h>
+#endif
 #include "global.h"
 #include "core.h"
 #include "malloc_vram.h"
 
 void *VramMalloc(u32 numTiles)
 {
+#if PORTABLE
+    u32 count = numTiles;
+    count = (count + (VRAM_TILE_SLOTS_PER_SEGMENT - 1))
+        / VRAM_TILE_SLOTS_PER_SEGMENT; // round up
+    if (count == 0) {
+        return NULL;
+    }
+
+    return malloc(count);
+#else
     u16 i, j;
     u32 count = numTiles;
     count = (count + (VRAM_TILE_SLOTS_PER_SEGMENT - 1))
@@ -29,6 +42,7 @@ void *VramMalloc(u32 numTiles)
         }
     }
     return ewram_end;
+#endif
 }
 
 void VramResetHeapState(void)
@@ -38,10 +52,17 @@ void VramResetHeapState(void)
 
 void VramFree(void *addr)
 {
+#if PORTABLE
+    printf("VramFree: %p\n", addr);
+    if (addr != NULL) {
+        free(addr);
+    }
+#else
     u16 segmentId;
 
     if (ewram_end != addr) {
         segmentId = (u32)(addr - gVramHeapStartAddr) / VRAM_HEAP_SEGMENT_SIZE;
         gVramHeapState[segmentId] = 0;
     }
+#endif
 }

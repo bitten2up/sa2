@@ -62,6 +62,7 @@ const u16 gUnknown_080D5254[7] = {
 
 void Task_StageMusicManager(void)
 {
+    return;
     struct SongHeader *songHeader = gMPlayTable[0].info->songHeader;
 
     if ((gUnknown_030054A8.unk0 == 0) && PLAYER_IS_ALIVE) {
@@ -147,6 +148,7 @@ void CreateStageMusicManager(void)
 
 static void MusManager_UpdateBgmParams(void)
 {
+    return;
     struct MusicPlayerInfo *bgmInfo = &gMPlayInfo_BGM;
 
     m4aMPlayImmInit(bgmInfo);
@@ -160,6 +162,7 @@ static void MusManager_UpdateBgmParams(void)
 
 void sub_800BF74(u16 fadeoutSpeed)
 {
+    return;
     struct MusicPlayerInfo *bgmInfo = &gMPlayInfo_BGM;
 
     m4aMPlayFadeOutTemporarily(bgmInfo, fadeoutSpeed / 16);
