@@ -27,8 +27,7 @@ void Task_DestroyExplosionParts(void);
 void CreateBossParticleWithExplosionUpdate(ExplosionPartsInfo *info, u8 *numCreatedParts)
 {
     if (!(info->unk4 & 1) || *numCreatedParts < 16) {
-        struct Task *t = TaskCreate(Task_BossParticleWithExplosionUpdate,
-                                    sizeof(Sprite_ExplosionParts), 0x5432, 0, NULL);
+        struct Task *t = TaskCreate(Task_BossParticleWithExplosionUpdate, sizeof(Sprite_ExplosionParts), 0x5432, 0, NULL);
         Sprite_ExplosionParts *parts = TASK_DATA(t);
         Sprite *s = &parts->s;
         s32 cos, sin;
@@ -49,17 +48,17 @@ void CreateBossParticleWithExplosionUpdate(ExplosionPartsInfo *info, u8 *numCrea
         s->x = 0;
         s->y = 0;
         s->graphics.dest = info->vram;
-        s->unk1A = SPRITE_OAM_ORDER(4);
+        s->oamFlags = SPRITE_OAM_ORDER(4);
         s->graphics.size = 0;
         s->graphics.anim = info->anim;
         s->variant = info->variant;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = SPRITE_FLAG(PRIORITY, 1);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 1);
     }
 }
 
@@ -79,8 +78,7 @@ void Task_BossParticleWithExplosionUpdate(void)
     s->x = I(parts->posX);
     s->y = I(parts->posY);
 
-    if (((s->x < -BOSS_PARTS_DIMENSION) && (parts->accelX < 0))
-        || ((s->x > (DISPLAY_WIDTH + BOSS_PARTS_DIMENSION)) && (parts->accelX > 0))
+    if (((s->x < -BOSS_PARTS_DIMENSION) && (parts->accelX < 0)) || ((s->x > (DISPLAY_WIDTH + BOSS_PARTS_DIMENSION)) && (parts->accelX > 0))
         || ((s->y < -BOSS_PARTS_DIMENSION) && (parts->accelY < 0))
         || ((s->y > (DISPLAY_HEIGHT + BOSS_PARTS_DIMENSION)) && (parts->accelY > 0))) {
         gCurTask->main = Task_DestroyBossParts;
@@ -96,8 +94,7 @@ void Task_BossParticleWithExplosionUpdate(void)
 void CreateBossParticleStatic(ExplosionPartsInfo *info, u8 *numCreatedParts)
 {
     if (!(info->unk4 & 1) || *numCreatedParts < 16) {
-        struct Task *t = TaskCreate(Task_BossParticleStatic,
-                                    sizeof(Sprite_ExplosionParts), 0x5432, 0, NULL);
+        struct Task *t = TaskCreate(Task_BossParticleStatic, sizeof(Sprite_ExplosionParts), 0x5432, 0, NULL);
         Sprite_ExplosionParts *parts = TASK_DATA(t);
         Sprite *s = &parts->s;
         s32 cos, sin;
@@ -118,17 +115,17 @@ void CreateBossParticleStatic(ExplosionPartsInfo *info, u8 *numCreatedParts)
         s->x = 0;
         s->y = 0;
         s->graphics.dest = info->vram;
-        s->unk1A = SPRITE_OAM_ORDER(4);
+        s->oamFlags = SPRITE_OAM_ORDER(4);
         s->graphics.size = 0;
         s->graphics.anim = info->anim;
         s->variant = info->variant;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = SPRITE_FLAG(PRIORITY, 1);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 1);
     }
 }
 
@@ -144,8 +141,7 @@ void Task_BossParticleStatic(void)
     s->x = I(parts->posX) - gCamera.x;
     s->y = I(parts->posY) - gCamera.y;
 
-    if (((s->x < -BOSS_PARTS_DIMENSION) && (parts->accelX < 0))
-        || ((s->x > (DISPLAY_WIDTH + BOSS_PARTS_DIMENSION)) && (parts->accelX > 0))
+    if (((s->x < -BOSS_PARTS_DIMENSION) && (parts->accelX < 0)) || ((s->x > (DISPLAY_WIDTH + BOSS_PARTS_DIMENSION)) && (parts->accelX > 0))
         || ((s->y < -BOSS_PARTS_DIMENSION) && (parts->accelY < 0))
         || ((s->y > (DISPLAY_HEIGHT + BOSS_PARTS_DIMENSION)) && (parts->accelY > 0))) {
         gCurTask->main = Task_DestroyBossParts;

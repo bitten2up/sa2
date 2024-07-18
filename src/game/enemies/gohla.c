@@ -39,8 +39,7 @@ static void TaskDestructor_Gohla(struct Task *);
 void CreateEntity_Gohla(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
     if (gGameMode == GAME_MODE_TIME_ATTACK || gDifficultyLevel != 1) {
-        struct Task *t = TaskCreate(sub_8051928, sizeof(Sprite_Gohla), 0x4040, 0,
-                                    TaskDestructor_Gohla);
+        struct Task *t = TaskCreate(sub_8051928, sizeof(Sprite_Gohla), 0x4040, 0, TaskDestructor_Gohla);
         Sprite_Gohla *gohla = TASK_DATA(t);
         Sprite *s = &gohla->s;
         gohla->base.regionX = spriteRegionX;
@@ -58,8 +57,7 @@ void CreateEntity_Gohla(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 
         gohla->spawnX = Q(TO_WORLD_POS(me->x, spriteRegionX));
         gohla->spawnY = Q(TO_WORLD_POS(me->y, spriteRegionY));
         gohla->offsetX = 0;
-        gohla->offsetY = Q(sub_801F07C(I(gohla->spawnY), I(gohla->spawnX), gohla->unk8C,
-                                       8, NULL, sub_801EE64));
+        gohla->offsetY = Q(sub_801F07C(I(gohla->spawnY), I(gohla->spawnX), gohla->unk8C, 8, NULL, sub_801EE64));
         gohla->projX = 0;
         gohla->projY = 0;
         gohla->projZ = 0;
@@ -111,7 +109,7 @@ static void sub_8051928(void)
         s->prevVariant = -1;
     }
     ENEMY_UPDATE(s, pos.x, pos.y);
-    RenderProjectiles(gohla, s->x, s->y - 4, s->unk10);
+    RenderProjectiles(gohla, s->x, s->y - 4, s->frameFlags);
 }
 
 static void sub_8051AF0(void)
@@ -151,7 +149,7 @@ static void sub_8051AF0(void)
     }
 
     DisplaySprite(s);
-    RenderProjectiles(gohla, s->x, s->y - 4, s->unk10);
+    RenderProjectiles(gohla, s->x, s->y - 4, s->frameFlags);
 }
 
 static void RenderProjectiles(Sprite_Gohla *gohla, s16 x, s16 y, u32 flags)
@@ -179,9 +177,9 @@ static void RenderProjectiles(Sprite_Gohla *gohla, s16 x, s16 y, u32 flags)
         proj->y = y + (SIN(pos[1]) >> 13);
 
         if (pos[0] >= 0x200) {
-            proj->unk1A = SPRITE_OAM_ORDER(17);
+            proj->oamFlags = SPRITE_OAM_ORDER(17);
         } else {
-            proj->unk1A = SPRITE_OAM_ORDER(19);
+            proj->oamFlags = SPRITE_OAM_ORDER(19);
         }
         DisplaySprite(proj);
     }

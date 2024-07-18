@@ -122,8 +122,7 @@ static TrappedAnimalsFunc const sTrappedAnimalSpawnFunctions[] = {
 
 static void CreateFlyingAnimal(SpawnOptions *init)
 {
-    struct Task *t
-        = TaskCreate(Task_FlyingAnimal, sizeof(FlyingAnimal), 0x2000, 0, NULL);
+    struct Task *t = TaskCreate(Task_FlyingAnimal, sizeof(FlyingAnimal), 0x2000, 0, NULL);
     FlyingAnimal *animal = TASK_DATA(t);
     Sprite *s;
     animal->x = Q(init->x);
@@ -135,16 +134,16 @@ static void CreateFlyingAnimal(SpawnOptions *init)
     s->x = init->x;
     s->y = init->y;
     s->graphics.dest = (void *)OBJ_VRAM0 + (init->vramOffset * TILE_SIZE_4BPP);
-    s->unk1A = SPRITE_OAM_ORDER(17);
+    s->oamFlags = SPRITE_OAM_ORDER(17);
     s->graphics.size = 0;
     s->graphics.anim = init->anim;
     s->variant = init->variant;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 }
 
 static void Task_FlyingAnimal(void)
@@ -188,8 +187,7 @@ static void Task_FlyingAnimal(void)
 
 static void CreateBouncingAnimal(SpawnOptions *init)
 {
-    struct Task *t
-        = TaskCreate(Task_BouncingAnimal, sizeof(BouncingAnimal), 0x2000, 0, NULL);
+    struct Task *t = TaskCreate(Task_BouncingAnimal, sizeof(BouncingAnimal), 0x2000, 0, NULL);
     BouncingAnimal *animal = TASK_DATA(t);
     Sprite *s;
     animal->x = Q(init->x);
@@ -203,16 +201,16 @@ static void CreateBouncingAnimal(SpawnOptions *init)
     s->x = init->x;
     s->y = init->y;
     s->graphics.dest = (void *)OBJ_VRAM0 + (init->vramOffset * TILE_SIZE_4BPP);
-    s->unk1A = SPRITE_OAM_ORDER(17);
+    s->oamFlags = SPRITE_OAM_ORDER(17);
     s->graphics.size = 0;
     s->graphics.anim = init->anim;
     s->variant = init->variant;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 }
 
 static void Task_BouncingAnimal(void)
@@ -229,8 +227,7 @@ static void Task_BouncingAnimal(void)
     if (animal->inAirTimer > 0) {
         animal->inAirTimer--;
     } else {
-        s32 clampedY
-            = y + Q(sub_801F07C(I(animal->y), I(animal->x), 1, 8, NULL, sub_801EE64));
+        s32 clampedY = y + Q(sub_801F07C(I(animal->y), I(animal->x), 1, 8, NULL, sub_801EE64));
 
         // if hit floor
         if (clampedY <= animal->y) {
@@ -257,8 +254,7 @@ static void Task_BouncingAnimal(void)
 
 static void CreateStaticAnimal(SpawnOptions *init)
 {
-    struct Task *t
-        = TaskCreate(Task_StaticAnimalMain, sizeof(StaticAnimal), 0x2000, 0, NULL);
+    struct Task *t = TaskCreate(Task_StaticAnimalMain, sizeof(StaticAnimal), 0x2000, 0, NULL);
     StaticAnimal *animal = TASK_DATA(t);
     Sprite *s;
     animal->x = Q(init->x);
@@ -273,16 +269,16 @@ static void CreateStaticAnimal(SpawnOptions *init)
     s->x = init->x;
     s->y = init->y;
     s->graphics.dest = (void *)OBJ_VRAM0 + (init->vramOffset * TILE_SIZE_4BPP);
-    s->unk1A = SPRITE_OAM_ORDER(17);
+    s->oamFlags = SPRITE_OAM_ORDER(17);
     s->graphics.size = 0;
     s->graphics.anim = init->anim;
     s->variant = init->variant;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 }
 
 static void Task_StaticAnimalMain(void)
@@ -299,8 +295,7 @@ static void Task_StaticAnimalMain(void)
     if (animal->inAirTimer > 0) {
         animal->inAirTimer--;
     } else {
-        s32 clampedY
-            = y + Q(sub_801F07C(I(animal->y), I(animal->x), 1, 8, NULL, sub_801EE64));
+        s32 clampedY = y + Q(sub_801F07C(I(animal->y), I(animal->x), 1, 8, NULL, sub_801EE64));
 
         // if collided with floor
         if (clampedY <= animal->y) {

@@ -53,8 +53,7 @@ u32 CreateTimeAttackResults(u32 finishTime)
     u8 level;
     gLoadedSaveGame->score += (s16)gRingCount;
 
-    t = TaskCreate(sub_8089AEC, sizeof(struct TimeAttackResultsCutScene), 0xC100, 0,
-                   sub_8089BB0);
+    t = TaskCreate(sub_8089AEC, sizeof(struct TimeAttackResultsCutScene), 0xC100, 0, sub_8089BB0);
     resultsCutScene = TASK_DATA(t);
     fade = &resultsCutScene->unk0;
 
@@ -99,15 +98,15 @@ u32 CreateTimeAttackResults(u32 finishTime)
         s->graphics.dest = VramMalloc(4);
         s->graphics.anim = SA2_ANIM_TIME_ATTACK_DIGITS;
         s->variant = SA2_ANIM_VARIANT_TA_DIGITS_0;
-        s->unk1A = SPRITE_OAM_ORDER(4);
+        s->oamFlags = SPRITE_OAM_ORDER(4);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = 0;
+        s->frameFlags = 0;
     }
 
     resultsCutScene->unk178[0].variant += resultsCutScene->unk171;
@@ -130,15 +129,15 @@ u32 CreateTimeAttackResults(u32 finishTime)
     s->graphics.dest = VramMalloc(4);
     s->graphics.anim = SA2_ANIM_TA_WHITE_BAR;
     s->variant = 0;
-    s->unk1A = SPRITE_OAM_ORDER(5);
+    s->oamFlags = SPRITE_OAM_ORDER(5);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0;
+    s->frameFlags = 0;
     UpdateSpriteAnimation(s);
 
     s = &resultsCutScene->unkC[0];
@@ -147,15 +146,15 @@ u32 CreateTimeAttackResults(u32 finishTime)
     s->graphics.dest = VramMalloc(sAnimsGotThroughCharacterNames[gSelectedCharacter][0]);
     s->graphics.anim = sAnimsGotThroughCharacterNames[gSelectedCharacter][1];
     s->variant = sAnimsGotThroughCharacterNames[gSelectedCharacter][2];
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0;
+    s->frameFlags = 0;
     UpdateSpriteAnimation(s);
 
     isBossLevel = ACT_INDEX(gCurrentLevel) >> 1;
@@ -166,15 +165,15 @@ u32 CreateTimeAttackResults(u32 finishTime)
     s->graphics.dest = VramMalloc(sStageResultsHeadlineTexts[isBossLevel][0]);
     s->graphics.anim = sStageResultsHeadlineTexts[isBossLevel][1];
     s->variant = sStageResultsHeadlineTexts[isBossLevel][2];
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0;
+    s->frameFlags = 0;
     UpdateSpriteAnimation(s);
 
     if (isBossLevel) {
@@ -189,15 +188,15 @@ u32 CreateTimeAttackResults(u32 finishTime)
     s->graphics.dest = VramMalloc(sAnimsGotThroughZoneAndActNames[level][0]);
     s->graphics.anim = sAnimsGotThroughZoneAndActNames[level][1];
     s->variant = sAnimsGotThroughZoneAndActNames[level][2];
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0;
+    s->frameFlags = 0;
     UpdateSpriteAnimation(s);
 
     s = &resultsCutScene->unk9C[0];
@@ -206,15 +205,15 @@ u32 CreateTimeAttackResults(u32 finishTime)
     s->graphics.dest = VramMalloc(8);
     s->graphics.anim = SA2_ANIM_TA_RECORD;
     s->variant = SA2_ANIM_VARIANT_TA_TIME;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0;
+    s->frameFlags = 0;
     UpdateSpriteAnimation(s);
 
     s = &resultsCutScene->unk9C[1];
@@ -227,15 +226,15 @@ u32 CreateTimeAttackResults(u32 finishTime)
     } else {
         s->variant = SA2_ANIM_VARIANT_TA_DIGITS_PLATE_1_GOLD;
     }
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = gUnknown_030054B8++ | 0x20;
+    s->frameFlags = gUnknown_030054B8++ | 0x20;
     UpdateSpriteAnimation(s);
 
     resultsCutScene->transform.width = 0;
@@ -250,15 +249,15 @@ u32 CreateTimeAttackResults(u32 finishTime)
     s->graphics.dest = VramMalloc(0x16);
     s->graphics.anim = SA2_ANIM_TA_RECORD;
     s->variant = 0;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0;
+    s->frameFlags = 0;
     UpdateSpriteAnimation(s);
 
     gUnknown_030054A8.unk0 = 0xFF;
@@ -277,8 +276,7 @@ u32 CreateTimeAttackResults(u32 finishTime)
 }
 
 const s8 gUnknown_080E05C4[] = {
-    3, 2, 1, 0, 0, -1, -2, -3, -4, -4, -3, -2, 1, 2, 3, 0,
-    0, 0, 0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0,
+    3, 2, 1, 0, 0, -1, -2, -3, -4, -4, -3, -2, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 void sub_80897E8(void)
@@ -335,8 +333,7 @@ void sub_80897E8(void)
         if (temp > 16) {
             if (resultsCutScene->unk2D8) {
                 s = &resultsCutScene->unk9C[1];
-                resultsCutScene->transform.width
-                    = gSineTable[(((u16)resultsCutScene->unk2D6 >> 8) * 4) + 0x100] >> 6;
+                resultsCutScene->transform.width = gSineTable[(((u16)resultsCutScene->unk2D6 >> 8) * 4) + 0x100] >> 6;
                 resultsCutScene->unk2D6 += resultsCutScene->unk2D4;
 
                 if (resultsCutScene->unk2D6 == 0) {
@@ -350,7 +347,7 @@ void sub_80897E8(void)
                 if (resultsCutScene->transform.width == 0) {
                     resultsCutScene->transform.width = 0x10;
                 }
-                sub_8004860(s, &resultsCutScene->transform);
+                TransformSprite(s, &resultsCutScene->transform);
                 DisplaySprite(s);
             }
 
@@ -401,8 +398,7 @@ u8 sub_80899B8(u32 finishTime)
     }
 
     for (; i < 3; i++) {
-        gLoadedSaveGame->timeRecords.table[character][zone][act][i]
-            = existingRecords[i - 1];
+        gLoadedSaveGame->timeRecords.table[character][zone][act][i] = existingRecords[i - 1];
     }
 
     return rank;
@@ -421,8 +417,7 @@ void sub_8089AEC(void)
     sub_8031314();
     sub_80897E8();
 
-    if (((unk168 > 160) && (gPressedKeys & (A_BUTTON | START_BUTTON)))
-        || (unk168 > 600)) {
+    if (((unk168 > 160) && (gPressedKeys & (A_BUTTON | START_BUTTON))) || (unk168 > 600)) {
         gCurTask->main = sub_8089B40;
     }
 }
@@ -435,7 +430,7 @@ void sub_8089B40(void)
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         CreateTimeAttackLobbyScreen();
         return;
     }

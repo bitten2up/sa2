@@ -36,8 +36,7 @@ void CreateEntity_Decoration(MapEntity *me, u16 regionX, u16 regionY, u8 spriteY
     Sprite *s;
 
     if (me->decoId >= 0) {
-        t = TaskCreate(Task_Decoration, sizeof(Sprite_Decoration), 0x2010, 0,
-                       TaskDestructor_Decoration);
+        t = TaskCreate(Task_Decoration, sizeof(Sprite_Decoration), 0x2010, 0, TaskDestructor_Decoration);
         base = TASK_DATA(t);
         s = &base->displayed;
 
@@ -56,15 +55,15 @@ void CreateEntity_Decoration(MapEntity *me, u16 regionX, u16 regionY, u8 spriteY
         s->graphics.anim = sDecoTileAnimInfo[me->decoId].anim;
         s->variant = sDecoTileAnimInfo[me->decoId].variant;
 
-        s->unk1A = SPRITE_OAM_ORDER(28);
+        s->oamFlags = SPRITE_OAM_ORDER(28);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = 0x2000;
+        s->frameFlags = 0x2000;
     }
 }
 

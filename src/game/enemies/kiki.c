@@ -42,8 +42,7 @@ static void TaskDestructor_KikiProj(struct Task *);
 
 void CreateEntity_Kiki(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_KikiMain, sizeof(Sprite_Kiki), 0x4020, 0,
-                                TaskDestructor_80095E8);
+    struct Task *t = TaskCreate(Task_KikiMain, sizeof(Sprite_Kiki), 0x4020, 0, TaskDestructor_80095E8);
     Sprite_Kiki *kiki = TASK_DATA(t);
     Sprite *s = &kiki->s;
 
@@ -63,12 +62,12 @@ void CreateEntity_Kiki(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 s
     SET_MAP_ENTITY_INITIALIZED(me);
 
     s->graphics.dest = VramMalloc(0x14);
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->graphics.anim = SA2_ANIM_KIKI;
     s->variant = 0;
     SPRITE_INIT_SCRIPT(s, 1.0);
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
     UpdateSpriteAnimation(s);
 }
 
@@ -159,7 +158,7 @@ static void sub_8053A38(void)
     Player_UpdateHomingPosition(QS(x), QS(y));
 
     if (kiki->unk3F == 0x12) {
-        if (s->unk10 & SPRITE_FLAG_MASK_X_FLIP) {
+        if (s->frameFlags & SPRITE_FLAG_MASK_X_FLIP) {
             CreateKikiProjectile(x - 4, y + 2);
         } else {
             CreateKikiProjectile(x + 9, y + 2);
@@ -174,8 +173,7 @@ static void sub_8053A38(void)
 
 static void CreateKikiProjectile(s16 x, s16 y)
 {
-    struct Task *t = TaskCreate(Task_KikiProjMain, sizeof(Kiki_Proj), 0x4028, 0,
-                                TaskDestructor_KikiProj);
+    struct Task *t = TaskCreate(Task_KikiProjMain, sizeof(Kiki_Proj), 0x4028, 0, TaskDestructor_KikiProj);
     Kiki_Proj *proj = TASK_DATA(t);
     Sprite *s = &proj->s;
 
@@ -200,12 +198,12 @@ static void CreateKikiProjectile(s16 x, s16 y)
     s->y = y;
 
     s->graphics.dest = VramMalloc(4);
-    s->unk1A = SPRITE_OAM_ORDER(17);
+    s->oamFlags = SPRITE_OAM_ORDER(17);
     s->graphics.size = 0;
     s->graphics.anim = SA2_ANIM_KIKI_PROJ;
     s->variant = 0;
     SPRITE_INIT_SCRIPT(s, 1.0);
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
     UpdateSpriteAnimation(s);
 }
@@ -285,8 +283,7 @@ static void Task_KikiProjSplit(void)
 
 static void CreateKikiProjectilePiece(s16 x, s16 y)
 {
-    struct Task *t = TaskCreate(Task_ProjPieceMain, sizeof(Kiki_Proj), 0x2000, 0,
-                                TaskDestructor_KikiProj);
+    struct Task *t = TaskCreate(Task_ProjPieceMain, sizeof(Kiki_Proj), 0x2000, 0, TaskDestructor_KikiProj);
     Kiki_Proj *proj = TASK_DATA(t);
     Sprite *s = &proj->s;
 
@@ -302,12 +299,12 @@ static void CreateKikiProjectilePiece(s16 x, s16 y)
     s->x = x;
     s->y = y;
     s->graphics.dest = VramMalloc(16);
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->graphics.anim = SA2_ANIM_KIKI_PROJ_EXPLOSION;
     s->variant = 0;
     SPRITE_INIT_SCRIPT(s, 1.0);
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
     UpdateSpriteAnimation(s);
 }
 
@@ -330,8 +327,7 @@ static void Task_ProjPieceMain(void)
             y1 = y + s->hitboxes[0].top;
             y2 = I(gPlayer.y) + s2->hitboxes[0].top;
             if ((y1 <= y2 && y1 + (s->hitboxes[0].bottom - s->hitboxes[0].top) >= y2)
-                || (y1 >= y2
-                    && y2 + (s2->hitboxes[0].bottom - s2->hitboxes[0].top) >= y1)) {
+                || (y1 >= y2 && y2 + (s2->hitboxes[0].bottom - s2->hitboxes[0].top) >= y1)) {
                 sub_800CBA4(&gPlayer);
             }
         }

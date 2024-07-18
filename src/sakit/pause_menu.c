@@ -34,9 +34,8 @@ typedef struct {
 } AnimInfoPauseMenu;
 
 const AnimInfoPauseMenu sAnimInfoPauseMenu[] = {
-    { 40, SA2_ANIM_PAUSE_MENU_JP, 0 }, { 40, SA2_ANIM_PAUSE_MENU_EN, 0 },
-    { 40, SA2_ANIM_PAUSE_MENU_DE, 0 }, { 40, SA2_ANIM_PAUSE_MENU_FR, 0 },
-    { 40, SA2_ANIM_PAUSE_MENU_ES, 0 }, { 40, SA2_ANIM_PAUSE_MENU_IT, 0 },
+    { 40, SA2_ANIM_PAUSE_MENU_JP, 0 }, { 40, SA2_ANIM_PAUSE_MENU_EN, 0 }, { 40, SA2_ANIM_PAUSE_MENU_DE, 0 },
+    { 40, SA2_ANIM_PAUSE_MENU_FR, 0 }, { 40, SA2_ANIM_PAUSE_MENU_ES, 0 }, { 40, SA2_ANIM_PAUSE_MENU_IT, 0 },
 };
 
 #define PMCURSOR_CONTINUE 0
@@ -55,12 +54,11 @@ void CreatePauseMenu(void)
     if (lang < LANG_DEFAULT)
         lang = LANG_JAPANESE - 1;
 
-    if (!(gStageFlags & EXTRA_STATE__DISABLE_PAUSE_MENU)) {
+    if (!(gStageFlags & STAGE_FLAG__DISABLE_PAUSE_MENU)) {
         void *vramTiles = VramMalloc(sAnimInfoPauseMenu[lang].size);
 
         if (vramTiles != ewram_end) {
-            struct Task *t = TaskCreate(Task_PauseMenuInit, sizeof(PauseMenu), 0xFFFE, 4,
-                                        TaskDestructor_PauseMenu);
+            struct Task *t = TaskCreate(Task_PauseMenuInit, sizeof(PauseMenu), 0xFFFE, 4, TaskDestructor_PauseMenu);
             PauseMenu *pm = TASK_DATA(t);
             Sprite *s = &pm->s;
 
@@ -74,7 +72,7 @@ void CreatePauseMenu(void)
             }
 
             s->graphics.dest = vramTiles;
-            s->unk1A = SPRITE_OAM_ORDER(1);
+            s->oamFlags = SPRITE_OAM_ORDER(1);
             s->graphics.size = 0;
             s->graphics.anim = sAnimInfoPauseMenu[lang].anim;
             s->variant = sAnimInfoPauseMenu[lang].variant;
@@ -87,7 +85,7 @@ void CreatePauseMenu(void)
             s->x = (DISPLAY_WIDTH / 2);
             s->y = (DISPLAY_HEIGHT / 2);
 
-            s->unk10 = 0;
+            s->frameFlags = 0;
 
             UpdateSpriteAnimation(s);
         }
@@ -99,13 +97,10 @@ void Task_PauseMenuUpdate(void)
     PauseMenu *pm = TASK_DATA(gCurTask);
 
     /* Handle A-/B-Button */
-    if ((gReleasedKeys & A_BUTTON)
-        && (pm->unk63 & PMFLAG_HOLDING_A_BUTTON_SINCE_CREATION)) {
+    if ((gReleasedKeys & A_BUTTON) && (pm->unk63 & PMFLAG_HOLDING_A_BUTTON_SINCE_CREATION)) {
         pm->unk63 = PMFLAG_A_BUTTON_RELEASED;
-    } else if ((gPressedKeys & START_BUTTON)
-               || ((pm->cursor == PMCURSOR_CONTINUE) && (gReleasedKeys & A_BUTTON))
-               || ((gGameMode != GAME_MODE_SINGLE_PLAYER)
-                   && (gPressedKeys & B_BUTTON))) {
+    } else if ((gPressedKeys & START_BUTTON) || ((pm->cursor == PMCURSOR_CONTINUE) && (gReleasedKeys & A_BUTTON))
+               || ((gGameMode != GAME_MODE_SINGLE_PLAYER) && (gPressedKeys & B_BUTTON))) {
         // Close the Pause Menu
         gFlags &= ~FLAGS_PAUSE_GAME;
         m4aMPlayContinue(gMPlayTable[0].info);
@@ -118,25 +113,24 @@ void Task_PauseMenuUpdate(void)
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         CreateTimeAttackLobbyScreen();
         return;
-    } else if ((gGameMode == GAME_MODE_SINGLE_PLAYER)
-               && (pm->cursor != PMCURSOR_CONTINUE) && (gReleasedKeys & A_BUTTON)) {
+    } else if ((gGameMode == GAME_MODE_SINGLE_PLAYER) && (pm->cursor != PMCURSOR_CONTINUE) && (gReleasedKeys & A_BUTTON)) {
         gFlags &= ~FLAGS_PAUSE_GAME;
         m4aSongNumStart(SE_SELECT);
 
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         CreateTitleScreenAndSkipIntro();
         return;
     }
 
     if (gBldRegs.bldY == 0) {
-        pm->s2.unk10 &= ~SPRITE_FLAG_MASK_OBJ_MODE;
-        pm->s.unk10 &= ~SPRITE_FLAG_MASK_OBJ_MODE;
+        pm->s2.frameFlags &= ~SPRITE_FLAG_MASK_OBJ_MODE;
+        pm->s.frameFlags &= ~SPRITE_FLAG_MASK_OBJ_MODE;
     }
 
     /* Move the cursor */
@@ -205,8 +199,7 @@ extern u8 Tileset_zone_1_act_1_fg[];
 
 void sub_800AE58(void)
 {
-    DmaCopy16(3, &Tileset_zone_1_act_1_fg[(4 * 16 * TILE_SIZE_4BPP) / sizeof(u16)],
-              (void *)(OBJ_VRAM1 + 0x3EC0), 0x140);
+    DmaCopy16(3, &Tileset_zone_1_act_1_fg[(4 * 16 * TILE_SIZE_4BPP) / sizeof(u16)], (void *)(OBJ_VRAM1 + 0x3EC0), 0x140);
 
     gObjPalette[1] = RGB_WHITE;
     gFlags |= FLAGS_UPDATE_SPRITE_PALETTES;

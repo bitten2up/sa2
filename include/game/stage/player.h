@@ -14,8 +14,8 @@ void Player_SetMovestate_IsInScriptedSequence(void);
 void Player_ClearMovestate_IsInScriptedSequence(void);
 
 void InitializePlayer(Player *p);
-void sub_80218E4(Player *);
-void sub_8023B5C(Player *, s8);
+void Player_TransitionCancelFlyingAndBoost(Player *p);
+void sub_8023B5C(Player *, s32);
 void sub_8023260(Player *);
 void sub_80232D0(Player *);
 void sub_8023610(Player *);
@@ -44,26 +44,25 @@ type8029A28 sub_8029A74(Player *player, u8 *p1, type8029A28 *out);
 
 bool32 sub_8029E6C(Player *);
 
-#define GET_CHARACTER_ANIM(player)                                                      \
-    (player->anim - gPlayerCharacterIdleAnims[player->character])
+#define GET_CHARACTER_ANIM(player) (player->anim - gPlayerCharacterIdleAnims[player->character])
 
 #define PLAYERFN_SET(proc)          gPlayer.callback = proc;
 #define PLAYERFN_CALL(proc, player) proc(player);
-#define PLAYERFN_SET_AND_CALL(proc, player)                                             \
-    {                                                                                   \
-        PLAYERFN_SET(proc);                                                             \
-        PLAYERFN_CALL(proc, player);                                                    \
+#define PLAYERFN_SET_AND_CALL(proc, player)                                                                                                \
+    {                                                                                                                                      \
+        PLAYERFN_SET(proc);                                                                                                                \
+        PLAYERFN_CALL(proc, player);                                                                                                       \
     }
 
-#define PLAYERFN_SET_SHIFT_OFFSETS(player, x, y)                                        \
-    {                                                                                   \
-        player->unk16 = x;                                                              \
-        player->unk17 = y;                                                              \
+#define PLAYERFN_SET_SHIFT_OFFSETS(player, x, y)                                                                                           \
+    {                                                                                                                                      \
+        player->unk16 = x;                                                                                                                 \
+        player->unk17 = y;                                                                                                                 \
     }
-#define PLAYERFN_CHANGE_SHIFT_OFFSETS(player, x, y)                                     \
-    {                                                                                   \
-        sub_8023B5C(player, y);                                                         \
-        PLAYERFN_SET_SHIFT_OFFSETS(player, x, y)                                        \
+#define PLAYERFN_CHANGE_SHIFT_OFFSETS(player, x, y)                                                                                        \
+    {                                                                                                                                      \
+        sub_8023B5C(player, y);                                                                                                            \
+        PLAYERFN_SET_SHIFT_OFFSETS(player, x, y)                                                                                           \
     }
 
 extern const u16 gUnknown_080D6736[][2];

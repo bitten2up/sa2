@@ -1,10 +1,11 @@
 #include "core.h"
+#include "malloc_vram.h"
+#include "flags.h"
 
 #include "sakit/globals.h"
 #include "game/multiboot/collect_rings/time_display.h"
 
-#include "malloc_vram.h"
-#include "animation_commands.h"
+#include "constants/animations.h"
 
 typedef struct {
     Sprite unk0;
@@ -17,10 +18,9 @@ void sub_808328C(void);
 u32 gUnknown_03005B6C = 0;
 
 const u8 gUnknown_080E0234[] = {
-    0,   2,   3,   5,   7,   8,   16,  18,  19,  21,  23,  24,  32,  34,  35,
-    37,  39,  40,  48,  50,  51,  53,  55,  56,  64,  66,  67,  69,  71,  72,
-    80,  82,  83,  85,  87,  88,  96,  98,  99,  101, 103, 104, 112, 114, 115,
-    117, 119, 120, 128, 130, 131, 133, 135, 136, 144, 146, 147, 149, 151, 152,
+    0,   2,   3,   5,   7,   8,   16,  18,  19,  21,  23,  24,  32,  34,  35,  37,  39,  40,  48,  50,
+    51,  53,  55,  56,  64,  66,  67,  69,  71,  72,  80,  82,  83,  85,  87,  88,  96,  98,  99,  101,
+    103, 104, 112, 114, 115, 117, 119, 120, 128, 130, 131, 133, 135, 136, 144, 146, 147, 149, 151, 152,
 };
 
 const u16 gUnknown_080E0270[] = INCBIN_U16("graphics/80E0270.gbapal");
@@ -30,23 +30,23 @@ void CreateCollectRingsTimeDisplay(void)
     u32 i;
     TimeDisplay *timeDisplay;
     Sprite *s;
-    struct Task *t = TaskCreate(sub_808328C, 0x240, 0x2102, 0, sub_80832E0);
+    struct Task *t = TaskCreate(sub_808328C, sizeof(TimeDisplay), 0x2102, 0, sub_80832E0);
     gUnknown_03005B6C = 0;
     timeDisplay = TASK_DATA(t);
 
     s = &timeDisplay->unk0;
-    s->unk1A = SPRITE_OAM_ORDER(5);
+    s->oamFlags = SPRITE_OAM_ORDER(5);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
-    s->unk10 = 0x40000;
+    s->frameFlags = 0x40000;
 
     if (gGameMode == GAME_MODE_MULTI_PLAYER_COLLECT_RINGS) {
         s->graphics.dest = VramMalloc(9);
-        s->graphics.anim = 729;
+        s->graphics.anim = SA2_ANIM_MULTIPLAYER_UI_RING;
         s->variant = 0;
     }
 
@@ -56,16 +56,16 @@ void CreateCollectRingsTimeDisplay(void)
         s = &timeDisplay->unk30[i];
         s->x = 0;
         s->y = 0;
-        s->unk1A = SPRITE_OAM_ORDER(4);
+        s->oamFlags = SPRITE_OAM_ORDER(4);
         s->graphics.size = 0;
-        s->graphics.anim = 1119;
-        s->variant = i + 16;
+        s->graphics.anim = SA2_ANIM_ASCII;
+        s->variant = i + SA2_ANIM_ASCII_1;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
-        s->unk10 = 0;
+        s->frameFlags = 0;
 
         if (i == 0) {
             s->graphics.dest = VramMalloc(22);
@@ -80,7 +80,7 @@ void CreateCollectRingsTimeDisplay(void)
         gObjPalette[i + 0x70] = gUnknown_080E0270[i];
     }
 
-    gFlags |= 0x2;
+    gFlags |= FLAGS_UPDATE_SPRITE_PALETTES;
 }
 
 void sub_8082E9C(TimeDisplay *timeDisplay)
@@ -89,7 +89,7 @@ void sub_8082E9C(TimeDisplay *timeDisplay)
     u16 temp4;
     u32 temp;
     Sprite *s;
-    u8 temp5;
+    u8 palId;
     u16 index;
     u8 digit1;
     u32 temp2;
@@ -110,15 +110,15 @@ void sub_8082E9C(TimeDisplay *timeDisplay)
     index = temp / 0x10000;
     temp2 *= 0x10000;
     temp2 /= 0x10000;
-    temp6 = sub_8004518(index);
+    temp6 = Base10DigitsToHexNibbles(index);
 
     temp3 = Div(temp2, 60);
     index = temp2 - (temp3 * 60);
-    temp4 = sub_8004518(index);
+    temp4 = Base10DigitsToHexNibbles(index);
 
-    temp5 = 0;
+    palId = 0;
     if (gCourseTime < 3600) {
-        temp5 = (-(gStageTime & 0x10)) >> 0x1F;
+        palId = (-(gStageTime & 0x10)) >> 0x1F;
     }
 
     x = 8;
@@ -126,7 +126,7 @@ void sub_8082E9C(TimeDisplay *timeDisplay)
     s = &timeDisplay->unk30[temp4 % 16];
     s->x = x;
     s->y = y;
-    s->palId = temp5;
+    s->palId = palId;
     DisplaySprite(s);
 
     x += 8;
@@ -140,14 +140,14 @@ void sub_8082E9C(TimeDisplay *timeDisplay)
     s = &timeDisplay->unk30[(temp6 / 16) % 16];
     s->x = x;
     s->y = y;
-    s->palId = temp5;
+    s->palId = palId;
     DisplaySprite(s);
 
     x += 8;
     s = &timeDisplay->unk30[temp6 % 16];
     s->x = x;
     s->y = y;
-    s->palId = temp5;
+    s->palId = palId;
     DisplaySprite(s);
 
     x += 8;
@@ -161,14 +161,14 @@ void sub_8082E9C(TimeDisplay *timeDisplay)
     s = &timeDisplay->unk30[(digit1 / 16) % 16];
     s->x = x;
     s->y = y;
-    s->palId = temp5;
+    s->palId = palId;
     DisplaySprite(s);
 
     x += 8;
     s = &timeDisplay->unk30[digit1 % 16];
     s->x = x;
     s->y = y;
-    s->palId = temp5;
+    s->palId = palId;
     DisplaySprite(s);
 }
 
@@ -187,7 +187,7 @@ void sub_8083040(TimeDisplay *timeDisplay)
         s->palId = i;
         DisplaySprite(s);
 
-        j = sub_8004518(gMultiplayerCharRings[i]);
+        j = Base10DigitsToHexNibbles(gMultiplayerCharRings[i]);
         x = s->x + 0x17;
         y = s->y + 0x13;
         do {
@@ -232,11 +232,11 @@ void sub_8083104(TimeDisplay *timeDisplay)
     index = temp / 0x10000;
     temp2 *= 0x10000;
     temp2 /= 0x10000;
-    temp6 = sub_8004518(index);
+    temp6 = Base10DigitsToHexNibbles(index);
 
     temp3 = Div(temp2, 60);
     index = temp2 - (temp3 * 60);
-    temp4 = sub_8004518(index);
+    temp4 = Base10DigitsToHexNibbles(index);
 
     x = 8;
     y = 54;
@@ -297,10 +297,10 @@ void sub_8083104(TimeDisplay *timeDisplay)
 
 void sub_808328C(void)
 {
-    if (!(gStageFlags & EXTRA_STATE__TURN_OFF_HUD)) {
+    if (!(gStageFlags & STAGE_FLAG__TURN_OFF_HUD)) {
         TimeDisplay *timeDisplay = TASK_DATA(gCurTask);
         Sprite *s = &timeDisplay->unk0;
-        if (!(gStageFlags & EXTRA_STATE__TURN_OFF_TIMER)) {
+        if (!(gStageFlags & STAGE_FLAG__TURN_OFF_TIMER)) {
             sub_8082E9C(timeDisplay);
 
             if (gUnknown_03005B6C != 0) {

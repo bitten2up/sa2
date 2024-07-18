@@ -31,13 +31,11 @@ static void sub_80811A0(Sprite_SpecialRing *, u32);
 static void sub_8081134(Sprite_SpecialRing *);
 static void Task_80811BC(void);
 
-void CreateEntity_SpecialRing(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                              u8 spriteY)
+void CreateEntity_SpecialRing(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
     if (IS_SINGLE_PLAYER) {
         struct Task *t
-            = TaskCreate(Task_Interactable_SpecialRing, sizeof(Sprite_SpecialRing),
-                         0x4040, 0, TaskDestructor_Interactable_SpecialRing);
+            = TaskCreate(Task_Interactable_SpecialRing, sizeof(Sprite_SpecialRing), 0x4040, 0, TaskDestructor_Interactable_SpecialRing);
 
         Sprite_SpecialRing *ring = TASK_DATA(t);
         Sprite *s;
@@ -51,15 +49,15 @@ void CreateEntity_SpecialRing(MapEntity *me, u16 spriteRegionX, u16 spriteRegion
         ring->base.spriteY = spriteY;
 
         s = &ring->displayed;
-        s->unk1A = SPRITE_OAM_ORDER(18);
+        s->oamFlags = SPRITE_OAM_ORDER(18);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = 0x2000;
+        s->frameFlags = 0x2000;
 
         s->graphics.dest = VramMalloc(9);
         s->graphics.anim = SA2_ANIM_SPECIAL_RING;
@@ -77,21 +75,26 @@ static bool32 sub_8081010(Sprite_SpecialRing *ring)
         if (flags & 0xF0000) {
             return TRUE;
         } else {
-            s32 somePosX, somePosY;
-            u16 posX, posY;
-            somePosX = I(cheese->posX) + 16;
-            somePosX -= ring->worldX;
+#ifdef BUG_FIX
+            if (cheese != NULL)
+#endif
+            {
+                s32 somePosX, somePosY;
+                u16 posX, posY;
+                somePosX = I(cheese->posX) + 16;
+                somePosX -= ring->worldX;
 
-            somePosY = I(cheese->posY) + 32;
-            somePosY -= ring->worldY;
+                somePosY = I(cheese->posY) + 32;
+                somePosY -= ring->worldY;
 
-            posY = somePosY;
-            posX = somePosX;
+                posY = somePosY;
+                posX = somePosX;
 
-            if ((posX <= 32) && (posY <= 32)) {
-                gCurTask->unk15 = 0;
+                if ((posX <= 32) && (posY <= 32)) {
+                    gCurTask->unk15 = 0;
 
-                return TRUE;
+                    return TRUE;
+                }
             }
         }
     }
@@ -178,7 +181,7 @@ static void Task_80811BC(void)
     Sprite_SpecialRing *ring = TASK_DATA(gCurTask);
     Sprite *s = &ring->displayed;
 
-    if ((s->unk10 & 0x4000) || sub_8081164(ring)) {
+    if ((s->frameFlags & 0x4000) || sub_8081164(ring)) {
         sub_80811A0(ring, 0);
     } else {
         sub_8081134(ring);

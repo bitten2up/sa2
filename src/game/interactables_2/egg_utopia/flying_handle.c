@@ -54,13 +54,11 @@ static void sub_807F784(Sprite_FlyingHandle *);
 
 #define FLYING_HANDLE_VRAM_TILES 25
 
-void CreateEntity_FlyingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                               u8 spriteY)
+void CreateEntity_FlyingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
     u32 i;
     Sprite *s;
-    struct Task *t = TaskCreate(Task_FlyingHandle, sizeof(Sprite_FlyingHandle), 0x2010,
-                                0, TaskDestructor_FlyingHandle);
+    struct Task *t = TaskCreate(Task_FlyingHandle, sizeof(Sprite_FlyingHandle), 0x2010, 0, TaskDestructor_FlyingHandle);
     Sprite_FlyingHandle *flyingHandle = TASK_DATA(t);
     flyingHandle->unk68 = 0;
     flyingHandle->unk5C = 0;
@@ -73,8 +71,7 @@ void CreateEntity_FlyingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteRegio
     flyingHandle->width = flyingHandle->offsetX + me->d.uData[2] * 8;
     flyingHandle->height = flyingHandle->offsetY + me->d.uData[3] * 8;
 
-    flyingHandle->unk44
-        = Q(((flyingHandle->offsetX + flyingHandle->width) >> 1) + flyingHandle->x);
+    flyingHandle->unk44 = Q(((flyingHandle->offsetX + flyingHandle->width) >> 1) + flyingHandle->x);
     flyingHandle->unk48 = Q(flyingHandle->y + flyingHandle->height);
     flyingHandle->unk4C = 0;
     flyingHandle->unk50 = 0;
@@ -91,15 +88,15 @@ void CreateEntity_FlyingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteRegio
     }
 
     s = &flyingHandle->s;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
     s->graphics.dest = VramMalloc(FLYING_HANDLE_VRAM_TILES);
     s->graphics.anim = SA2_ANIM_FLYING_HANDLE;
     s->variant = 0;
@@ -163,7 +160,7 @@ static void ActivatePlayerGrab(Sprite_FlyingHandle *flyingHandle)
 static void sub_807F484(Sprite_FlyingHandle *flyingHandle)
 {
     gPlayer.moveState &= ~MOVESTATE_400000;
-    sub_80218E4(&gPlayer);
+    Player_TransitionCancelFlyingAndBoost(&gPlayer);
     sub_8023B5C(&gPlayer, 14);
 
     gPlayer.unk16 = 6;
@@ -181,8 +178,7 @@ static void sub_807F484(Sprite_FlyingHandle *flyingHandle)
 static void sub_807F4F0(Sprite_FlyingHandle *flyingHandle)
 {
     if (flyingHandle->unk60 != 0) {
-        if (flyingHandle->unk48 <= Q(flyingHandle->y + flyingHandle->offsetY)
-            && flyingHandle->unk5E > -1) {
+        if (flyingHandle->unk48 <= Q(flyingHandle->y + flyingHandle->offsetY) && flyingHandle->unk5E > -1) {
             flyingHandle->unk50 = SIN_24_8(flyingHandle->unk68 * 4) * 8;
             flyingHandle->unk68 += 4;
             flyingHandle->unk5E = 0;
@@ -281,15 +277,9 @@ static void TaskDestructor_FlyingHandle(struct Task *t)
     VramFree(flyingHandle->s.graphics.dest);
 }
 
-static void sub_807F770(UNUSED Sprite_FlyingHandle *flyingHandle)
-{
-    gCurTask->main = Task_FlyingHandle;
-}
+static void sub_807F770(UNUSED Sprite_FlyingHandle *flyingHandle) { gCurTask->main = Task_FlyingHandle; }
 
-static void sub_807F784(UNUSED Sprite_FlyingHandle *flyingHandle)
-{
-    gCurTask->main = Task_FlyingHandle;
-}
+static void sub_807F784(UNUSED Sprite_FlyingHandle *flyingHandle) { gCurTask->main = Task_FlyingHandle; }
 
 static void sub_807F798(Sprite_FlyingHandle *flyingHandle)
 {
@@ -318,18 +308,15 @@ static void sub_807F7D0(Sprite_FlyingHandle *flyingHandle)
     }
 }
 
-static void sub_807F818(UNUSED Sprite_FlyingHandle *flyingHandle)
-{
-    m4aSongNumStartOrContinue(SE_291);
-}
+static void sub_807F818(UNUSED Sprite_FlyingHandle *flyingHandle) { m4aSongNumStartOrContinue(SE_291); }
 
 static bool32 ShouldDespawn(Sprite_FlyingHandle *flyingHandle)
 {
     s16 x = flyingHandle->x - gCamera.x;
     s16 y = flyingHandle->y - gCamera.y;
 
-    if (x + flyingHandle->width < -128 || x + flyingHandle->offsetX > 368
-        || y + flyingHandle->height < -128 || y + flyingHandle->offsetY > 288) {
+    if (x + flyingHandle->width < -128 || x + flyingHandle->offsetX > 368 || y + flyingHandle->height < -128
+        || y + flyingHandle->offsetY > 288) {
         return TRUE;
     }
 

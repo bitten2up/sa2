@@ -84,7 +84,7 @@ TOOLS = $(foreach tool,$(TOOLBASE),tools/$(tool)/$(tool)$(EXE))
 # -I sets an include path
 # -D defines a symbol
 CPPFLAGS ?= -iquote include -D $(GAME_REGION)
-CC1FLAGS ?= -Wimplicit -Wparentheses -Werror -Wno-parentheses-equality
+CC1FLAGS ?= -Wimplicit -Wparentheses -Werror
 
 SDL_MINGW_PKG          :=  ext/SDL2-2.30.3/i686-w64-mingw32
 SDL_MINGW_INCLUDE      := $(SDL_MINGW_PKG)/include/SDL2
@@ -102,7 +102,7 @@ ifeq ($(PLATFORM),gba)
 	CC1FLAGS += -fhex-asm
 else 
 	ifeq ($(PLATFORM),sdl)
-		CPPFLAGS += -D TITLE_BAR=$(BUILD_NAME).$(PLATFORM) -D PLATFORM_GBA=0 -D PLATFORM_SDL=1 -D PLATFORM_WIN32=0 $(shell sdl2-config --cflags) -fPIE
+		CPPFLAGS += -D TITLE_BAR=$(BUILD_NAME).$(PLATFORM) -D PLATFORM_GBA=0 -D PLATFORM_SDL=1 -D PLATFORM_WIN32=0 $(shell sdl2-config --cflags)
 	else ifeq ($(PLATFORM),sdl_win32)
 		CPPFLAGS += -D TITLE_BAR=$(BUILD_NAME).$(PLATFORM) -D PLATFORM_GBA=0 -D PLATFORM_SDL=1 -D PLATFORM_WIN32=0 $(SDL_MINGW_FLAGS)
 	else
@@ -111,6 +111,9 @@ else
 
 	ifeq ($(CPU_ARCH),i386)
         CPPFLAGS += -D CPU_ARCH_X86=1 -D CPU_ARCH_ARM=0
+
+        # Use the more legible Intel dialect for x86, without underscores
+        CC1FLAGS += -masm=intel
 	else 
         CPPFLAGS += -D CPU_ARCH_X86=0 -D CPU_ARCH_ARM=0
 	endif
@@ -123,11 +126,8 @@ ifeq ($(PLATFORM),gba)
     ASFLAGS  += -mthumb-interwork
     CC1FLAGS += -mthumb-interwork
   endif
-else 
-  ifeq ($(PLATFORM), sdl_win32)
-    # Use the more legible Intel dialect for x86, without underscores
-    CC1FLAGS += -masm=intel
-  else ifeq ($(PLATFORM), sdl)
+else
+  ifeq ($(PLATFORM), sdl)
     # for modern we are using a modern compiler
     # so instead of CPP we can use gcc -E to "preprocess only"
     CPP := $(CC1) -E
@@ -138,6 +138,7 @@ endif
 
 ifeq ($(DEBUG),1)
   CC1FLAGS += -g3 -O0
+  CPPFLAGS += -D DEBUG=1
 else
   CC1FLAGS += -O2
 endif
@@ -424,7 +425,7 @@ else
 ifeq ($(PLATFORM),sdl)
 	cd $(OBJ_DIR) && $(CC1) -no-pie $(OBJS_REL) $(shell sdl2-config --cflags --libs) -o $(ROOT_DIR)/$@
 else ifeq ($(PLATFORM),sdl_win32)
-	cd $(OBJ_DIR) && $(CC1) -mwin32 $(OBJS_REL) -lmingw32 -L$(ROOT_DIR)/$(SDL_MINGW_LIB) -lSDL2main -lSDL2.dll -lwinmm -lkernel32 -lxinput -o $(ROOT_DIR)/$@ -Xlinker -Map "$(ROOT_DIR)/$(MAP)"
+	@cd $(OBJ_DIR) && $(CC1) -mwin32 $(OBJS_REL) -lmingw32 -L$(ROOT_DIR)/$(SDL_MINGW_LIB) -lSDL2main -lSDL2.dll -lwinmm -lkernel32 -lxinput -o $(ROOT_DIR)/$@ -Xlinker -Map "$(ROOT_DIR)/$(MAP)"
 else
 	@cd $(OBJ_DIR) && $(CC1) -mwin32 $(OBJS_REL) -L$(ROOT_DIR)/libagbsyscall -lagbsyscall -lkernel32 -o $(ROOT_DIR)/$@ -Xlinker -Map "$(ROOT_DIR)/$(MAP)"
 endif
@@ -484,7 +485,7 @@ endif
 
 $(DATA_ASM_BUILDDIR)/%.o: $(DATA_ASM_SUBDIR)/%.s $$(data_dep)
 	@echo "$(AS) <flags> -o $@ $<"
-	$(PREPROC) $< "" | $(ASM_PSEUDO_OP_CONV) | $(CPP) $(CPPFLAGS) - | $(AS) $(ASFLAGS) -o $@ -
+	@$(PREPROC) $< "" | $(ASM_PSEUDO_OP_CONV) | $(CPP) $(CPPFLAGS) - | $(AS) $(ASFLAGS) -o $@ -
 
 $(SONG_BUILDDIR)/%.o: $(SONG_SUBDIR)/%.s
 	@echo "$(AS) <flags> -o $@ $<"

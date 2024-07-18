@@ -11,7 +11,7 @@ typedef struct {
     /*0x00 */ SpriteTransform transform;
     /*0x0C */ Sprite s;
     /*0x3C */ Hitbox reserved;
-} PlayerSpriteInfo; /* 0x30 */
+} PlayerSpriteInfo; /* size: 0x44 */
 
 extern PlayerSpriteInfo gUnknown_03005AA0;
 extern PlayerSpriteInfo gUnknown_03005AF0;
@@ -64,9 +64,7 @@ typedef void (*PlayerCallback)(struct Player_ *);
 #define PLAYER_ITEM_EFFECT__20              0x20
 #define PLAYER_ITEM_EFFECT__80              0x80
 
-#define HAS_SHIELD(p)                                                                   \
-    ((p)->itemEffect                                                                    \
-     & (PLAYER_ITEM_EFFECT__SHIELD_MAGNETIC | PLAYER_ITEM_EFFECT__SHIELD_NORMAL))
+#define HAS_SHIELD(p) ((p)->itemEffect & (PLAYER_ITEM_EFFECT__SHIELD_MAGNETIC | PLAYER_ITEM_EFFECT__SHIELD_NORMAL))
 
 // Confusion
 #define PLAYER_ITEM_EFFECT__40 0x40

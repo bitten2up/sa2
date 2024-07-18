@@ -39,9 +39,8 @@ static void sub_8075DE8(Sprite_NoteBlock *);
 
 /* animId, variant, tileId (OBJ VRAM) */
 const u16 gUnknown_080DFC40[NUM_NOTE_BLOCK_TYPES][3] = {
-    { SA2_ANIM_NOTE_BLOCK, 0, 0x16C }, { SA2_ANIM_NOTE_BLOCK, 1, 0x170 },
-    { SA2_ANIM_NOTE_BLOCK, 2, 0x174 }, { SA2_ANIM_NOTE_BLOCK, 3, 0x178 },
-    { SA2_ANIM_NOTE_BLOCK, 4, 0x17C }, { SA2_ANIM_NOTE_BLOCK, 5, 0x180 },
+    { SA2_ANIM_NOTE_BLOCK, 0, 0x16C }, { SA2_ANIM_NOTE_BLOCK, 1, 0x170 }, { SA2_ANIM_NOTE_BLOCK, 2, 0x174 },
+    { SA2_ANIM_NOTE_BLOCK, 3, 0x178 }, { SA2_ANIM_NOTE_BLOCK, 4, 0x17C }, { SA2_ANIM_NOTE_BLOCK, 5, 0x180 },
     { SA2_ANIM_NOTE_BLOCK, 6, 0x184 },
 };
 
@@ -56,17 +55,13 @@ const s16 gUnknown_080DFC6A[NUM_NOTE_BLOCK_TYPES] = {
 };
 
 const u16 sSfxGlockenspiel[NUM_NOTE_BLOCK_TYPES + 1] = {
-    SE_MUSIC_PLANT_GLOCKENSPIEL_1, SE_MUSIC_PLANT_GLOCKENSPIEL_2,
-    SE_MUSIC_PLANT_GLOCKENSPIEL_3, SE_MUSIC_PLANT_GLOCKENSPIEL_4,
-    SE_MUSIC_PLANT_GLOCKENSPIEL_5, SE_MUSIC_PLANT_GLOCKENSPIEL_6,
-    SE_MUSIC_PLANT_GLOCKENSPIEL_6, MUS_DUMMY,
+    SE_MUSIC_PLANT_GLOCKENSPIEL_1, SE_MUSIC_PLANT_GLOCKENSPIEL_2, SE_MUSIC_PLANT_GLOCKENSPIEL_3, SE_MUSIC_PLANT_GLOCKENSPIEL_4,
+    SE_MUSIC_PLANT_GLOCKENSPIEL_5, SE_MUSIC_PLANT_GLOCKENSPIEL_6, SE_MUSIC_PLANT_GLOCKENSPIEL_6, MUS_DUMMY,
 };
 
-void CreateEntity_Note_Block(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                             u8 spriteY)
+void CreateEntity_Note_Block(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_8075C6C, sizeof(Sprite_NoteBlock), 0x2010, 0,
-                                TaskDestructor_8075CC0);
+    struct Task *t = TaskCreate(Task_8075C6C, sizeof(Sprite_NoteBlock), 0x2010, 0, TaskDestructor_8075CC0);
     Sprite_NoteBlock *block = TASK_DATA(t);
     Sprite *s = &block->s;
 
@@ -82,16 +77,16 @@ void CreateEntity_Note_Block(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY
     block->base.spriteX = me->x;
     block->base.spriteY = spriteY;
 
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
 
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
 
     {
         u16 tileId = gUnknown_080DFC40[block->unk48][2];
@@ -161,11 +156,8 @@ void sub_8075B50(Sprite_NoteBlock *block)
                 (-((gUnknown_080DFC6A[block->unk48] * 3) << 14)) >> 16, 1);
 
     if (--block->unk4B == 1) {
-        block->s.graphics.dest
-            = &((u8 *)OBJ_VRAM0)[gUnknown_080DFC40[ARRAY_COUNT(gUnknown_080DFC40) - 1][2]
-                                 * TILE_SIZE_4BPP];
-        block->s.graphics.anim
-            = gUnknown_080DFC40[ARRAY_COUNT(gUnknown_080DFC40) - 1][0];
+        block->s.graphics.dest = &((u8 *)OBJ_VRAM0)[gUnknown_080DFC40[ARRAY_COUNT(gUnknown_080DFC40) - 1][2] * TILE_SIZE_4BPP];
+        block->s.graphics.anim = gUnknown_080DFC40[ARRAY_COUNT(gUnknown_080DFC40) - 1][0];
         block->s.variant = gUnknown_080DFC40[ARRAY_COUNT(gUnknown_080DFC40) - 1][1];
         UpdateSpriteAnimation(&block->s);
     }
@@ -215,10 +207,10 @@ void sub_8075D28(Sprite_NoteBlock *block)
 {
     Sprite *s = &block->s;
 
-    s->unk10 |= 0x400;
+    s->frameFlags |= 0x400;
     DisplaySprite(s);
 
-    s->unk10 &= ~0x400;
+    s->frameFlags &= ~0x400;
     DisplaySprite(s);
 }
 
@@ -251,8 +243,7 @@ bool32 sub_8075D58(Sprite_NoteBlock *block)
     otherX = screenX;
     if ((otherX) > 752 || (otherY) > 672) {
 #else
-    if ((screenX < -256 || screenX > (256 + DISPLAY_WIDTH))
-        || (screenY < -256 || screenY > (256 + DISPLAY_HEIGHT))) {
+    if ((screenX < -256 || screenX > (256 + DISPLAY_WIDTH)) || (screenY < -256 || screenY > (256 + DISPLAY_HEIGHT))) {
 #endif
         return TRUE;
     }

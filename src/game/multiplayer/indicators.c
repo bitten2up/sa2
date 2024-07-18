@@ -34,11 +34,9 @@ void CreateOpponentPositionIndicator(u8 sid)
     OpponentIndicator *pi;
 
     if (gGameMode != GAME_MODE_MULTI_PLAYER_COLLECT_RINGS) {
-        t = TaskCreate(Task_801951C, sizeof(OpponentIndicator), 0x2001, 0,
-                       TaskDestructor_8019CC8);
+        t = TaskCreate(Task_801951C, sizeof(OpponentIndicator), 0x2001, 0, TaskDestructor_8019CC8);
     } else {
-        t = TaskCreate(Task_8019898, sizeof(OpponentIndicator), 0x2001, 0,
-                       TaskDestructor_8019CC8);
+        t = TaskCreate(Task_8019898, sizeof(OpponentIndicator), 0x2001, 0, TaskDestructor_8019CC8);
     }
 
     pi = TASK_DATA(t);
@@ -48,7 +46,7 @@ void CreateOpponentPositionIndicator(u8 sid)
     spr = &pi->spr;
     transform = &pi->transform;
     spr->graphics.dest = RESERVED_INDICATOR_TILES_VRAM;
-    spr->unk1A = 0x40;
+    spr->oamFlags = SPRITE_OAM_ORDER(1);
     spr->graphics.size = 0;
     spr->animCursor = 0;
     spr->timeUntilNextFrame = 0;
@@ -56,8 +54,7 @@ void CreateOpponentPositionIndicator(u8 sid)
     spr->animSpeed = SPRITE_ANIM_SPEED(1.0);
     spr->palId = sid;
     spr->hitboxes[0].index = -1;
-    spr->unk10 = SPRITE_FLAG(19, 1) | SPRITE_FLAG(18, 1)
-        | SPRITE_FLAG_MASK_ROT_SCALE_ENABLE | SPRITE_FLAG_MASK_ROT_SCALE_DOUBLE_SIZE;
+    spr->frameFlags = SPRITE_FLAG(19, 1) | SPRITE_FLAG(18, 1) | SPRITE_FLAG_MASK_ROT_SCALE_ENABLE | SPRITE_FLAG_MASK_ROT_SCALE_DOUBLE_SIZE;
 
     spr->graphics.anim = SA2_ANIM_INDICATOR_SONIC;
     spr->variant = 0;
@@ -78,7 +75,7 @@ void CreateSelfPositionIndicator(void)
 
     spr = &pi->spr;
     spr->graphics.dest = RESERVED_INDICATOR_TILES_VRAM;
-    spr->unk1A = 0x40;
+    spr->oamFlags = SPRITE_OAM_ORDER(1);
     spr->graphics.size = 0;
     spr->animCursor = 0;
     spr->timeUntilNextFrame = 0;
@@ -86,7 +83,7 @@ void CreateSelfPositionIndicator(void)
     spr->animSpeed = SPRITE_ANIM_SPEED(1.0);
     spr->palId = 0;
     spr->hitboxes[0].index = -1;
-    spr->unk10 = SPRITE_FLAG(18, 1);
+    spr->frameFlags = SPRITE_FLAG(18, 1);
 
     spr->graphics.anim = SA2_ANIM_INDICATOR_SONIC;
     spr->variant = 0;
@@ -94,8 +91,7 @@ void CreateSelfPositionIndicator(void)
 }
 
 // (79.22%) https://decomp.me/scratch/SKNlg
-NONMATCH("asm/non_matching/game/multiplayer/indicators__Task_801951C.inc",
-         void Task_801951C(void))
+NONMATCH("asm/non_matching/game/multiplayer/indicators__Task_801951C.inc", void Task_801951C(void))
 {
     s32 opponentX, opponentY;
     s32 opponentDistSq;
@@ -115,10 +111,10 @@ NONMATCH("asm/non_matching/game/multiplayer/indicators__Task_801951C.inc",
     spr = &pi->spr;
     transform = &pi->transform;
 
-    opponentX = mpp->unk50 - gCamera.x;
+    opponentX = mpp->pos.x - gCamera.x;
 
     if ((opponentX >= 0) && (opponentX <= DISPLAY_WIDTH)) {
-        opponentY = mpp->unk52 - gCamera.y;
+        opponentY = mpp->pos.y - gCamera.y;
 
         if ((opponentY >= 0) && (opponentY <= DISPLAY_HEIGHT)) {
             return;
@@ -126,8 +122,8 @@ NONMATCH("asm/non_matching/game/multiplayer/indicators__Task_801951C.inc",
     }
     // _08019576
 
-    opponentX2 = mpp->unk50 - (DISPLAY_WIDTH / 2);
-    opponentY2 = mpp->unk52 - (DISPLAY_HEIGHT / 2);
+    opponentX2 = mpp->pos.x - (DISPLAY_WIDTH / 2);
+    opponentY2 = mpp->pos.y - (DISPLAY_HEIGHT / 2);
 
     opponentX2 -= gCamera.x;
     opponentY2 -= gCamera.y;
@@ -168,8 +164,7 @@ NONMATCH("asm/non_matching/game/multiplayer/indicators__Task_801951C.inc",
     opponentDistSq = SQUARE(opponentX2) + SQUARE(opponentY2);
 
     if (opponentDistSq < 0x10000) {
-        spr->animSpeed
-            = opponentDistSq < 0x10000 ? SPRITE_ANIM_SPEED(1.5) : SPRITE_ANIM_SPEED(1.0);
+        spr->animSpeed = opponentDistSq < 0x10000 ? SPRITE_ANIM_SPEED(1.5) : SPRITE_ANIM_SPEED(1.0);
     } else {
         spr->animSpeed = SPRITE_ANIM_SPEED(1.0);
     }
@@ -236,8 +231,7 @@ NONMATCH("asm/non_matching/game/multiplayer/indicators__Task_801951C.inc",
             // _08019818
         } else {
             // _0801977C
-            s16 divRes = Div((SIN_24_8((r4 - (SIN_PERIOD / 2)) & ONE_CYCLE)) * 0x100,
-                             (COS_24_8((r4 - (SIN_PERIOD / 2)) & ONE_CYCLE)));
+            s16 divRes = Div((SIN_24_8((r4 - (SIN_PERIOD / 2)) & ONE_CYCLE)) * 0x100, (COS_24_8((r4 - (SIN_PERIOD / 2)) & ONE_CYCLE)));
             tfy = (DISPLAY_HEIGHT / 2) - ((divRes * 15) >> 5);
 
             if (opponentY2 > 0) {
@@ -272,10 +266,10 @@ NONMATCH("asm/non_matching/game/multiplayer/indicators__Task_801951C.inc",
     transform->y = tfy;
 
     // _0801984A+6
-    spr->unk10 &= ~SPRITE_FLAG_MASK_ROT_SCALE;
-    spr->unk10 |= gUnknown_030054B8++;
+    spr->frameFlags &= ~SPRITE_FLAG_MASK_ROT_SCALE;
+    spr->frameFlags |= gUnknown_030054B8++;
     UpdateSpriteAnimation(spr);
-    sub_8004860(spr, transform);
+    TransformSprite(spr, transform);
     DisplaySprite(spr);
 }
 END_NONMATCH

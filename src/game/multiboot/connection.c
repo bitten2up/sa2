@@ -141,7 +141,7 @@ void sub_8081200(void)
     };
 
     ApplyGameStageSettings();
-    gStageFlags &= ~EXTRA_STATE__ACT_START;
+    gStageFlags &= ~STAGE_FLAG__ACT_START;
     gPlayer.moveState &= ~MOVESTATE_IGNORE_INPUT;
     gPlayer.unk5C |= gPlayerControls.jump | gPlayerControls.attack;
 }
@@ -168,7 +168,7 @@ void StartSinglePakConnect(void)
     gBgScrollRegs[1][0] = 0;
     gBgScrollRegs[1][1] = 0;
 
-    t = TaskCreate(sub_8081604, 0xFC, 0x2000, 0, NULL);
+    t = TaskCreate(sub_8081604, sizeof(struct SinglePakConnectScreen), 0x2000, 0, NULL);
     connectScreen = TASK_DATA(t);
     connectScreen->unkFA = gLoadedSaveGame->language;
 
@@ -177,8 +177,8 @@ void StartSinglePakConnect(void)
     }
 
     connectScreen->mbProgStart = gUnknown_080E01E0[connectScreen->unkFA][0];
-    connectScreen->mbProgLength = (uintptr_t)gUnknown_080E01E0[connectScreen->unkFA][1]
-        - (uintptr_t)gUnknown_080E01E0[connectScreen->unkFA][0];
+    connectScreen->mbProgLength
+        = (uintptr_t)gUnknown_080E01E0[connectScreen->unkFA][1] - (uintptr_t)gUnknown_080E01E0[connectScreen->unkFA][0];
     connectScreen->unkF0 = 0;
     connectScreen->unkF9 = 0;
     connectScreen->unkE4 = 0;
@@ -198,14 +198,14 @@ void StartSinglePakConnect(void)
     s = &connectScreen->unkC;
     s->x = 8;
     s->y = 24;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     s->graphics.anim = gUnknown_080E018C[connectScreen->unkFA][0];
     s->variant = gUnknown_080E018C[connectScreen->unkFA][1];
     s->prevVariant = -1;
@@ -216,14 +216,14 @@ void StartSinglePakConnect(void)
     s = &connectScreen->unk3C;
     s->x = (DISPLAY_WIDTH / 2);
     s->y = (DISPLAY_HEIGHT - 38);
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     s->graphics.anim = gUnknown_080E01B6[connectScreen->unkFA][0];
     s->variant = gUnknown_080E01B6[connectScreen->unkFA][1];
     s->prevVariant = -1;
@@ -233,14 +233,14 @@ void StartSinglePakConnect(void)
     s = &connectScreen->unk6C;
     s->x = (DISPLAY_WIDTH / 2);
     s->y = (DISPLAY_HEIGHT * (7. / 8.));
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     s->graphics.anim = SA2_ANIM_MP_MSG;
     s->variant = SA2_ANIM_VARIANT_MP_MSG_2;
     s->prevVariant = -1;
@@ -275,7 +275,7 @@ void StartSinglePakConnect(void)
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         MultiPakCommunicationError();
     }
 }
@@ -300,7 +300,7 @@ void sub_8081604(void)
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         MultiPakCommunicationError();
     }
 
@@ -318,8 +318,7 @@ void sub_8081604(void)
                 DmaStop(1);
                 DmaStop(2);
                 DmaStop(3);
-                MultiBootStartMaster(&gMultiBootParam, connectScreen->mbProgStart + 0xC0,
-                                     connectScreen->mbProgLength - 0xC0, 4, 1);
+                MultiBootStartMaster(&gMultiBootParam, connectScreen->mbProgStart + 0xC0, connectScreen->mbProgLength - 0xC0, 4, 1);
             }
         }
     } else {
@@ -338,14 +337,12 @@ void sub_8081604(void)
     }
 
     multiBootFlags = MultiBootMain(&gMultiBootParam);
-    if (multiBootFlags == MULTIBOOT_ERROR_NO_PROBE_TARGET
-        || multiBootFlags == MULTIBOOT_ERROR_NO_DLREADY
-        || multiBootFlags == MULTIBOOT_ERROR_BOOT_FAILURE
-        || multiBootFlags == MULTIBOOT_ERROR_HANDSHAKE_FAILURE) {
+    if (multiBootFlags == MULTIBOOT_ERROR_NO_PROBE_TARGET || multiBootFlags == MULTIBOOT_ERROR_NO_DLREADY
+        || multiBootFlags == MULTIBOOT_ERROR_BOOT_FAILURE || multiBootFlags == MULTIBOOT_ERROR_HANDSHAKE_FAILURE) {
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         gFlags &= ~FLAGS_4000;
         gFlags &= ~FLAGS_8000;
         m4aSoundVSyncOn();
@@ -393,8 +390,7 @@ void sub_80818B8(void)
     u16 i, j;
     u32 temp;
     struct SinglePakConnectScreen *connectScreen = TASK_DATA(gCurTask);
-    if (gMultiSioStatusFlags & MULTI_SIO_LD_REQUEST
-        && connectScreen->unkF9 < ARRAY_COUNT(gCollectRingsSegments)) {
+    if (gMultiSioStatusFlags & MULTI_SIO_LD_REQUEST && connectScreen->unkF9 < ARRAY_COUNT(gCollectRingsSegments)) {
         gCurTask->main = sub_8081D04;
     }
 
@@ -403,17 +399,14 @@ void sub_80818B8(void)
     }
 
     gMultiSioSend.pat2.unk0 = connectScreen->unkFA;
-    gMultiSioStatusFlags
-        = MultiSioMain(&gMultiSioSend, &gMultiSioRecv, connectScreen->unkF8);
+    gMultiSioStatusFlags = MultiSioMain(&gMultiSioSend, &gMultiSioRecv, connectScreen->unkF8);
 
     if (connectScreen->unkF4 == 0) {
         MultiSioStart();
         connectScreen->unkF4 = 1;
     }
 
-    temp = ((gMultiSioStatusFlags
-             & (MULTI_SIO_CONNECTED_ID0 | MULTI_SIO_CONNECTED_ID1
-                | MULTI_SIO_CONNECTED_ID2 | MULTI_SIO_CONNECTED_ID3))
+    temp = ((gMultiSioStatusFlags & (MULTI_SIO_CONNECTED_ID0 | MULTI_SIO_CONNECTED_ID1 | MULTI_SIO_CONNECTED_ID2 | MULTI_SIO_CONNECTED_ID3))
             >> 8);
 
     for (i = 1; i < 4; i++) {
@@ -421,7 +414,7 @@ void sub_80818B8(void)
             TasksDestroyAll();
             gUnknown_03002AE4 = gUnknown_0300287C;
             gUnknown_03005390 = 0;
-            gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+            PAUSE_GRAPHICS_QUEUE();
             gFlags &= ~FLAGS_4000;
             gFlags &= ~FLAGS_8000;
             m4aSoundVSyncOn();
@@ -521,7 +514,7 @@ void sub_8081AD4(struct SinglePakConnectScreen *connectScreen)
     gFlags |= FLAGS_UPDATE_BACKGROUND_PALETTES;
 }
 
-void sub_8081C0C(void)
+void ShowSinglePakResults(void)
 {
     u32 i;
     for (i = 0; i < MULTI_SIO_PLAYERS_MAX; i++) {
@@ -582,8 +575,7 @@ void sub_8081D04(void)
     struct SinglePakConnectScreen *connectScreen = TASK_DATA(gCurTask);
     MultiSioStop();
     gIntrTable[0] = Sio32MultiLoadIntr;
-    Sio32MultiLoadInit(gMultiSioStatusFlags & MULTI_SIO_PARENT,
-                       gCollectRingsSegments[connectScreen->unkF9]);
+    Sio32MultiLoadInit(gMultiSioStatusFlags & MULTI_SIO_PARENT, gCollectRingsSegments[connectScreen->unkF9]);
     gCurTask->main = sub_8081A5C;
 }
 
@@ -599,8 +591,7 @@ s8 sub_8081D70(UNUSED struct SinglePakConnectScreen *connectScreen)
     s8 result;
 
     for (result = 1, i = 1; i < MULTI_SIO_PLAYERS_MAX; i++) {
-        if (GetBit(gMultiBootParam.response_bit, i)
-            && GetBit(gMultiBootParam.client_bit, i)) {
+        if (GetBit(gMultiBootParam.response_bit, i) && GetBit(gMultiBootParam.client_bit, i)) {
             result++;
         }
     }

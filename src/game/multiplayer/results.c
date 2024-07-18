@@ -113,12 +113,9 @@ static const TileInfo sResultsScreenPlayerCursor[MULTI_SIO_PLAYERS_MAX] = {
 };
 
 static const u16 sResultsScreenBgSelectedCharacters[] = {
-    [LANG_DEFAULT] = TM_MP_CHARACTERS_SELECTED_JP,
-    [LANG_JAPANESE] = TM_MP_CHARACTERS_SELECTED_JP,
-    [LANG_ENGLISH] = TM_MP_CHARACTERS_SELECTED_EN,
-    [LANG_GERMAN] = TM_MP_CHARACTERS_SELECTED_DE,
-    [LANG_FRENCH] = TM_MP_CHARACTERS_SELECTED_FR,
-    [LANG_SPANISH] = TM_MP_CHARACTERS_SELECTED_ES,
+    [LANG_DEFAULT] = TM_MP_CHARACTERS_SELECTED_JP, [LANG_JAPANESE] = TM_MP_CHARACTERS_SELECTED_JP,
+    [LANG_ENGLISH] = TM_MP_CHARACTERS_SELECTED_EN, [LANG_GERMAN] = TM_MP_CHARACTERS_SELECTED_DE,
+    [LANG_FRENCH] = TM_MP_CHARACTERS_SELECTED_FR,  [LANG_SPANISH] = TM_MP_CHARACTERS_SELECTED_ES,
     [LANG_ITALIAN] = TM_MP_CHARACTERS_SELECTED_IT,
 };
 
@@ -156,8 +153,7 @@ void CreateMultiplayerResultsScreen(u8 mode)
     gUnknown_03002280[3][3] = 0x40;
 
     DmaFill32(3, 0, (void *)VRAM + 0x9fe0, 0x40);
-    t = TaskCreate(sub_805C0F0, sizeof(struct MultiplayerResultsScreen), 0x2000, 0,
-                   NULL);
+    t = TaskCreate(sub_805C0F0, sizeof(struct MultiplayerResultsScreen), 0x2000, 0, NULL);
     resultsScreen = TASK_DATA(t);
 
     resultsScreen->animStep = 0;
@@ -208,7 +204,7 @@ void CreateMultiplayerResultsScreen(u8 mode)
             s->x = 200;
             s->y = 0x33 + (0x20 * i);
             s->graphics.dest = (void *)(OBJ_VRAM0 + (i * 0x800));
-            s->unk1A = SPRITE_OAM_ORDER(16);
+            s->oamFlags = SPRITE_OAM_ORDER(16);
             s->graphics.size = 0;
             temp = gUnknown_030054B4[i];
             if (temp == 5) {
@@ -227,25 +223,25 @@ void CreateMultiplayerResultsScreen(u8 mode)
             s->animCursor = 0;
             s->timeUntilNextFrame = 0;
             s->prevVariant = -1;
-            s->animSpeed = 0x10;
+            s->animSpeed = SPRITE_ANIM_SPEED(1.0);
             s->palId = 0;
-            s->unk10 = 0x1000;
+            s->frameFlags = 0x1000;
             UpdateSpriteAnimation(s);
 
             s = &resultsScreen->characterRows[i];
             s->x = 0;
             s->y = 0x1F + (0x20 * i);
             s->graphics.dest = (void *)(OBJ_VRAM0 + temp2);
-            s->unk1A = SPRITE_OAM_ORDER(16);
+            s->oamFlags = SPRITE_OAM_ORDER(16);
             s->graphics.size = 0;
             s->graphics.anim = sResultsScreenPlayerCursor[i].anim;
             s->variant = sResultsScreenPlayerCursor[i].variant;
             s->animCursor = 0;
             s->timeUntilNextFrame = 0;
             s->prevVariant = -1;
-            s->animSpeed = 0x10;
+            s->animSpeed = SPRITE_ANIM_SPEED(1.0);
             s->palId = 0;
-            s->unk10 = 0x1000;
+            s->frameFlags = 0x1000;
             UpdateSpriteAnimation(s);
         }
     }
@@ -353,7 +349,7 @@ static void sub_805C3D0(void)
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         if (resultsScreen->mode == MULTIPLAYER_RESULTS_MODE_COURSE_COMPLETE) {
             CreateMultiplayerLobbyScreen();
         } else {
@@ -369,11 +365,9 @@ static void sub_805C3D0(void)
 #ifdef TEAMPLAY_AVAILABLE
                 CreateMultiplayerResultsScreen();
 #else
-                CreateCourseSelectionScreen(0, gMultiplayerUnlockedLevels,
-                                            COURSE_SELECT_CUT_SCENE_NONE);
+                CreateCourseSelectionScreen(0, gMultiplayerUnlockedLevels, COURSE_SELECT_CUT_SCENE_NONE);
 #endif
-            } else if (gGameMode == GAME_MODE_SINGLE_PLAYER
-                       && gLoadedSaveGame->unlockedLevels[gSelectedCharacter] == 0) {
+            } else if (gGameMode == GAME_MODE_SINGLE_PLAYER && gLoadedSaveGame->unlockedLevels[gSelectedCharacter] == 0) {
                 gCurrentLevel = 0;
                 GameStageStart();
                 return;
@@ -381,9 +375,7 @@ static void sub_805C3D0(void)
 #ifdef TEAMPLAY_AVAILABLE
                 CreateMultiplayerResultsScreen();
 #else
-                CreateCourseSelectionScreen(
-                    0, gLoadedSaveGame->unlockedLevels[gSelectedCharacter],
-                    COURSE_SELECT_CUT_SCENE_NONE);
+                CreateCourseSelectionScreen(0, gLoadedSaveGame->unlockedLevels[gSelectedCharacter], COURSE_SELECT_CUT_SCENE_NONE);
 #endif
             }
         }

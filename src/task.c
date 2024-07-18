@@ -82,11 +82,9 @@ u32 TasksInit(void)
 #endif
 
 #if ENABLE_TASK_LOGGING
-struct Task *TaskCreate(TaskMain taskMain, u16 structSize, u16 priority, u16 flags,
-                        TaskDestructor taskDestructor, const char *name)
+struct Task *TaskCreate(TaskMain taskMain, u16 structSize, u16 priority, u16 flags, TaskDestructor taskDestructor, const char *name)
 #else
-struct Task *TaskCreate(TaskMain taskMain, u16 structSize, u16 priority, u16 flags,
-                        TaskDestructor taskDestructor)
+struct Task *TaskCreate(TaskMain taskMain, u16 structSize, u16 priority, u16 flags, TaskDestructor taskDestructor)
 #endif
 {
     struct Task *slow;
@@ -231,7 +229,7 @@ void *IwramMalloc(u16 req)
         return NULL;
     }
 
-    void *result = malloc(req);
+    void *result = calloc(req, 1);
     assert(result != NULL);
     return result;
 #else
@@ -344,13 +342,8 @@ static void UNUSED sub_80028DC(void)
                 cur->state += ((struct IwramNode *)IWRAM_PTR(cur->next))->state;
                 cur->next = ((struct IwramNode *)IWRAM_PTR(cur->next))->next;
             } else {
-#if PLATFORM_GBA
-                nextNodeSpace
-                    = (void *)(cur->next + IWRAM_PTR(offsetof(struct IwramNode, space)));
-#else
-                nextNodeSpace
-                    = (void *)cur->next + IWRAM_PTR(offsetof(struct IwramNode, space));
-#endif
+                nextNodeSpace = (void *)(cur->next + IWRAM_PTR(offsetof(struct IwramNode, space)));
+
                 space = cur->space;
                 curStateBackup = cur->state;
                 cur->state = ((struct IwramNode *)IWRAM_PTR(cur->next))->state;
@@ -367,11 +360,9 @@ static void UNUSED sub_80028DC(void)
                     }
                 }
 
-                DmaCopy32(3, nextNodeSpace, space,
-                          cur->state + sizeof(struct IwramNode));
+                DmaCopy32(3, nextNodeSpace, space, cur->state + sizeof(struct IwramNode));
                 {
-                    struct IwramNode *newLoc
-                        = (struct IwramNode *)((u8 *)cur + cur->state);
+                    struct IwramNode *newLoc = (struct IwramNode *)((u8 *)cur + cur->state);
                     newLoc->next = cur->next;
                     newLoc->state = curStateBackup;
                     cur = newLoc;

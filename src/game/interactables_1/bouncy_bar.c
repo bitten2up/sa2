@@ -32,11 +32,10 @@ const s8 gUnknown_080D94EE[] = { -16, -18, -20 };
 
 const s16 gUnknown_080D94F2[] = { -384, -384, -384 };
 
-void CreateEntity_BouncyBar(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                            u8 spriteY)
+void CreateEntity_BouncyBar(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
     Sprite *s;
-    struct Task *t = TaskCreate(sub_806160C, 0x44, 0x2010, 0, TaskDestructor_80095E8);
+    struct Task *t = TaskCreate(sub_806160C, sizeof(BouncyBar), 0x2010, 0, TaskDestructor_80095E8);
     BouncyBar *bar = TASK_DATA(t);
 
     s = &bar->s;
@@ -60,15 +59,15 @@ void CreateEntity_BouncyBar(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
     s->graphics.anim = SA2_ANIM_BOUNCY_BAR;
     s->variant = 0;
 
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
 
     if (me->d.sData[0] != 0) {
         SPRITE_FLAG_SET(s, X_FLIP);
@@ -88,9 +87,8 @@ void sub_806160C(void)
     s->x = screenX - gCamera.x;
     s->y = screenY - gCamera.y;
 
-    if (!(gPlayer.moveState & MOVESTATE_DEAD)
-        && (sub_800C204(s, screenX, screenY, 0, &gPlayer, 0) == 1)
-        && (gPlayer.speedAirY > 0) && (I(gPlayer.y) + 4) < screenY) {
+    if (!(gPlayer.moveState & MOVESTATE_DEAD) && (sub_800C204(s, screenX, screenY, 0, &gPlayer, 0) == 1) && (gPlayer.speedAirY > 0)
+        && (I(gPlayer.y) + 4) < screenY) {
         gPlayer.unk64 = 0x32;
         gPlayer.transition = PLTRANS_PT5;
 
@@ -102,8 +100,7 @@ void sub_806160C(void)
         bar->unk3D = (bar->unk3C * 5) + 10;
         bar->unk3E = gUnknown_080D94E8[bar->unk3C];
 
-        bar->unk40 = screenX - I(gPlayer.x) >= 0 ? screenX - I(gPlayer.x)
-                                                 : I(gPlayer.x) - screenX;
+        bar->unk40 = screenX - I(gPlayer.x) >= 0 ? screenX - I(gPlayer.x) : I(gPlayer.x) - screenX;
 
         gCurTask->main = sub_80617A4;
         gPlayer.moveState |= MOVESTATE_400000;
@@ -151,8 +148,7 @@ void sub_80617A4(void)
             }
 
             gPlayer.speedAirY = gUnknown_080D94F2[bar->unk3C];
-            gPlayer.speedAirY
-                += ((temp * bar->unk3E) * gUnknown_080D94EE[bar->unk3C]) >> 1;
+            gPlayer.speedAirY += ((temp * bar->unk3E) * gUnknown_080D94EE[bar->unk3C]) >> 1;
             gPlayer.moveState &= ~MOVESTATE_400000;
             gPlayer.moveState &= ~MOVESTATE_100;
         }

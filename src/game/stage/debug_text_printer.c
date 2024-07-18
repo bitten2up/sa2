@@ -15,15 +15,13 @@ static struct Task *sDebugUITask = NULL;
 void Task_802D4B4(void);
 void TaskDestructor_802D4B8(struct Task *);
 
-#define DBG_UI_REQUIRED_TILES (2 * SA2_ANIM_NUM_ASCII_CHARS)
-#define DBG_UI_CHAR_SIZE      (2 * TILE_SIZE_4BPP)
-#define DGB_UI_GET_CHAR_FROM_TASK(task, ascii)                                          \
-    (Sprite *)&(((DebugTextPrinter *)TASK_DATA(task))->chars[(ascii) - '!'])
+#define DBG_UI_REQUIRED_TILES                  (2 * SA2_ANIM_NUM_ASCII_CHARS)
+#define DBG_UI_CHAR_SIZE                       (2 * TILE_SIZE_4BPP)
+#define DGB_UI_GET_CHAR_FROM_TASK(task, ascii) (Sprite *)&(((DebugTextPrinter *)TASK_DATA(task))->chars[(ascii) - '!'])
 
 struct Task *Debug_CreateAsciiTask(s16 x, s16 y)
 {
-    struct Task *t = TaskCreate(Task_802D4B4, sizeof(DebugTextPrinter), 0xE100, 0,
-                                TaskDestructor_802D4B8);
+    struct Task *t = TaskCreate(Task_802D4B4, sizeof(DebugTextPrinter), 0xE100, 0, TaskDestructor_802D4B8);
     DebugTextPrinter *printer = TASK_DATA(t);
     u32 i;
 
@@ -36,11 +34,10 @@ struct Task *Debug_CreateAsciiTask(s16 x, s16 y)
         if (i == 0) {
             s->graphics.dest = VramMalloc(DBG_UI_REQUIRED_TILES);
         } else {
-            s->graphics.dest
-                = (printer->chars[0].graphics.dest + (i * DBG_UI_CHAR_SIZE));
+            s->graphics.dest = (printer->chars[0].graphics.dest + (i * DBG_UI_CHAR_SIZE));
         }
 
-        s->unk1A = 0;
+        s->oamFlags = SPRITE_OAM_ORDER(0);
         s->graphics.size = 0;
         s->graphics.anim = SA2_ANIM_ASCII;
 
@@ -51,10 +48,10 @@ struct Task *Debug_CreateAsciiTask(s16 x, s16 y)
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = SPRITE_FLAG(PRIORITY, 0);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 0);
     }
 
     sDebugUITask = t;
@@ -100,7 +97,7 @@ void Debug_PrintIntegerAt(u32 value, u16 x, u16 y)
         digit->y = y;
         UpdateSpriteAnimation(digit);
 
-        digit->unk10 |= SPRITE_FLAG_MASK_ANIM_OVER;
+        digit->frameFlags |= SPRITE_FLAG_MASK_ANIM_OVER;
         DisplaySprite(digit);
 
         value = remaining;
@@ -122,7 +119,7 @@ void Debug_PrintTextAt(char *text, s16 x, s16 y)
             digit->y = y;
             UpdateSpriteAnimation(digit);
 
-            digit->unk10 |= SPRITE_FLAG_MASK_ANIM_OVER;
+            digit->frameFlags |= SPRITE_FLAG_MASK_ANIM_OVER;
             DisplaySprite(digit);
         }
 

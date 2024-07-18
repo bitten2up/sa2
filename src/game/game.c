@@ -33,11 +33,11 @@ void GameStart(void)
 
     // TODO: Fix cast
     gTilemapsRef = (struct MapHeader **)gTilemaps;
-    gUnknown_03002794 = &gSpriteTables;
+    gRefSpriteTables = &gSpriteTables;
     gUnknown_03004D54 = gBgOffsetsBuffer[0];
     gUnknown_030022C0 = gBgOffsetsBuffer[1];
 
-    gStageFlags = gUnknown_0300544C = EXTRA_STATE__CLEAR;
+    gStageFlags = gUnknown_0300544C = STAGE_FLAG__CLEAR;
 
     gRingsScatterTask = NULL;
     gDummyTask = NULL;
@@ -75,8 +75,7 @@ void GameStart(void)
 
     // This flag is only set in GameInit
     if (gFlags & FLAGS_200) {
-        // Show singlepak results
-        sub_8081C0C();
+        ShowSinglePakResults();
         return;
     }
 

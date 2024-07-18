@@ -25,8 +25,7 @@ static void TaskDestructor_EggmobileEscape(struct Task *t);
 
 void CreateEggmobileEscapeSequence(s16 x, s16 y, u32 spriteFlags)
 {
-    struct Task *t = TaskCreate(Task_EggmobileMoveUp, sizeof(Sprite_EggMobile), 0x3800,
-                                0, TaskDestructor_EggmobileEscape);
+    struct Task *t = TaskCreate(Task_EggmobileMoveUp, sizeof(Sprite_EggMobile), 0x3800, 0, TaskDestructor_EggmobileEscape);
     Sprite_EggMobile *em = TASK_DATA(t);
     Sprite *s;
 
@@ -41,15 +40,15 @@ void CreateEggmobileEscapeSequence(s16 x, s16 y, u32 spriteFlags)
     s->graphics.dest = VramMalloc(8);
     s->graphics.anim = SA2_ANIM_EGGMAN_HEAD;
     s->variant = 0;
-    s->unk1A = SPRITE_OAM_ORDER(25);
+    s->oamFlags = SPRITE_OAM_ORDER(25);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = spriteFlags;
+    s->frameFlags = spriteFlags;
     UpdateSpriteAnimation(s);
 
     s = &em->s;
@@ -58,15 +57,15 @@ void CreateEggmobileEscapeSequence(s16 x, s16 y, u32 spriteFlags)
     s->graphics.dest = VramMalloc(36);
     s->graphics.anim = SA2_ANIM_EGGMOBILE;
     s->variant = 0;
-    s->unk1A = SPRITE_OAM_ORDER(24);
+    s->oamFlags = SPRITE_OAM_ORDER(24);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = spriteFlags;
+    s->frameFlags = spriteFlags;
     UpdateSpriteAnimation(s);
 
     if (spriteFlags & SPRITE_FLAG_MASK_X_FLIP) {
@@ -104,8 +103,8 @@ static void Task_EggmobileSwitchMovement(void)
     if (--em->frames == 0) {
         // Make Eggman look to the right
         if (em->direction == EGGMOBILE_DIR_LEFT) {
-            em->s.unk10 |= SPRITE_FLAG_MASK_X_FLIP;
-            em->s2.unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+            em->s.frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
+            em->s2.frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
         }
 
         gCurTask->main = Task_EggmobileMoveRight;

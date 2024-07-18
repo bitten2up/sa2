@@ -32,7 +32,7 @@ void CreateMagneticRing(s16 x, s16 y)
     s->y = y;
 
     s->graphics.dest = RESERVED_RING_TILES_VRAM;
-    s->unk1A = SPRITE_OAM_ORDER(15);
+    s->oamFlags = SPRITE_OAM_ORDER(15);
     s->graphics.size = 0;
     s->graphics.anim = SA2_ANIM_RING;
     s->variant = 0;
@@ -41,12 +41,11 @@ void CreateMagneticRing(s16 x, s16 y)
     s->prevVariant = -1;
     s->animSpeed = 0x10;
     s->palId = 0;
-    s->unk10 = (SPRITE_FLAG_MASK_19 | SPRITE_FLAG_MASK_18 | SPRITE_FLAG(PRIORITY, 2));
+    s->frameFlags = (SPRITE_FLAG_MASK_19 | SPRITE_FLAG_MASK_18 | SPRITE_FLAG(PRIORITY, 2));
 }
 
 // (88.87%) https://decomp.me/scratch/EmhmV
-NONMATCH("asm/non_matching/game/stage/Task_MagneticRing.inc",
-         void Task_MagneticRing(void))
+NONMATCH("asm/non_matching/game/stage/Task_MagneticRing.inc", void Task_MagneticRing(void))
 {
     StageRing *ring = TASK_DATA(gCurTask);
     Player *p = &gPlayer;
@@ -70,22 +69,18 @@ NONMATCH("asm/non_matching/game/stage/Task_MagneticRing.inc",
     lvalue = ring->s.x - 8;
     rvalue = I(p->x) + gUnknown_03005AF0.s.hitboxes[0].left;
 
-    if (((lvalue <= rvalue) && (ring->s.x + 8 < rvalue))
-        || ((ringY - 16 > I(gPlayer.y) + gUnknown_03005AF0.s.hitboxes[0].top))
-        || ((I(p->y) >= gUnknown_03005AF0.s.hitboxes[0].top)
-            || ringY - 16 < gUnknown_03005AF0.s.hitboxes[0].top)) {
+    if (((lvalue <= rvalue) && (ring->s.x + 8 < rvalue)) || ((ringY - 16 > I(gPlayer.y) + gUnknown_03005AF0.s.hitboxes[0].top))
+        || ((I(p->y) >= gUnknown_03005AF0.s.hitboxes[0].top) || ringY - 16 < gUnknown_03005AF0.s.hitboxes[0].top)) {
 
     }
 
-    else if (gUnknown_03005AF0.s.hitboxes[0].bottom - gUnknown_03005AF0.s.hitboxes[0].top
-             >= I(gPlayer.y) + ringY) {
+    else if (gUnknown_03005AF0.s.hitboxes[0].bottom - gUnknown_03005AF0.s.hitboxes[0].top >= I(gPlayer.y) + ringY) {
         // _0800BC36
         if (PLAYER_IS_ALIVE) {
             u16 oldRings = gRingCount;
             gRingCount++;
 
-            if ((gCurrentLevel != COURSE_INDEX(ZONE_FINAL, ACT_TRUE_AREA_53))
-                && (Div(gRingCount, 100) != Div(oldRings, 100))
+            if ((gCurrentLevel != COURSE_INDEX(ZONE_FINAL, ACT_TRUE_AREA_53)) && (Div(gRingCount, 100) != Div(oldRings, 100))
                 && (gGameMode == GAME_MODE_SINGLE_PLAYER)) {
                 u32 lives = gNumLives;
                 if (lives + 1 > 255)

@@ -23,19 +23,16 @@ static void TaskDestructor_Windmill(struct Task *);
 static void Task_WindmillMain(void);
 
 static const TileInfo sWindmillParts[] = {
-    { 4, SA2_ANIM_WIND_MILL_PART, 3 }, { 4, SA2_ANIM_WIND_MILL_PART, 2 },
-    { 4, SA2_ANIM_WIND_MILL_PART, 1 }, { 4, SA2_ANIM_WIND_MILL_PART, 0 },
-    { 4, SA2_ANIM_WIND_MILL_PART, 6 },
+    { 4, SA2_ANIM_WIND_MILL_PART, 3 }, { 4, SA2_ANIM_WIND_MILL_PART, 2 }, { 4, SA2_ANIM_WIND_MILL_PART, 1 },
+    { 4, SA2_ANIM_WIND_MILL_PART, 0 }, { 4, SA2_ANIM_WIND_MILL_PART, 6 },
 };
 
-void CreateEntity_Windmill(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                           u8 spriteY)
+void CreateEntity_Windmill(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
     u8 i, j;
     void *ramDests[4];
     Sprite *s;
-    struct Task *t = TaskCreate(Task_WindmillMain, sizeof(InteractableWindmill), 0x2010,
-                                0, TaskDestructor_Windmill);
+    struct Task *t = TaskCreate(Task_WindmillMain, sizeof(InteractableWindmill), 0x2010, 0, TaskDestructor_Windmill);
     InteractableWindmill *windmill = TASK_DATA(t);
 
     s = &windmill->center;
@@ -52,15 +49,15 @@ void CreateEntity_Windmill(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
     s->graphics.dest = VramMalloc(sWindmillParts[4].numTiles);
     s->graphics.anim = sWindmillParts[4].anim;
     s->variant = sWindmillParts[4].variant;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
     UpdateSpriteAnimation(s);
 
     for (i = 0; i < 4; i++) {
@@ -76,15 +73,15 @@ void CreateEntity_Windmill(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
             }
             s->graphics.anim = sWindmillParts[j].anim;
             s->variant = sWindmillParts[j].variant;
-            s->unk1A = SPRITE_OAM_ORDER(18);
+            s->oamFlags = SPRITE_OAM_ORDER(18);
             s->graphics.size = 0;
             s->animCursor = 0;
             s->timeUntilNextFrame = 0;
             s->prevVariant = -1;
-            s->animSpeed = 0x10;
+            s->animSpeed = SPRITE_ANIM_SPEED(1.0);
             s->palId = 0;
             s->hitboxes[0].index = -1;
-            s->unk10 = 0;
+            s->frameFlags = 0;
             UpdateSpriteAnimation(s);
         }
     }
@@ -123,18 +120,16 @@ static void Task_WindmillMain(void)
             transform = &windmill->blades[i * 4 + j].transform;
             sinPeriod = (gStageTime * 2 + (i * 256));
 
-            s->x = screenX
-                + ((COS(CLAMP_SIN_PERIOD(sinPeriod)) * ((j + 1) * 16 - 8)) >> 14);
-            s->y = screenY
-                + ((SIN(CLAMP_SIN_PERIOD(sinPeriod)) * ((j + 1) * 16 - 8)) >> 14);
+            s->x = screenX + ((COS(CLAMP_SIN_PERIOD(sinPeriod)) * ((j + 1) * 16 - 8)) >> 14);
+            s->y = screenY + ((SIN(CLAMP_SIN_PERIOD(sinPeriod)) * ((j + 1) * 16 - 8)) >> 14);
             transform->rotation = CLAMP_SIN_PERIOD(sinPeriod);
             transform->width = 256;
             transform->height = 256;
             transform->x = s->x;
             transform->y = s->y;
 
-            s->unk10 = (gUnknown_030054B8++ | 0x1060);
-            sub_8004860(s, transform);
+            s->frameFlags = (gUnknown_030054B8++ | 0x1060);
+            TransformSprite(s, transform);
             DisplaySprite(s);
         }
     }

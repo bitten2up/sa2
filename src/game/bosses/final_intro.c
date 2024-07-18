@@ -145,48 +145,47 @@ void sub_8038E20(void);
 
 #define ACTOR_CHEESE 4
 
-#define NEXT_SEQUENCE_ANIM(actor, s)                                                    \
-    ({                                                                                  \
-        const TileInfoPtr *animSet, *tileInfo;                                          \
-        (actor)->animFrame                                                              \
-            = gUnknown_080D7704[(actor)->character][++(actor)->sequence];               \
-                                                                                        \
-        animSet = gUnknown_080D76F0[(actor)->character];                                \
-        tileInfo = &animSet[(actor)->sequence];                                         \
-                                                                                        \
-        (s)->graphics.anim = tileInfo->anim;                                            \
-        (s)->variant = tileInfo->variant;                                               \
-        (s)->prevVariant = -1;                                                          \
+#define NEXT_SEQUENCE_ANIM(actor, s)                                                                                                       \
+    ({                                                                                                                                     \
+        const TileInfoPtr *animSet, *tileInfo;                                                                                             \
+        (actor)->animFrame = gUnknown_080D7704[(actor)->character][++(actor)->sequence];                                                   \
+                                                                                                                                           \
+        animSet = gUnknown_080D76F0[(actor)->character];                                                                                   \
+        tileInfo = &animSet[(actor)->sequence];                                                                                            \
+                                                                                                                                           \
+        (s)->graphics.anim = tileInfo->anim;                                                                                               \
+        (s)->variant = tileInfo->variant;                                                                                                  \
+        (s)->prevVariant = -1;                                                                                                             \
     })
 
-#define OBJ_RENDER_SPRITE(obj, s)                                                       \
-    ({                                                                                  \
-        (s)->x = I((obj)->x);                                                           \
-        (s)->y = I((obj)->y) - gCamera.y;                                               \
-        UpdateSpriteAnimation(s);                                                       \
-        DisplaySprite(s);                                                               \
+#define OBJ_RENDER_SPRITE(obj, s)                                                                                                          \
+    ({                                                                                                                                     \
+        (s)->x = I((obj)->x);                                                                                                              \
+        (s)->y = I((obj)->y) - gCamera.y;                                                                                                  \
+        UpdateSpriteAnimation(s);                                                                                                          \
+        DisplaySprite(s);                                                                                                                  \
     })
 
-#define OBJ_UPDATE_POS(obj)                                                             \
-    ({                                                                                  \
-        (obj)->x += (obj)->speedX;                                                      \
-        (obj)->y += (obj)->speedY;                                                      \
+#define OBJ_UPDATE_POS(obj)                                                                                                                \
+    ({                                                                                                                                     \
+        (obj)->x += (obj)->speedX;                                                                                                         \
+        (obj)->y += (obj)->speedY;                                                                                                         \
     })
 
-#define OBJ_ACCELERATE_Y(obj, val)                                                      \
-    ({                                                                                  \
-        (obj)->speedY += (val);                                                         \
-        if ((val) < 0 && (obj)->speedY < 0) {                                           \
-            (obj)->speedY = 0;                                                          \
-        }                                                                               \
+#define OBJ_ACCELERATE_Y(obj, val)                                                                                                         \
+    ({                                                                                                                                     \
+        (obj)->speedY += (val);                                                                                                            \
+        if ((val) < 0 && (obj)->speedY < 0) {                                                                                              \
+            (obj)->speedY = 0;                                                                                                             \
+        }                                                                                                                                  \
     })
 
-#define OBJ_ACCELERATE_X(obj, val)                                                      \
-    ({                                                                                  \
-        (obj)->speedX += (val);                                                         \
-        if ((val) < 0 && (obj)->speedX < 0) {                                           \
-            (obj)->speedX = 0;                                                          \
-        }                                                                               \
+#define OBJ_ACCELERATE_X(obj, val)                                                                                                         \
+    ({                                                                                                                                     \
+        (obj)->speedX += (val);                                                                                                            \
+        if ((val) < 0 && (obj)->speedX < 0) {                                                                                              \
+            (obj)->speedX = 0;                                                                                                             \
+        }                                                                                                                                  \
     })
 
 static const TileInfoPtr gUnknown_080D7540[] = {
@@ -205,9 +204,8 @@ static const TileInfoPtr gUnknown_080D7560[] = {
 };
 
 static const TileInfoPtr gUnknown_080D7588[] = {
-    { OBJ_VRAM0, 9, 2 }, { NULL, 9, 1 },   { NULL, 835, 0 }, { NULL, 835, 1 },
-    { NULL, 835, 2 },    { NULL, 835, 3 }, { NULL, 835, 5 }, { NULL, 835, 5 },
-    { NULL, 836, 0 },    { NULL, 836, 1 }, { NULL, 836, 2 }, { NULL, 836, 3 },
+    { OBJ_VRAM0, 9, 2 }, { NULL, 9, 1 },   { NULL, 835, 0 }, { NULL, 835, 1 }, { NULL, 835, 2 }, { NULL, 835, 3 },
+    { NULL, 835, 5 },    { NULL, 835, 5 }, { NULL, 836, 0 }, { NULL, 836, 1 }, { NULL, 836, 2 }, { NULL, 836, 3 },
 };
 static const TileInfoPtr gUnknown_080D75E8[] = {
     { OBJ_VRAM0 + 0x1000, 191, 2 },
@@ -252,8 +250,7 @@ static const TileInfoPtr gUnknown_080D76B0[] = {
 };
 
 static const TileInfoPtr *const gUnknown_080D76F0[] = {
-    gUnknown_080D7588, gUnknown_080D7668, gUnknown_080D75E8,
-    gUnknown_080D7628, gUnknown_080D76B0,
+    gUnknown_080D7588, gUnknown_080D7668, gUnknown_080D75E8, gUnknown_080D7628, gUnknown_080D76B0,
 };
 
 static const u16 gUnknown_080D7704[][17] = {
@@ -266,23 +263,18 @@ static const u16 gUnknown_080D7704[][17] = {
 };
 
 static const s32 gUnknown_080D77D0[][4] = {
-    { Q(-344), Q(178), Q(2), Q(0) }, { Q(-4), Q(178), Q(2), Q(0) },
-    { Q(-406), Q(178), Q(2), Q(0) }, { Q(-388), Q(178), Q(2), Q(0) },
-    { Q(-14), Q(158), Q(2), Q(0) },  { Q(0), Q(0), Q(0), Q(0) },
+    { Q(-344), Q(178), Q(2), Q(0) }, { Q(-4), Q(178), Q(2), Q(0) },  { Q(-406), Q(178), Q(2), Q(0) },
+    { Q(-388), Q(178), Q(2), Q(0) }, { Q(-14), Q(158), Q(2), Q(0) }, { Q(0), Q(0), Q(0), Q(0) },
 };
 
 static const s16 gUnknown_080D7830[][5] = {
-    { 120, 85, 5, 6, 0 },   { 130, 90, 4, 5, 1 },   { 140, 95, 7, 4, 2 },
-    { 90, 100, 8, 5, 0 },   { 100, 105, 10, 3, 1 }, { 110, 110, 5, 1, 2 },
-    { 120, 115, 9, 4, 0 },  { 80, 120, 4, 3, 1 },   { 120, 125, 8, 2, 2 },
-    { 130, 130, 6, 4, 0 },  { 140, 135, 4, 2, 1 },  { 150, 140, 5, 1, 2 },
-    { 100, 145, 10, 5, 0 }, { 110, 150, 7, 1, 1 },  { 120, 155, 6, 4, 2 },
-    { 80, 160, 4, 3, 0 },   { 80, 160, 5, 6, 2 },   { 70, 150, 4, 5, 1 },
-    { 60, 140, 7, 4, 2 },   { 50, 130, 8, 5, 0 },   { 50, 120, 10, 3, 1 },
-    { 60, 110, 5, 1, 2 },   { 70, 100, 9, 4, 0 },   { 80, 90, 4, 3, 1 },
-    { 150, 120, 5, 6, 2 },  { 160, 100, 4, 5, 1 },  { 140, 140, 7, 4, 2 },
-    { 150, 80, 8, 5, 0 },   { 70, 90, 10, 6, 1 },   { 60, 110, 5, 5, 2 },
-    { 70, 100, 9, 7, 0 },   { 80, 90, 8, 4, 1 },
+    { 120, 85, 5, 6, 0 },  { 130, 90, 4, 5, 1 },  { 140, 95, 7, 4, 2 },   { 90, 100, 8, 5, 0 },  { 100, 105, 10, 3, 1 },
+    { 110, 110, 5, 1, 2 }, { 120, 115, 9, 4, 0 }, { 80, 120, 4, 3, 1 },   { 120, 125, 8, 2, 2 }, { 130, 130, 6, 4, 0 },
+    { 140, 135, 4, 2, 1 }, { 150, 140, 5, 1, 2 }, { 100, 145, 10, 5, 0 }, { 110, 150, 7, 1, 1 }, { 120, 155, 6, 4, 2 },
+    { 80, 160, 4, 3, 0 },  { 80, 160, 5, 6, 2 },  { 70, 150, 4, 5, 1 },   { 60, 140, 7, 4, 2 },  { 50, 130, 8, 5, 0 },
+    { 50, 120, 10, 3, 1 }, { 60, 110, 5, 1, 2 },  { 70, 100, 9, 4, 0 },   { 80, 90, 4, 3, 1 },   { 150, 120, 5, 6, 2 },
+    { 160, 100, 4, 5, 1 }, { 140, 140, 7, 4, 2 }, { 150, 80, 8, 5, 0 },   { 70, 90, 10, 6, 1 },  { 60, 110, 5, 5, 2 },
+    { 70, 100, 9, 7, 0 },  { 80, 90, 8, 4, 1 },
 };
 
 static const TaskMain gUnknown_080D7970[] = {
@@ -329,14 +321,14 @@ void CreateTrueArea53Intro(void)
     s->graphics.dest = gUnknown_080D7560[0].tiles;
     s->graphics.anim = gUnknown_080D7560[4].anim;
     s->variant = gUnknown_080D7560[4].variant;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 5;
-    s->unk10 = 0x400;
+    s->frameFlags = 0x400;
 
     for (i = 0; i < 3; i++) {
         s = &intro->birdSprites[i];
@@ -345,15 +337,15 @@ void CreateTrueArea53Intro(void)
         s->graphics.dest = gUnknown_080D7560[i + 1].tiles;
         s->graphics.anim = gUnknown_080D7560[i + 1].anim;
         s->variant = gUnknown_080D7560[i + 1].variant;
-        s->unk1A = SPRITE_OAM_ORDER(4);
+        s->oamFlags = SPRITE_OAM_ORDER(4);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = i + 1;
         s->hitboxes[0].index = -1;
-        s->unk10 = 0;
+        s->frameFlags = 0;
     }
 
     CreateBackgrounds();
@@ -367,8 +359,7 @@ void CreateOrbitingEmeraldsSequence(void)
     Background *background;
     Sprite *emerald;
 
-    struct Task *t = TaskCreate(Task_OrbitingEmeraldsMoveOutwards,
-                                sizeof(OrbitingEmeraldsSequence), 0x7000, 0, NULL);
+    struct Task *t = TaskCreate(Task_OrbitingEmeraldsMoveOutwards, sizeof(OrbitingEmeraldsSequence), 0x7000, 0, NULL);
     OrbitingEmeraldsSequence *sequence = TASK_DATA(t);
     sequence->animFrame = 32;
 
@@ -398,23 +389,23 @@ void CreateOrbitingEmeraldsSequence(void)
         emerald->graphics.anim = 0x345;
         emerald->variant = i;
         emerald->prevVariant = -1;
-        emerald->unk1A = SPRITE_OAM_ORDER(20);
+        emerald->oamFlags = SPRITE_OAM_ORDER(20);
         emerald->graphics.size = 0;
         emerald->animCursor = 0;
         emerald->timeUntilNextFrame = 0;
-        emerald->animSpeed = 0x10;
+        emerald->animSpeed = SPRITE_ANIM_SPEED(1.0);
         emerald->palId = 0;
-        emerald->unk10 = 0;
+        emerald->frameFlags = 0;
     }
 }
 
 #define ORBIT_BASE_X 120
 #define ORBIT_BASE_Y 100
 
-#define ORBIT_SET_SPRITE_POS(s, pos)                                                    \
-    ({                                                                                  \
-        s->x = pos[0] + ORBIT_BASE_X;                                                   \
-        s->y = pos[1] + ORBIT_BASE_Y;                                                   \
+#define ORBIT_SET_SPRITE_POS(s, pos)                                                                                                       \
+    ({                                                                                                                                     \
+        s->x = pos[0] + ORBIT_BASE_X;                                                                                                      \
+        s->y = pos[1] + ORBIT_BASE_Y;                                                                                                      \
     })
 
 void Task_OrbitingEmeraldsMoveOutwards(void)
@@ -565,14 +556,13 @@ void Task_DisplaySonicSonicArtworkAndDestroyTask(void)
 void CreateSuperSonicSpark(s32 x, s32 y)
 {
     Sprite *s;
-    struct Task *t
-        = TaskCreate(Task_SuperSonicSpark, sizeof(SuperSonicSpark), 0x7000, 0, NULL);
-    u32 type = PseudoRandBetween(2, 3);
+    struct Task *t = TaskCreate(Task_SuperSonicSpark, sizeof(SuperSonicSpark), 0x7000, 0, NULL);
+    u32 type = PseudoRandBetween(2, 4);
     SuperSonicSpark *spark = TASK_DATA(t);
     spark->animFrame = 40;
 
-    spark->x = x + (s16)Q(PseudoRandBetween(-16, 15));
-    spark->y = y + (s16)Q(PseudoRandBetween(-16, 15));
+    spark->x = x + (s16)Q(PseudoRandBetween(-16, 16));
+    spark->y = y + (s16)Q(PseudoRandBetween(-16, 16));
     spark->speedX = 0;
     spark->speedY = 0;
 
@@ -583,13 +573,13 @@ void CreateSuperSonicSpark(s32 x, s32 y)
     s->graphics.anim = gUnknown_080D7540[type].anim;
     s->variant = gUnknown_080D7540[type].variant;
     s->prevVariant = -1;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->animSpeed = 0x20;
     s->palId = 0;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
 }
 
 void Task_SuperSonicSpark(void)
@@ -612,8 +602,7 @@ void CreateActor(u8 character)
 {
     Sprite *s;
     const TileInfoPtr *tileInfo;
-    struct Task *t
-        = TaskCreate(gUnknown_080D7970[character], sizeof(IntroActor), 0x7000, 0, NULL);
+    struct Task *t = TaskCreate(gUnknown_080D7970[character], sizeof(IntroActor), 0x7000, 0, NULL);
     IntroActor *actor = TASK_DATA(t);
     actor->character = character;
     actor->sequence = 0;
@@ -636,7 +625,7 @@ void CreateActor(u8 character)
     s->graphics.anim = tileInfo->anim;
     s->variant = tileInfo->variant;
     s->prevVariant = -1;
-    s->unk1A = SPRITE_OAM_ORDER(16 - gUnknown_080D7984[character]);
+    s->oamFlags = SPRITE_OAM_ORDER(16 - gUnknown_080D7984[character]);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
@@ -647,7 +636,7 @@ void CreateActor(u8 character)
         s->palId = 0;
     }
 
-    s->unk10 = 0x1400;
+    s->frameFlags = 0x1400;
 
     if (character < ACTOR_CHEESE) {
         s = &actor->ssGroundEffectSprite;
@@ -658,13 +647,13 @@ void CreateActor(u8 character)
         s->graphics.anim = gUnknown_080D7540[character].anim;
         s->variant = gUnknown_080D7540[character].variant;
         s->prevVariant = -1;
-        s->unk1A = SPRITE_OAM_ORDER(16);
+        s->oamFlags = SPRITE_OAM_ORDER(16);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
-        s->unk10 = 0x1000;
+        s->frameFlags = 0x1000;
     }
 }
 
@@ -678,7 +667,7 @@ void Task_ActorSonicRunIn(void)
 
     if (--actor->animFrame == 0) {
         NEXT_SEQUENCE_ANIM(actor, s);
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         gCurTask->main = Task_ActorSonicSlowDownTilStop;
     }
 
@@ -696,7 +685,7 @@ void Task_ActorSonicSlowDownTilStop(void)
 
     if (--actor->animFrame == 0) {
         NEXT_SEQUENCE_ANIM(actor, s);
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         gCurTask->main = sub_8037744;
     }
 
@@ -716,7 +705,7 @@ void sub_8037744(void)
     if (--actor->animFrame == 0) {
         actor->speedX = 0;
         NEXT_SEQUENCE_ANIM(actor, s);
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         gCurTask->main = sub_8037818;
     }
 
@@ -772,7 +761,7 @@ void sub_803796C(void)
 
     if (--actor->animFrame == 0) {
         NEXT_SEQUENCE_ANIM(actor, s);
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         gCurTask->main = sub_8037A38;
     }
     OBJ_RENDER_SPRITE(actor, s);
@@ -791,7 +780,7 @@ void sub_8037A38(void)
 
     if (--actor->animFrame == 0) {
         NEXT_SEQUENCE_ANIM(actor, s);
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         m4aSongNumStart(SE_GRINDING);
         gCurTask->main = sub_8037B04;
     }
@@ -830,11 +819,11 @@ void sub_8037BD0(void)
     s = &actor->ssGroundEffectSprite;
     s->x = I(actor->x);
     s->y = 178 - gCamera.y;
-    s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+    s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
     UpdateSpriteAnimation(s);
     DisplaySprite(s);
 
-    s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+    s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
     DisplaySprite(s);
 
     if (!(actor->animFrame & 3)) {
@@ -859,11 +848,11 @@ void sub_8037CEC(void)
     s = &actor->ssGroundEffectSprite;
     s->x = I(actor->x);
     s->y = 178 - gCamera.y;
-    s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+    s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
     UpdateSpriteAnimation(s);
     DisplaySprite(s);
 
-    s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+    s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
     DisplaySprite(s);
 
     if (!(actor->animFrame & 3)) {
@@ -899,11 +888,11 @@ void sub_8037E08(void)
     s = &actor->ssGroundEffectSprite;
     s->x = I(actor->x);
     s->y = 178 - gCamera.y;
-    s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+    s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
     UpdateSpriteAnimation(s);
     DisplaySprite(s);
 
-    s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+    s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
     DisplaySprite(s);
 
     if (!(actor->animFrame & 3)) {
@@ -932,7 +921,7 @@ void sub_8037F68(void)
             TasksDestroyAll();
             gUnknown_03002AE4 = gUnknown_0300287C;
             gUnknown_03005390 = 0;
-            gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+            PAUSE_GRAPHICS_QUEUE();
             gGameMode = GAME_MODE_SINGLE_PLAYER;
             gSelectedCharacter = CHARACTER_SONIC;
             gCurrentLevel = LEVEL_INDEX(ZONE_FINAL, ACT_TRUE_AREA_53);
@@ -952,11 +941,11 @@ void sub_8037F68(void)
         s = &actor->ssGroundEffectSprite;
         s->x = I(actor->x);
         s->y = 178 - gCamera.y;
-        s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+        s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
         UpdateSpriteAnimation(s);
         DisplaySprite(s);
 
-        s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+        s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
         DisplaySprite(s);
     }
 
@@ -991,7 +980,7 @@ void sub_8038168(void)
 
     if (--actor->animFrame == 0) {
         NEXT_SEQUENCE_ANIM(actor, s);
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         gCurTask->main = sub_8038238;
     }
 
@@ -1078,7 +1067,7 @@ void sub_80385A4(void)
 
     if (--actor->animFrame == 0) {
         NEXT_SEQUENCE_ANIM(actor, s);
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         gCurTask->main = sub_8038664;
     }
 
@@ -1166,7 +1155,7 @@ void sub_80389E0(void)
 
     if (--actor->animFrame == 0) {
         NEXT_SEQUENCE_ANIM(actor, s);
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         gCurTask->main = sub_8038AA0;
     }
 
@@ -1251,7 +1240,7 @@ void sub_8038E20(void)
     IntroActor *actor = TASK_DATA(gCurTask);
     Sprite *s = &actor->s;
 
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
 
     OBJ_UPDATE_POS(actor);
 
@@ -1305,7 +1294,7 @@ void sub_8039084(void)
     if (actor->x < 0xB800) {
         actor->x += 0x80;
     } else {
-        s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+        s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
     }
 
     if (--actor->animFrame == 0) {
@@ -1327,7 +1316,7 @@ void sub_8039144(void)
 
     if (--actor->animFrame == 0) {
         NEXT_SEQUENCE_ANIM(actor, s);
-        s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+        s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
         gCurTask->main = sub_8039208;
     }
 
@@ -1372,7 +1361,7 @@ void Task_IntroPanIn(void)
             s->graphics.dest = gUnknown_080D7560[0].tiles;
             s->graphics.anim = gUnknown_080D7560[0].anim;
             s->variant = gUnknown_080D7560[0].variant;
-            s->unk10 = 0;
+            s->frameFlags = 0;
             s->prevVariant = -1;
         }
 
@@ -1416,13 +1405,9 @@ void sub_80393A4(void)
 
         for (i = 0; i < 32; i++) {
             if (intro->unk10[i] != 0) {
-                intro->birdPositions[i][0]
-                    = sub_8085698(intro->birdPositions[i][0], x, intro->animFrame, 10,
-                                  gUnknown_080D7830[i][4] + 2);
+                intro->birdPositions[i][0] = sub_8085698(intro->birdPositions[i][0], x, intro->animFrame, 10, gUnknown_080D7830[i][4] + 2);
 
-                intro->birdPositions[i][1]
-                    = sub_8085698(intro->birdPositions[i][1], y, intro->animFrame, 10,
-                                  gUnknown_080D7830[i][4] + 2);
+                intro->birdPositions[i][1] = sub_8085698(intro->birdPositions[i][1], y, intro->animFrame, 10, gUnknown_080D7830[i][4] + 2);
 
                 intro->birdSpeeds[i][0] -= (intro->birdSpeeds[i][0] >> 3);
                 intro->birdSpeeds[i][1] -= (intro->birdSpeeds[i][1] >> 3);
@@ -1495,7 +1480,7 @@ void IntroRenderSprites(u8 flockMode)
 
                 s->x = intro->birdPositions[i][0] >> 8;
                 s->y = (intro->birdPositions[i][1] >> 8) - intro->cameraY;
-                s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+                s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
                 DisplaySprite(s);
             }
         }
@@ -1519,9 +1504,9 @@ void IntroRenderSprites(u8 flockMode)
             s->y = I(intro->birdPositions[i][1]) - intro->cameraY;
 
             if (intro->birdSpeeds[i][0] < 0) {
-                s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+                s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
             } else {
-                s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+                s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
             }
 
             DisplaySprite(s);
@@ -1643,7 +1628,7 @@ void Task_SkipHandlerMain(void)
         TasksDestroyInPriorityRange(0, priorityMax);
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         TaskCreate(sub_8039AD4, 0, priority, 0, NULL);
     }
 }

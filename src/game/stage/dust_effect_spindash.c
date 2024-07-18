@@ -21,8 +21,7 @@ void TaskDestructor_SpindashDustEffect(struct Task *);
 
 struct Task *CreateSpindashDustEffect()
 {
-    struct Task *t = TaskCreate(Task_SpindashDustEffect, sizeof(DustEffect), 0x4001, 0,
-                                TaskDestructor_SpindashDustEffect);
+    struct Task *t = TaskCreate(Task_SpindashDustEffect, sizeof(DustEffect), 0x4001, 0, TaskDestructor_SpindashDustEffect);
 
     DustEffect *sde = TASK_DATA(t);
     Sprite *s = &sde->s;
@@ -31,11 +30,11 @@ struct Task *CreateSpindashDustEffect()
     s->graphics.anim = SA2_ANIM_SPINDASH_DUST_EFFECT;
     s->variant = 0;
     s->prevVariant = -1;
-    s->unk1A = SPRITE_OAM_ORDER(8);
+    s->oamFlags = SPRITE_OAM_ORDER(8);
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
     return t;
 }
@@ -46,8 +45,7 @@ void Task_SpindashDustEffect(void)
     Player *p = &gPlayer;
     s32 offY;
 
-    if (p->spriteTask == NULL
-        || (p->moveState & (MOVESTATE_400 | MOVESTATE_DEAD)) != MOVESTATE_400) {
+    if (p->spriteTask == NULL || (p->moveState & (MOVESTATE_400 | MOVESTATE_DEAD)) != MOVESTATE_400) {
         TaskDestroy(gCurTask);
         return;
     } else {
@@ -71,23 +69,23 @@ void Task_SpindashDustEffect(void)
         if (IS_MULTI_PLAYER) {
             struct Task *t = gMultiplayerPlayerTasks[SIO_MULTI_CNT->id];
             MultiplayerPlayer *mpp = TASK_DATA(t);
-            s->x = (mpp->unk50 - cam->x);
-            s->y = ((mpp->unk52 + offY) - cam->y);
+            s->x = (mpp->pos.x - cam->x);
+            s->y = ((mpp->pos.y + offY) - cam->y);
         } else {
             s->x = I(p->x) - cam->x;
             s->y = (I(p->y) + offY) - cam->y;
         }
 
         if (!(p->moveState & MOVESTATE_FACING_LEFT)) {
-            s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+            s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
         } else {
-            s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+            s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
         }
 
         if (GRAVITY_IS_INVERTED) {
-            s->unk10 |= SPRITE_FLAG_MASK_Y_FLIP;
+            s->frameFlags |= SPRITE_FLAG_MASK_Y_FLIP;
         } else {
-            s->unk10 &= ~SPRITE_FLAG_MASK_Y_FLIP;
+            s->frameFlags &= ~SPRITE_FLAG_MASK_Y_FLIP;
         }
 
         UpdateSpriteAnimation(s);
@@ -101,8 +99,7 @@ void Task_SpindashDustEffectBig(void)
     Player *p = &gPlayer;
     s32 offY;
 
-    if (p->spriteTask == NULL
-        || (p->moveState & (MOVESTATE_400 | MOVESTATE_DEAD)) != MOVESTATE_400) {
+    if (p->spriteTask == NULL || (p->moveState & (MOVESTATE_400 | MOVESTATE_DEAD)) != MOVESTATE_400) {
         TaskDestroy(gCurTask);
         return;
     } else {
@@ -126,23 +123,23 @@ void Task_SpindashDustEffectBig(void)
         if (IS_MULTI_PLAYER) {
             struct Task *t = gMultiplayerPlayerTasks[SIO_MULTI_CNT->id];
             MultiplayerPlayer *mpp = TASK_DATA(t);
-            s->x = (mpp->unk50 - cam->x);
-            s->y = ((mpp->unk52 + offY) - cam->y);
+            s->x = (mpp->pos.x - cam->x);
+            s->y = ((mpp->pos.y + offY) - cam->y);
         } else {
             s->x = I(p->x) - cam->x;
             s->y = (I(p->y) + offY) - cam->y;
         }
 
         if (!(p->moveState & MOVESTATE_FACING_LEFT)) {
-            s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+            s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
         } else {
-            s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+            s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
         }
 
         if (GRAVITY_IS_INVERTED) {
-            s->unk10 |= SPRITE_FLAG_MASK_Y_FLIP;
+            s->frameFlags |= SPRITE_FLAG_MASK_Y_FLIP;
         } else {
-            s->unk10 &= ~SPRITE_FLAG_MASK_Y_FLIP;
+            s->frameFlags &= ~SPRITE_FLAG_MASK_Y_FLIP;
         }
 
         UpdateSpriteAnimation(s);

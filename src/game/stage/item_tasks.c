@@ -26,16 +26,15 @@ void Task_Item_Shield_Magnetic(void);
 void Task_Item_Confusion(void);
 void TaskDestructor_ItemTasks(struct Task *);
 
-#define ITEMTASK_GET_PLAYER_NUM()                                                       \
-    ({                                                                                  \
-        ItemTask *it = TASK_DATA(gCurTask);                                             \
-        it->unk30;                                                                      \
+#define ITEMTASK_GET_PLAYER_NUM()                                                                                                          \
+    ({                                                                                                                                     \
+        ItemTask *it = TASK_DATA(gCurTask);                                                                                                \
+        it->unk30;                                                                                                                         \
     })
 
 struct Task *CreateItemTask_Shield_Normal(s8 p0)
 {
-    struct Task *t = TaskCreate(Task_Item_Shield_Normal, sizeof(ItemTask), 0x4001, 0,
-                                TaskDestructor_ItemTasks);
+    struct Task *t = TaskCreate(Task_Item_Shield_Normal, sizeof(ItemTask), 0x4001, 0, TaskDestructor_ItemTasks);
     ItemTask *item = TASK_DATA(t);
     Sprite *s = &item->s;
 
@@ -46,11 +45,11 @@ struct Task *CreateItemTask_Shield_Normal(s8 p0)
     s->graphics.anim = SA2_ANIM_SHIELD_NORMAL;
     s->variant = 0;
     s->prevVariant = -1;
-    s->unk1A = SPRITE_OAM_ORDER(8);
+    s->oamFlags = SPRITE_OAM_ORDER(8);
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
     m4aSongNumStart(SE_ACTIVATE_SHIELD);
 
@@ -59,8 +58,7 @@ struct Task *CreateItemTask_Shield_Normal(s8 p0)
 
 struct Task *CreateItemTask_Invincibility(s8 p0)
 {
-    struct Task *t = TaskCreate(Task_Item_Invincibility, sizeof(ItemTask), 0x4001, 0,
-                                TaskDestructor_ItemTasks);
+    struct Task *t = TaskCreate(Task_Item_Invincibility, sizeof(ItemTask), 0x4001, 0, TaskDestructor_ItemTasks);
     ItemTask *item = TASK_DATA(t);
     Sprite *s = &item->s;
 
@@ -71,19 +69,18 @@ struct Task *CreateItemTask_Invincibility(s8 p0)
     s->graphics.anim = SA2_ANIM_INVINCIBILITY;
     s->variant = 0;
     s->prevVariant = -1;
-    s->unk1A = SPRITE_OAM_ORDER(8);
+    s->oamFlags = SPRITE_OAM_ORDER(8);
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
     return t;
 }
 
 struct Task *CreateItemTask_Shield_Magnetic(s8 p0)
 {
-    struct Task *t = TaskCreate(Task_Item_Shield_Magnetic, sizeof(ItemTask), 0x4001, 0,
-                                TaskDestructor_ItemTasks);
+    struct Task *t = TaskCreate(Task_Item_Shield_Magnetic, sizeof(ItemTask), 0x4001, 0, TaskDestructor_ItemTasks);
     ItemTask *item = (ItemTask *)TASK_DATA(t);
 
     item->unk30 = p0;
@@ -97,11 +94,11 @@ struct Task *CreateItemTask_Shield_Magnetic(s8 p0)
         s->graphics.anim = SA2_ANIM_SHIELD_MAGNETIC;
         s->variant = 0;
         s->prevVariant = -1;
-        s->unk1A = 0x200;
+        s->oamFlags = SPRITE_OAM_ORDER(8);
         s->timeUntilNextFrame = 0;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
-        s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
     }
 
     m4aSongNumStart(SE_ACTIVATE_SHIELD);
@@ -111,8 +108,7 @@ struct Task *CreateItemTask_Shield_Magnetic(s8 p0)
 
 struct Task *CreateItemTask_Confusion(s8 p0)
 {
-    struct Task *t = TaskCreate(Task_Item_Confusion, sizeof(ItemTask), 0x4001, 0,
-                                TaskDestructor_ItemTasks);
+    struct Task *t = TaskCreate(Task_Item_Confusion, sizeof(ItemTask), 0x4001, 0, TaskDestructor_ItemTasks);
     ItemTask *item = TASK_DATA(t);
 
     item->unk30 = p0;
@@ -126,11 +122,11 @@ struct Task *CreateItemTask_Confusion(s8 p0)
         s->graphics.anim = SA2_ANIM_CONFUSION;
         s->variant = 0;
         s->prevVariant = -1;
-        s->unk1A = 0x200;
+        s->oamFlags = SPRITE_OAM_ORDER(8);
         s->timeUntilNextFrame = 0;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
-        s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
     }
 
     return t;
@@ -144,9 +140,7 @@ void Task_Item_Shield_Normal(void)
     ItemTask *item = TASK_DATA(gCurTask);
     struct Camera *cam = &gCamera;
 
-    u32 itemEffect
-        = (gPlayer.itemEffect
-           & (PLAYER_ITEM_EFFECT__INVINCIBILITY | PLAYER_ITEM_EFFECT__SHIELD_NORMAL));
+    u32 itemEffect = (gPlayer.itemEffect & (PLAYER_ITEM_EFFECT__INVINCIBILITY | PLAYER_ITEM_EFFECT__SHIELD_NORMAL));
     if (itemEffect != PLAYER_ITEM_EFFECT__SHIELD_NORMAL) {
         TaskDestroy(gCurTask);
         return;
@@ -162,8 +156,8 @@ void Task_Item_Shield_Normal(void)
         screenY = I(gPlayer.y) - cam->y;
         item->s.y = screenY;
 
-        item->s.unk10 &= ~SPRITE_FLAG_MASK_PRIORITY;
-        item->s.unk10 |= gPlayer.unk90->s.unk10 & SPRITE_FLAG_MASK_PRIORITY;
+        item->s.frameFlags &= ~SPRITE_FLAG_MASK_PRIORITY;
+        item->s.frameFlags |= gPlayer.unk90->s.frameFlags & SPRITE_FLAG_MASK_PRIORITY;
 
         UpdateSpriteAnimation(&item->s);
 
@@ -178,8 +172,7 @@ void Task_Item_Shield_Normal(void)
 #else
         b = (param & 0x1);
 #endif
-        if (((gStageTime & 0x2) && (b != itemEffect))
-            || (!(gStageTime & 0x2) && (b != 0))) {
+        if (((gStageTime & 0x2) && (b != itemEffect)) || (!(gStageTime & 0x2) && (b != 0))) {
             DisplaySprite(&item->s);
         }
     }
@@ -195,9 +188,7 @@ void Task_Item_Shield_Magnetic(void)
     bool32 b;
 
     if (IS_SINGLE_PLAYER) {
-        u32 itemEffect = (gPlayer.itemEffect
-                          & (PLAYER_ITEM_EFFECT__SHIELD_MAGNETIC
-                             | PLAYER_ITEM_EFFECT__INVINCIBILITY));
+        u32 itemEffect = (gPlayer.itemEffect & (PLAYER_ITEM_EFFECT__SHIELD_MAGNETIC | PLAYER_ITEM_EFFECT__INVINCIBILITY));
 
         if (itemEffect != PLAYER_ITEM_EFFECT__SHIELD_MAGNETIC) {
             TaskDestroy(gCurTask);
@@ -213,8 +204,8 @@ void Task_Item_Shield_Magnetic(void)
             screenY = I(gPlayer.y) - cam->y;
             item->s.y = screenY;
 
-            item->s.unk10 &= ~SPRITE_FLAG_MASK_PRIORITY;
-            item->s.unk10 |= gPlayer.unk90->s.unk10 & SPRITE_FLAG_MASK_PRIORITY;
+            item->s.frameFlags &= ~SPRITE_FLAG_MASK_PRIORITY;
+            item->s.frameFlags |= gPlayer.unk90->s.frameFlags & SPRITE_FLAG_MASK_PRIORITY;
         } else {
             return;
         }
@@ -243,7 +234,7 @@ void Task_802ABC8(void)
     struct Camera *cam = &gCamera;
     Sprite *s = &item->s;
 
-    if (s->unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (s->frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         TaskDestroy(gCurTask);
     } else {
         s16 screenX = 0, screenY = 0;
@@ -254,14 +245,14 @@ void Task_802ABC8(void)
 
             screenY = I(gPlayer.y);
 
-            r2 = gPlayer.unk90->s.unk10 & SPRITE_FLAG_MASK_PRIORITY;
+            r2 = gPlayer.unk90->s.frameFlags & SPRITE_FLAG_MASK_PRIORITY;
         }
 
         s->x = screenX - cam->x;
         s->y = screenY - cam->y;
 
-        item->s.unk10 &= ~SPRITE_FLAG_MASK_PRIORITY;
-        item->s.unk10 |= r2;
+        item->s.frameFlags &= ~SPRITE_FLAG_MASK_PRIORITY;
+        item->s.frameFlags |= r2;
 
         UpdateSpriteAnimation(s);
         DisplaySprite(s);
@@ -283,9 +274,9 @@ void Task_Item_Invincibility(void)
         MultiplayerPlayer *mpp = TASK_DATA(gMultiplayerPlayerTasks[(s8)param]);
 
         if (mpp->unk57 & 0x2) {
-            x = mpp->unk50;
-            y = mpp->unk52;
-            priority = mpp->s.unk10;
+            x = mpp->pos.x;
+            y = mpp->pos.y;
+            priority = mpp->s.frameFlags;
         } else {
             TaskDestroy(gCurTask);
             return;
@@ -297,15 +288,15 @@ void Task_Item_Invincibility(void)
         // _0802ACE4
         x = I(gPlayer.x) + gPlayer.unk7C;
         y = I(gPlayer.y);
-        priority = gPlayer.unk90->s.unk10;
+        priority = gPlayer.unk90->s.frameFlags;
     }
     // _0802AD02
     priority &= SPRITE_FLAG_MASK_PRIORITY;
 
     item->s.x = x - cam->x;
     item->s.y = y - cam->y;
-    item->s.unk10 &= ~SPRITE_FLAG_MASK_PRIORITY;
-    item->s.unk10 |= priority;
+    item->s.frameFlags &= ~SPRITE_FLAG_MASK_PRIORITY;
+    item->s.frameFlags |= priority;
     UpdateSpriteAnimation(&item->s);
 
     {
@@ -339,15 +330,15 @@ void Task_Item_Confusion(void)
             return;
         }
 
-        s->x = mpp->unk50 - cam->x;
-        s->y = mpp->unk52 - cam->y;
-        s->unk10 &= ~SPRITE_FLAG_MASK_PRIORITY;
-        s->unk10 |= mpp->s.unk10 & SPRITE_FLAG_MASK_PRIORITY;
+        s->x = mpp->pos.x - cam->x;
+        s->y = mpp->pos.y - cam->y;
+        s->frameFlags &= ~SPRITE_FLAG_MASK_PRIORITY;
+        s->frameFlags |= mpp->s.frameFlags & SPRITE_FLAG_MASK_PRIORITY;
 
         if (GRAVITY_IS_INVERTED) {
-            s->unk10 |= MOVESTATE_800;
+            s->frameFlags |= MOVESTATE_800;
         } else {
-            s->unk10 &= ~MOVESTATE_800;
+            s->frameFlags &= ~MOVESTATE_800;
         }
 
         UpdateSpriteAnimation(s);
@@ -360,8 +351,7 @@ void Task_Item_Confusion(void)
             u32 one = 1;
 #endif
             b &= one;
-            if (((gStageTime & 0x2) && (b != one))
-                || (!(gStageTime & 0x2) && (b != 0))) {
+            if (((gStageTime & 0x2) && (b != one)) || (!(gStageTime & 0x2) && (b != 0))) {
                 DisplaySprite(s);
             }
         }

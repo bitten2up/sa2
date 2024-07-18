@@ -53,36 +53,31 @@ const TileInfo gUnknown_080E0384[30] = {
     TextElementAlt4(SA2_ANIM_VARIANT_TA_BOSS, 12, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_CLEAR_ZONE_ASAP, 168, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_DEFEAT_BOSS_ASAP, 168, SA2_ANIM_TIME_ATTACK_EN),
-    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168,
-                    SA2_ANIM_TIME_ATTACK_EN),
+    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168, SA2_ANIM_TIME_ATTACK_EN),
 
     TextElementAlt4(SA2_ANIM_VARIANT_TA_ZONE, 12, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_BOSS, 12, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_CLEAR_ZONE_ASAP, 168, SA2_ANIM_TIME_ATTACK_DE),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_DEFEAT_BOSS_ASAP, 168, SA2_ANIM_TIME_ATTACK_DE),
-    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168,
-                    SA2_ANIM_TIME_ATTACK_DE),
+    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168, SA2_ANIM_TIME_ATTACK_DE),
 
     TextElementAlt4(SA2_ANIM_VARIANT_TA_ZONE, 12, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_BOSS, 12, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_CLEAR_ZONE_ASAP, 168, SA2_ANIM_TIME_ATTACK_FR),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_DEFEAT_BOSS_ASAP, 168, SA2_ANIM_TIME_ATTACK_FR),
-    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168,
-                    SA2_ANIM_TIME_ATTACK_FR),
+    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168, SA2_ANIM_TIME_ATTACK_FR),
 
     TextElementAlt4(SA2_ANIM_VARIANT_TA_ZONE, 12, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_BOSS, 12, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_CLEAR_ZONE_ASAP, 168, SA2_ANIM_TIME_ATTACK_ES),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_DEFEAT_BOSS_ASAP, 168, SA2_ANIM_TIME_ATTACK_ES),
-    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168,
-                    SA2_ANIM_TIME_ATTACK_ES),
+    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168, SA2_ANIM_TIME_ATTACK_ES),
 
     TextElementAlt4(SA2_ANIM_VARIANT_TA_ZONE, 12, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_BOSS, 12, SA2_ANIM_TIME_ATTACK_EN),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_CLEAR_ZONE_ASAP, 168, SA2_ANIM_TIME_ATTACK_IT),
     TextElementAlt4(SA2_ANIM_VARIANT_TA_DEFEAT_BOSS_ASAP, 168, SA2_ANIM_TIME_ATTACK_IT),
-    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168,
-                    SA2_ANIM_TIME_ATTACK_IT),
+    TextElementAlt4(SA2_ANIM_VARIANT_TA_CANT_PLAY_THIS_YET, 168, SA2_ANIM_TIME_ATTACK_IT),
 };
 
 void CreateTimeAttackModeSelectionScreen(void)
@@ -111,8 +106,7 @@ void CreateTimeAttackModeSelectionScreen(void)
     gBgScrollRegs[1][0] = 0;
     gBgScrollRegs[1][1] = 0;
 
-    t = TaskCreate(Task_FadeInAndStartIntro,
-                   sizeof(struct TimeAttackModeSelectionScreen), 0x2000, 0,
+    t = TaskCreate(Task_FadeInAndStartIntro, sizeof(struct TimeAttackModeSelectionScreen), 0x2000, 0,
                    TimeAttackModeSelectionScreenOnDestroy);
     modeScreen = TASK_DATA(t);
 
@@ -137,68 +131,65 @@ void CreateTimeAttackModeSelectionScreen(void)
     s->prevVariant = -1;
     s->x = 0;
     s->y = 0;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     UpdateSpriteAnimation(s);
 
     s = &modeScreen->unkB0;
-    s->graphics.dest
-        = VramMalloc(gUnknown_080E0384[TextElementOffset(lang, 5, 0)].numTiles);
+    s->graphics.dest = VramMalloc(gUnknown_080E0384[TextElementOffset(lang, 5, 0)].numTiles);
     s->graphics.anim = gUnknown_080E0384[TextElementOffset(lang, 5, 0)].anim;
     s->variant = gUnknown_080E0384[TextElementOffset(lang, 5, 0)].variant;
     s->prevVariant = -1;
     s->x = 0;
     s->y = 0;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     UpdateSpriteAnimation(s);
 
     s = &modeScreen->unkE0;
-    s->graphics.dest
-        = VramMalloc(gUnknown_080E0384[TextElementOffset(lang, 5, 1)].numTiles);
+    s->graphics.dest = VramMalloc(gUnknown_080E0384[TextElementOffset(lang, 5, 1)].numTiles);
     s->graphics.anim = gUnknown_080E0384[TextElementOffset(lang, 5, 1)].anim;
     s->variant = gUnknown_080E0384[TextElementOffset(lang, 5, 1)].variant;
     s->prevVariant = -1;
     s->x = 0;
     s->y = 0;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     UpdateSpriteAnimation(s);
 
     s = &modeScreen->infoText;
-    s->graphics.dest
-        = VramMalloc(gUnknown_080E0384[TextElementOffset(lang, 5, 2)].numTiles);
+    s->graphics.dest = VramMalloc(gUnknown_080E0384[TextElementOffset(lang, 5, 2)].numTiles);
     s->graphics.anim = gUnknown_080E0384[TextElementOffset(lang, 5, 2)].anim;
     s->variant = gUnknown_080E0384[TextElementOffset(lang, 5, 2)].variant;
     s->prevVariant = -1;
     s->x = 8;
     s->y = 103;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0;
+    s->frameFlags = 0;
 
     background = &modeScreen->unk0;
     background->graphics.dest = (void *)BG_SCREEN_ADDR(0);
@@ -471,7 +462,7 @@ static void Task_HandleModeSelectedExit(void)
     TasksDestroyAll();
     gUnknown_03002AE4 = gUnknown_0300287C;
     gUnknown_03005390 = 0;
-    gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+    PAUSE_GRAPHICS_QUEUE();
     CreateCharacterSelectionScreen(0, gLoadedSaveGame->unlockedCharacters & 0x10);
 }
 

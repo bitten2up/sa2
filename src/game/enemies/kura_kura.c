@@ -29,11 +29,9 @@ typedef struct {
 void Task_8052024(void);
 void TaskDestructor_8052264(struct Task *);
 
-void CreateEntity_KuraKura(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                           u8 spriteY)
+void CreateEntity_KuraKura(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_8052024, sizeof(Sprite_KuraKura), 0x4050, 0,
-                                TaskDestructor_8052264);
+    struct Task *t = TaskCreate(Task_8052024, sizeof(Sprite_KuraKura), 0x4050, 0, TaskDestructor_8052264);
     Sprite_KuraKura *kk = TASK_DATA(t);
     Sprite *s = &kk->s;
     kk->unkB0 = 0;
@@ -78,7 +76,7 @@ void Task_8052024(void)
     Vec2_32 pos;
     ENEMY_UPDATE_POSITION_STATIC(kk, s, pos.x, pos.y);
 
-    s->unk10 &= ~0x400;
+    s->frameFlags &= ~0x400;
 
     ENEMY_DESTROY_IF_PLAYER_HIT_2(s, pos);
     ENEMY_DESTROY_IF_OFFSCREEN_RAW(kk, me, s, pos.x, pos.y);

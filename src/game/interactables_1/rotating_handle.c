@@ -32,12 +32,10 @@ static void sub_805EF90(void);
 static void sub_805EA94(void);
 static void sub_805ECA0(void);
 
-void CreateEntity_RotatingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                                 u8 spriteY)
+void CreateEntity_RotatingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
     if (me->d.sData[0] >= 0) {
-        struct Task *t
-            = TaskCreate(sub_805EA94, 0x44, 0x2010, 0, TaskDestructor_80095E8);
+        struct Task *t = TaskCreate(sub_805EA94, sizeof(Sprite_RotatingHandle), 0x2010, 0, TaskDestructor_80095E8);
         Sprite_RotatingHandle *rotatingHandle = TASK_DATA(t);
         Sprite *s = &rotatingHandle->s;
         rotatingHandle->base.regionX = spriteRegionX;
@@ -57,15 +55,15 @@ void CreateEntity_RotatingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteReg
         s->graphics.anim = 546;
         s->variant = 0;
 
-        s->unk1A = SPRITE_OAM_ORDER(18);
+        s->oamFlags = SPRITE_OAM_ORDER(18);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = 0x2000;
+        s->frameFlags = 0x2000;
     }
 }
 
@@ -80,14 +78,13 @@ static void sub_805EA94(void)
     s->x = x - gCamera.x;
     s->y = y - gCamera.y;
 
-    if (!(gPlayer.moveState & (MOVESTATE_400000 | MOVESTATE_DEAD))
-        && sub_800C204(s, x, y, 0, &gPlayer, 0) == 1) {
+    if (!(gPlayer.moveState & (MOVESTATE_400000 | MOVESTATE_DEAD)) && sub_800C204(s, x, y, 0, &gPlayer, 0) == 1) {
 #ifndef NON_MATCHING
         register s32 temp1 asm("r0"), temp2;
 #else
         s32 temp1, temp2;
 #endif
-        sub_80218E4(&gPlayer);
+        Player_TransitionCancelFlyingAndBoost(&gPlayer);
         rotatingHandle->unk3C = 0;
 
         temp1 = abs(gPlayer.speedAirX);
@@ -104,22 +101,22 @@ static void sub_805EA94(void)
         if (gPlayer.speedAirX > 0) {
             gPlayer.moveState &= ~MOVESTATE_FACING_LEFT;
             if (I(gPlayer.y) > y) {
-                s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+                s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
                 gPlayer.unk64 = 0x2D;
                 rotatingHandle->unk40 = 0;
             } else {
-                s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+                s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
                 gPlayer.unk64 = 0x2E;
                 rotatingHandle->unk40 = 1;
             }
         } else {
             gPlayer.moveState |= 1;
             if (I(gPlayer.y) > y) {
-                s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+                s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
                 gPlayer.unk64 = 0x2D;
                 rotatingHandle->unk40 = 2;
             } else {
-                s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+                s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
                 gPlayer.unk64 = 0x2E;
                 rotatingHandle->unk40 = 3;
             }
@@ -146,8 +143,7 @@ static void sub_805EA94(void)
 }
 
 // (95.57%) https://decomp.me/scratch/RaPDV
-NONMATCH("asm/non_matching/game/interactables_1/sub_805ECA0.inc",
-         static void sub_805ECA0())
+NONMATCH("asm/non_matching/game/interactables_1/sub_805ECA0.inc", static void sub_805ECA0())
 {
     Sprite_RotatingHandle *rotatingHandle = TASK_DATA(gCurTask);
     Sprite *s = &rotatingHandle->s;
@@ -183,7 +179,7 @@ NONMATCH("asm/non_matching/game/interactables_1/sub_805ECA0.inc",
 #endif
         gPlayer.transition = PLTRANS_PT5;
         me->x = rotatingHandle->base.spriteX;
-        sub_80218E4(&gPlayer);
+        Player_TransitionCancelFlyingAndBoost(&gPlayer);
         sub_8023B5C(&gPlayer, 9);
         gPlayer.unk16 = 6;
         gPlayer.unk17 = 9;

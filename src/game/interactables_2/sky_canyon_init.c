@@ -1,5 +1,4 @@
 #include "global.h"
-
 #include "sprite.h"
 #include "task.h"
 
@@ -17,8 +16,7 @@ static void Task_80808DC(void);
 
 struct Task *sub_80807CC(void)
 {
-    struct Task *t
-        = TaskCreate(Task_80808DC, sizeof(Sprite_OnInit_SkyCanyon), 0x2001, 0, NULL);
+    struct Task *t = TaskCreate(Task_80808DC, sizeof(Sprite_OnInit_SkyCanyon), 0x2001, 0, NULL);
     Sprite_OnInit_SkyCanyon *init = TASK_DATA(t);
     Sprite *spring, *propellor;
 
@@ -26,30 +24,14 @@ struct Task *sub_80807CC(void)
     init->unk62 = 0;
 
     spring = &init->spring;
-    spring->unk1A = 0x480;
-    spring->graphics.size = 0;
-    spring->animCursor = 0;
-    spring->timeUntilNextFrame = 0;
-    spring->prevVariant = -1;
-    spring->animSpeed = 0x10;
-    spring->palId = 0;
-    spring->hitboxes[0].index = -1;
-    spring->unk10 = 0x2000;
+    SPRITE_INIT_WITHOUT_ANIM_OR_VRAM(spring, 18, 2, 0);
     spring->graphics.dest = (void *)(OBJ_VRAM0 + 0x3040);
     spring->graphics.anim = SA2_ANIM_SPRING_FLYING;
     spring->variant = 0;
     UpdateSpriteAnimation(&init->spring);
 
     propellor = &init->propellor;
-    propellor->unk1A = 0x480;
-    propellor->graphics.size = 0;
-    propellor->animCursor = 0;
-    propellor->timeUntilNextFrame = 0;
-    propellor->prevVariant = -1;
-    propellor->animSpeed = 0x10;
-    propellor->palId = 0;
-    propellor->hitboxes[0].index = -1;
-    propellor->unk10 = 0x2000;
+    SPRITE_INIT_WITHOUT_ANIM_OR_VRAM(propellor, 18, 2, 0);
     propellor->graphics.dest = (void *)(OBJ_VRAM0 + 0x2980);
     propellor->graphics.anim = SA2_ANIM_PROPELLER;
     propellor->variant = 0;

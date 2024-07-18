@@ -51,34 +51,20 @@ static void Task_FadeOutAndExitToTitleScreen(void);
 static void Task_ExitAndInitSelectedPakMode(void);
 
 static const TileInfo sMultiplayerModeSelectScreenText[] = {
-    TextElementAlt(4, LANG_DEFAULT, 1, 38, 1073),
-    TextElementAlt(4, LANG_DEFAULT, 2, 32, 1073),
-    TextElementAlt(4, LANG_DEFAULT, 3, 168, 1073),
-    TextElementAlt(4, LANG_DEFAULT, 4, 168, 1073),
-    TextElementAlt(4, LANG_JAPANESE, 1, 38, 1073),
-    TextElementAlt(4, LANG_JAPANESE, 2, 32, 1073),
-    TextElementAlt(4, LANG_JAPANESE, 3, 168, 1073),
-    TextElementAlt(4, LANG_JAPANESE, 4, 168, 1073),
-    TextElement(4, LANG_ENGLISH, 0, 36, 1094),
-    TextElement(4, LANG_ENGLISH, 1, 38, 1094),
-    TextElement(4, LANG_ENGLISH, 2, 168, 1094),
-    TextElement(4, LANG_ENGLISH, 3, 168, 1094),
-    TextElement(4, LANG_GERMAN, 0, 34, 1095),
-    TextElement(4, LANG_GERMAN, 1, 28, 1095),
-    TextElement(4, LANG_GERMAN, 2, 168, 1095),
-    TextElement(4, LANG_GERMAN, 3, 168, 1095),
-    TextElement(4, LANG_FRENCH, 0, 36, 1096),
-    TextElement(4, LANG_FRENCH, 1, 32, 1096),
-    TextElement(4, LANG_FRENCH, 2, 168, 1096),
-    TextElement(4, LANG_FRENCH, 3, 168, 1096),
-    TextElement(4, LANG_SPANISH, 0, 36, 1097),
-    TextElement(4, LANG_SPANISH, 1, 36, 1097),
-    TextElement(4, LANG_SPANISH, 2, 168, 1097),
-    TextElement(4, LANG_SPANISH, 3, 168, 1097),
-    TextElement(4, LANG_ITALIAN, 0, 36, 1098),
-    TextElement(4, LANG_ITALIAN, 1, 36, 1098),
-    TextElement(4, LANG_ITALIAN, 2, 168, 1098),
-    TextElement(4, LANG_ITALIAN, 3, 168, 1098),
+    TextElementAlt(4, LANG_DEFAULT, 1, 38, 1073),   TextElementAlt(4, LANG_DEFAULT, 2, 32, 1073),
+    TextElementAlt(4, LANG_DEFAULT, 3, 168, 1073),  TextElementAlt(4, LANG_DEFAULT, 4, 168, 1073),
+    TextElementAlt(4, LANG_JAPANESE, 1, 38, 1073),  TextElementAlt(4, LANG_JAPANESE, 2, 32, 1073),
+    TextElementAlt(4, LANG_JAPANESE, 3, 168, 1073), TextElementAlt(4, LANG_JAPANESE, 4, 168, 1073),
+    TextElement(4, LANG_ENGLISH, 0, 36, 1094),      TextElement(4, LANG_ENGLISH, 1, 38, 1094),
+    TextElement(4, LANG_ENGLISH, 2, 168, 1094),     TextElement(4, LANG_ENGLISH, 3, 168, 1094),
+    TextElement(4, LANG_GERMAN, 0, 34, 1095),       TextElement(4, LANG_GERMAN, 1, 28, 1095),
+    TextElement(4, LANG_GERMAN, 2, 168, 1095),      TextElement(4, LANG_GERMAN, 3, 168, 1095),
+    TextElement(4, LANG_FRENCH, 0, 36, 1096),       TextElement(4, LANG_FRENCH, 1, 32, 1096),
+    TextElement(4, LANG_FRENCH, 2, 168, 1096),      TextElement(4, LANG_FRENCH, 3, 168, 1096),
+    TextElement(4, LANG_SPANISH, 0, 36, 1097),      TextElement(4, LANG_SPANISH, 1, 36, 1097),
+    TextElement(4, LANG_SPANISH, 2, 168, 1097),     TextElement(4, LANG_SPANISH, 3, 168, 1097),
+    TextElement(4, LANG_ITALIAN, 0, 36, 1098),      TextElement(4, LANG_ITALIAN, 1, 36, 1098),
+    TextElement(4, LANG_ITALIAN, 2, 168, 1098),     TextElement(4, LANG_ITALIAN, 3, 168, 1098),
 };
 
 void CreateMultiplayerModeSelectScreen(void)
@@ -102,8 +88,7 @@ void CreateMultiplayerModeSelectScreen(void)
     gBgScrollRegs[1][0] = 0;
     gBgScrollRegs[1][1] = 0;
 
-    t = TaskCreate(Task_FadeInAndStartEnterAnim,
-                   sizeof(struct MultiplayerModeSelectScreen), 0x2000, 0,
+    t = TaskCreate(Task_FadeInAndStartEnterAnim, sizeof(struct MultiplayerModeSelectScreen), 0x2000, 0,
                    MultiplayerModeSelectScreenOnDestroy);
     modeScreen = TASK_DATA(t);
     modeScreen->animFrame = 0;
@@ -126,14 +111,14 @@ void CreateMultiplayerModeSelectScreen(void)
     s->prevVariant = -1;
     s->x = 0;
     s->y = 0;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     UpdateSpriteAnimation(s);
 
     s = &modeScreen->unkB0;
@@ -144,14 +129,14 @@ void CreateMultiplayerModeSelectScreen(void)
 
     s->x = 0;
     s->y = 0;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     UpdateSpriteAnimation(s);
 
     s = &modeScreen->unkE0;
@@ -162,14 +147,14 @@ void CreateMultiplayerModeSelectScreen(void)
 
     s->x = 0;
     s->y = 0;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     UpdateSpriteAnimation(s);
 
     s = &modeScreen->subText;
@@ -180,14 +165,14 @@ void CreateMultiplayerModeSelectScreen(void)
 
     s->x = 8;
     s->y = 103;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0;
+    s->frameFlags = 0;
 
     background = &modeScreen->unk0;
     background->graphics.dest = (void *)BG_SCREEN_ADDR(0);
@@ -426,7 +411,7 @@ static void Task_ExitAndInitSelectedPakMode(void)
 
     gUnknown_03002AE4 = gUnknown_0300287C;
     gUnknown_03005390 = 0;
-    gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+    PAUSE_GRAPHICS_QUEUE();
 
     if (pakMode == PAK_MODE_MULTI) {
         StartMultiPakConnect();

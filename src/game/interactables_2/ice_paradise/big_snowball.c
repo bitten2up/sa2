@@ -53,11 +53,9 @@ typedef struct {
 void Task_Interactable069(void);
 void TaskDestructor_Interactable069(struct Task *);
 
-void CreateEntity_BigSnowball(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                              u8 spriteY)
+void CreateEntity_BigSnowball(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_Interactable069, 0x1C0, 0x2010, 0,
-                                TaskDestructor_Interactable069);
+    struct Task *t = TaskCreate(Task_Interactable069, sizeof(Sprite_IA69), 0x2010, 0, TaskDestructor_Interactable069);
     Sprite *s;
     Sprite_IA69 *ia69 = TASK_DATA(t);
     void *vramBase;
@@ -85,15 +83,15 @@ void CreateEntity_BigSnowball(MapEntity *me, u16 spriteRegionX, u16 spriteRegion
     vramBase = VramMalloc(0x1F);
     ia69->vram = vramBase;
 
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
     s->graphics.dest = vramBase;
     s->graphics.anim = SA2_ANIM_BIG_SNOWBALL;
     s->variant = 0;
@@ -101,15 +99,15 @@ void CreateEntity_BigSnowball(MapEntity *me, u16 spriteRegionX, u16 spriteRegion
 
     vram = vramBase + 0x200;
     s = &ia69->unk30;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
     s->graphics.dest = vram;
     s->graphics.anim = SA2_ANIM_BIG_SNOWBALL;
     s->variant = 1;
@@ -117,15 +115,15 @@ void CreateEntity_BigSnowball(MapEntity *me, u16 spriteRegionX, u16 spriteRegion
 
     vram = vramBase + 800;
     s = &ia69->unk60;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
     s->graphics.dest = vram;
     s->graphics.anim = SA2_ANIM_BIG_SNOWBALL;
     s->variant = 2;
@@ -133,15 +131,15 @@ void CreateEntity_BigSnowball(MapEntity *me, u16 spriteRegionX, u16 spriteRegion
 
     vram = vramBase + 928;
     s = &ia69->unk90;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
     s->graphics.dest = vram;
     s->graphics.anim = SA2_ANIM_BIG_SNOWBALL;
     s->variant = 3;
@@ -149,15 +147,15 @@ void CreateEntity_BigSnowball(MapEntity *me, u16 spriteRegionX, u16 spriteRegion
 
     vram = vramBase + 960;
     s = &ia69->unkC0;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
     s->graphics.dest = vram;
     s->graphics.anim = SA2_ANIM_BIG_SNOWBALL;
     s->variant = 4;
@@ -346,8 +344,7 @@ void sub_80792AC(Sprite_IA69 *ia69)
         for (i = 0; i < 2; i++, unk178++) {
             s32 temp2 = I(ia69->unk168 + unk178->unk2);
             if (temp2 < temp) {
-                ia69->unk30.x
-                    = ia69->unk158 - gCamera.x + I(ia69->unk164 + unk178->unk0);
+                ia69->unk30.x = ia69->unk158 - gCamera.x + I(ia69->unk164 + unk178->unk0);
                 ia69->unk30.y = ia69->unk15C - gCamera.y + temp2;
                 DisplaySprite(&ia69->unk30);
             }
@@ -356,8 +353,7 @@ void sub_80792AC(Sprite_IA69 *ia69)
         for (i = 0; i < 2; i++, unk178++) {
             s32 temp2 = I(ia69->unk168 + unk178->unk2);
             if (temp2 < temp) {
-                ia69->unk60.x
-                    = ia69->unk158 - gCamera.x + I(ia69->unk164 + unk178->unk0);
+                ia69->unk60.x = ia69->unk158 - gCamera.x + I(ia69->unk164 + unk178->unk0);
                 ia69->unk60.y = ia69->unk15C - gCamera.y + temp2;
                 DisplaySprite(&ia69->unk60);
             }
@@ -366,8 +362,7 @@ void sub_80792AC(Sprite_IA69 *ia69)
         for (i = 0; i < 4; i++, unk178++) {
             s32 temp2 = I(ia69->unk168 + unk178->unk2);
             if (temp2 < temp) {
-                ia69->unk90.x
-                    = ia69->unk158 - gCamera.x + I(ia69->unk164 + unk178->unk0);
+                ia69->unk90.x = ia69->unk158 - gCamera.x + I(ia69->unk164 + unk178->unk0);
                 ia69->unk90.y = ia69->unk15C - gCamera.y + temp2;
                 DisplaySprite(&ia69->unk90);
             }
@@ -376,8 +371,7 @@ void sub_80792AC(Sprite_IA69 *ia69)
         for (i = 0; i < 4; i++, unk178++) {
             s32 temp2 = I(ia69->unk168 + unk178->unk2);
             if (temp2 < temp) {
-                ia69->unkC0.x
-                    = ia69->unk158 - gCamera.x + I(ia69->unk164 + unk178->unk0);
+                ia69->unkC0.x = ia69->unk158 - gCamera.x + I(ia69->unk164 + unk178->unk0);
                 ia69->unkC0.y = ia69->unk15C - gCamera.y + temp2;
                 DisplaySprite(&ia69->unkC0);
             }
@@ -439,8 +433,7 @@ bool32 sub_8079624(Sprite_IA69 *ia69)
 
     temp2 = temp1;
     temp3 = temp;
-    if ((temp2 + ia69->unk1B0) < -128 || (temp2 + ia69->unk1AC) > 368
-        || (temp3 + ia69->unk1B2) < -128 || (temp3 + ia69->unk1AE) >= 289) {
+    if ((temp2 + ia69->unk1B0) < -128 || (temp2 + ia69->unk1AC) > 368 || (temp3 + ia69->unk1B2) < -128 || (temp3 + ia69->unk1AE) >= 289) {
         return TRUE;
     }
 

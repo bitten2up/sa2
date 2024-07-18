@@ -86,11 +86,9 @@ const AnimId sPlatformLevelAnims[38] = {
     [LEVEL_INDEX(9, ACT_2)] = SA2_ANIM_PLATFORM_LEA_FOR,
 };
 
-void CreateEntity_Platform_A(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                             u8 spriteY)
+void CreateEntity_Platform_A(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_800E89C, sizeof(Sprite_Platform), 0x2010, 0,
-                                TaskDestructor_800F19C);
+    struct Task *t = TaskCreate(Task_800E89C, sizeof(Sprite_Platform), 0x2010, 0, TaskDestructor_800F19C);
     Sprite_Platform *platform = TASK_DATA(t);
     Sprite *s = &platform->s;
 
@@ -135,7 +133,7 @@ void CreateEntity_Platform_A(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY
         s->graphics.anim = sPlatformLevelAnims[gCurrentLevel];
         s->variant = 0;
 
-        s->unk1A = SPRITE_OAM_ORDER(18);
+        s->oamFlags = SPRITE_OAM_ORDER(18);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
@@ -143,7 +141,7 @@ void CreateEntity_Platform_A(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY
         s->animSpeed = 0x10;
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
         UpdateSpriteAnimation(s);
     }
 }
@@ -169,11 +167,7 @@ void Task_800E89C(void)
 #endif
         s32 meUdata2 = (me->d.uData[2] << 11);
 
-        platform->unk40
-            = (SIN((platform->unk48 * ((gStageTime + platform->unk3C) & 0xFF))
-                   & ONE_CYCLE)
-               * meUdata2)
-            >> 14;
+        platform->unk40 = (SIN((platform->unk48 * ((gStageTime + platform->unk3C) & 0xFF)) & ONE_CYCLE) * meUdata2) >> 14;
         r5 = platform->unk40 - r5;
 #ifndef NON_MATCHING
         asm("" ::"r"(r5));
@@ -188,11 +182,7 @@ void Task_800E89C(void)
         register s32 r5 asm("r5") = platform->unk44;
 #endif
         s32 meUdata3 = (me->d.uData[3] << 11);
-        platform->unk44
-            = (SIN(((platform->unk4A * ((gStageTime + platform->unk3C) & 0xFF)))
-                   & ONE_CYCLE)
-               * meUdata3)
-            >> 14;
+        platform->unk44 = (SIN(((platform->unk4A * ((gStageTime + platform->unk3C) & 0xFF))) & ONE_CYCLE) * meUdata3) >> 14;
         r5 = platform->unk44 - r5;
 #ifndef NON_MATCHING
         asm("" ::"r"(r5));
@@ -254,11 +244,9 @@ void Task_800E89C(void)
     }
 }
 
-void CreateEntity_Platform_B(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                             u8 spriteY)
+void CreateEntity_Platform_B(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_800EC58, sizeof(Sprite_Platform), 0x2010, 0,
-                                TaskDestructor_800F19C);
+    struct Task *t = TaskCreate(Task_800EC58, sizeof(Sprite_Platform), 0x2010, 0, TaskDestructor_800F19C);
     Sprite_Platform *platform = TASK_DATA(t);
     Sprite *s = &platform->s;
 
@@ -292,7 +280,7 @@ void CreateEntity_Platform_B(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY
         s->graphics.anim = SA2_ANIM_PLATFORM_LEA_FOR;
     }
 
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
@@ -300,7 +288,7 @@ void CreateEntity_Platform_B(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY
     s->animSpeed = 0x10;
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
     UpdateSpriteAnimation(s);
 }
 
@@ -340,8 +328,8 @@ void Task_800EC58(void)
         gCurTask->main = Task_800EFD0;
     }
 
-    if (((posX > gCamera.x + (DISPLAY_WIDTH + 128)) || (posX < (gCamera.x - 128))
-         || (posY > (gCamera.y + (DISPLAY_HEIGHT + 128))) || ((posY < gCamera.y - 128)))
+    if (((posX > gCamera.x + (DISPLAY_WIDTH + 128)) || (posX < (gCamera.x - 128)) || (posY > (gCamera.y + (DISPLAY_HEIGHT + 128)))
+         || ((posY < gCamera.y - 128)))
         && (IS_OUT_OF_CAM_RANGE(s->x, s->y))) {
         SET_MAP_ENTITY_NOT_INITIALIZED(me, platform->base.spriteX);
         TaskDestroy(gCurTask);
@@ -413,8 +401,8 @@ void Task_800EDF8(void)
         }
     }
 
-    if (((posX > gCamera.x + (DISPLAY_WIDTH + 128)) || (posX < (gCamera.x - 128))
-         || (posY > (gCamera.y + (DISPLAY_HEIGHT + 128))) || ((posY < gCamera.y - 128)))
+    if (((posX > gCamera.x + (DISPLAY_WIDTH + 128)) || (posX < (gCamera.x - 128)) || (posY > (gCamera.y + (DISPLAY_HEIGHT + 128)))
+         || ((posY < gCamera.y - 128)))
         && (IS_OUT_OF_CAM_RANGE(s->x, s->y))) {
         SET_MAP_ENTITY_NOT_INITIALIZED(me, platform->base.spriteX);
         TaskDestroy(gCurTask);

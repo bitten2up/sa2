@@ -24,8 +24,7 @@ extern struct SongHeader se_ring_copy;
 void CreateCollectRingEffect(s16 x, s16 y)
 {
     if (gActiveCollectRingEffectCount < 8) {
-        struct Task *t
-            = TaskCreate(Task_CollectRingEffect, sizeof(RingEffect), 0x2000, 0, NULL);
+        struct Task *t = TaskCreate(Task_CollectRingEffect, sizeof(RingEffect), 0x2000, 0, NULL);
         RingEffect *re = TASK_DATA(t);
         Sprite *s = &re->s;
 
@@ -34,7 +33,7 @@ void CreateCollectRingEffect(s16 x, s16 y)
         s->x = x;
         s->y = y;
         s->graphics.dest = RESERVED_RING_EFFECT_TILES_VRAM;
-        s->unk1A = SPRITE_OAM_ORDER(15);
+        s->oamFlags = SPRITE_OAM_ORDER(15);
         s->graphics.size = 0;
         s->graphics.anim = SA2_ANIM_RING_COLLECT_EFFECT;
         s->variant = 0;
@@ -43,7 +42,7 @@ void CreateCollectRingEffect(s16 x, s16 y)
         s->prevVariant = -1;
         s->animSpeed = 0x10;
         s->palId = 0;
-        s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
         re->bPanSfxLeft = gRingCount & 1;
         if (re->bPanSfxLeft) {

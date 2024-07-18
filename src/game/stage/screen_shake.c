@@ -33,7 +33,7 @@ void Task_ScreenShake(void)
     } else {
         struct Camera *cam = &gCamera;
 
-        if (shake->flags & 0x10) {
+        if (shake->flags & SCREENSHAKE_RANDOM_VALUE) {
             factor = ((u32)(PseudoRandom32() << 15) >> 23) - 0xFF;
         } else {
             factor = SIN_24_8(shake->unk14);
@@ -41,22 +41,17 @@ void Task_ScreenShake(void)
 
         r2 = (shake->p0 * factor) >> 16;
 
-        switch (shake->flags & 0x3) {
-            case 1: {
-                if (r2 < 0)
-                    r2 = -r2;
+        switch (shake->flags & SCREENSHAKE_FACTOR_MASK) {
+            case SCREENSHAKE_FACTOR_POSITIVE: {
+                r2 = +ABS(r2);
             } break;
 
-            case 2: {
-                s32 r2_2 = r2;
-                if (r2 < 0)
-                    r2_2 = -r2;
-
-                r2 = -r2_2;
+            case SCREENSHAKE_FACTOR_NEGATIVE: {
+                r2 = -ABS(r2);
             } break;
         }
 
-        if (!(shake->flags & 0x20) || !(gStageTime & 0x1)) {
+        if (!(shake->flags & 0x20) || ((gStageTime % 2u) == 0)) {
             if (shake->flags & SCREENSHAKE_HORIZONTAL) {
                 cam->unk60 = r2;
             }
@@ -77,8 +72,7 @@ void Task_ScreenShake(void)
 
 struct Task *CreateScreenShake(u32 p0, u32 p1, u32 p2, u32 p3, u32 flags)
 {
-    struct Task *t = TaskCreate(Task_ScreenShake, sizeof(ScreenShake), 0xEFF, 0,
-                                TaskDestructor_ScreenShake);
+    struct Task *t = TaskCreate(Task_ScreenShake, sizeof(ScreenShake), 0xEFF, 0, TaskDestructor_ScreenShake);
 
     ScreenShake *shake = TASK_DATA(t);
     shake->p0 = p0;

@@ -21,11 +21,9 @@ typedef struct {
 
 void Task_EnemySpinner(void);
 
-void CreateEntity_Spinner(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                          u8 spriteY)
+void CreateEntity_Spinner(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_EnemySpinner, sizeof(Sprite_Spinner), 0x4040, 0,
-                                TaskDestructor_80095E8);
+    struct Task *t = TaskCreate(Task_EnemySpinner, sizeof(Sprite_Spinner), 0x4040, 0, TaskDestructor_80095E8);
     Sprite_Spinner *spinner = TASK_DATA(t);
     Sprite *s = &spinner->s;
     spinner->base.regionX = spriteRegionX;
@@ -44,16 +42,16 @@ void CreateEntity_Spinner(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
     s->graphics.dest = VramMalloc(GFX_TILE_COUNT_SPINNER);
     s->graphics.anim = SA2_ANIM_SPINNER;
     s->variant = 0;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
     s->hitboxes[1].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
 }
 
 void Task_EnemySpinner(void)
@@ -75,14 +73,12 @@ void Task_EnemySpinner(void)
             x1 = pos.x + s->hitboxes[1].left;
             x2 = I(p->x) + s2->hitboxes[0].left;
             if ((x1 <= x2 && x1 + (s->hitboxes[1].right - s->hitboxes[1].left) >= x2)
-                || (x1 >= x2
-                    && x2 + (s2->hitboxes[0].right - s2->hitboxes[0].left) >= x1)) {
+                || (x1 >= x2 && x2 + (s2->hitboxes[0].right - s2->hitboxes[0].left) >= x1)) {
                 s32 y1, y2;
                 y1 = pos.y + s->hitboxes[1].top;
                 y2 = I(p->y) + s2->hitboxes[0].top;
                 if ((y1 <= y2 && y1 + (s->hitboxes[1].bottom - s->hitboxes[1].top) >= y2)
-                    || (y1 >= y2
-                        && y2 + (s2->hitboxes[0].bottom - s2->hitboxes[0].top) >= y1)) {
+                    || (y1 >= y2 && y2 + (s2->hitboxes[0].bottom - s2->hitboxes[0].top) >= y1)) {
                     if ((p->itemEffect & 0x2) == PLAYER_ITEM_EFFECT__NONE) {
                         sub_800CBA4(p);
                     }

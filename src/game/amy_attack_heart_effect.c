@@ -90,11 +90,8 @@ void CreateAmyAttackHeartEffect(u16 kind)
         return;
     }
 
-    if ((gPlayer.unk64 == SA2_CHAR_ANIM_15)
-        || (gPlayer.unk64 == SA2_CHAR_ANIM_INSTA_SHIELD_2)
-        || (gPlayer.unk64 == SA2_CHAR_ANIM_36)) {
-        struct Task *t = TaskCreate(Task_8015CE4, sizeof(AmyAtkHearts), 0x3001, 0,
-                                    TaskDestructor_8015FF0);
+    if ((gPlayer.unk64 == SA2_CHAR_ANIM_15) || (gPlayer.unk64 == SA2_CHAR_ANIM_INSTA_SHIELD_2) || (gPlayer.unk64 == SA2_CHAR_ANIM_36)) {
+        struct Task *t = TaskCreate(Task_8015CE4, sizeof(AmyAtkHearts), 0x3001, 0, TaskDestructor_8015FF0);
         AmyAtkHearts *hearts = TASK_DATA(t);
 
         hearts->unk100 = gUnknown_080D6736[gPlayer.unk64][0];
@@ -128,9 +125,7 @@ void Task_8015CE4(void)
     u8 i;
 
     // TODO: Fix horrible cast!
-    if ((!PLAYER_IS_ALIVE)
-        || ((*(u32 *)&hearts->unk100 != *(u32 *)&gPlayer.anim)
-            && (*(u32 *)&gPlayer.anim != 0x0001019F))) {
+    if ((!PLAYER_IS_ALIVE) || ((*(u32 *)&hearts->unk100 != *(u32 *)&gPlayer.anim) && (*(u32 *)&gPlayer.anim != 0x0001019F))) {
         TaskDestroy(t);
         return;
     } else {
@@ -143,7 +138,7 @@ void Task_8015CE4(void)
                 Sprite *s = &hearts->sprHearts[i];
 #endif
 
-                if (s->unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+                if (s->frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
                     hearts->params[i].count = 0;
                     VramFree(s->graphics.dest);
                 }
@@ -233,7 +228,7 @@ void sub_8015E28(u16 p0)
         hearts->params[i].unkA = 0;
 
         s->graphics.dest = VramMalloc(4);
-        s->unk1A = 0x400;
+        s->oamFlags = SPRITE_OAM_ORDER(16);
         s->graphics.size = 0;
         s->graphics.anim = SA2_ANIM_HEART;
         s->variant = 0;
@@ -242,7 +237,7 @@ void sub_8015E28(u16 p0)
         s->prevVariant = -1;
         s->animSpeed = gPlayer.unk90->s.animSpeed;
         s->palId = 0;
-        s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
         if (GRAVITY_IS_INVERTED) {
             SPRITE_FLAG_SET(s, Y_FLIP);

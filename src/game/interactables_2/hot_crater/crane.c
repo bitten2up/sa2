@@ -77,8 +77,7 @@ static void sub_8074604(Sprite_HCCrane *);
 
 void CreateEntity_Crane(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_8073AA8, sizeof(Sprite_HCCrane), 0x2010, 0,
-                                TaskDestructor_80743B8);
+    struct Task *t = TaskCreate(Task_8073AA8, sizeof(Sprite_HCCrane), 0x2010, 0, TaskDestructor_80743B8);
     Sprite_HCCrane *crane = TASK_DATA(t);
     CraneStruct *cs;
     u16 i;
@@ -97,16 +96,16 @@ void CreateEntity_Crane(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 
     cs->unk8 = 0x200;
     cs->unkC = 0;
     cs->unk10 = 0;
-    cs->s->unk1A = 0x480;
+    cs->s->oamFlags = SPRITE_OAM_ORDER(18);
 
     cs->s->graphics.size = 0;
     cs->s->animCursor = 0;
     cs->s->timeUntilNextFrame = 0;
     cs->s->prevVariant = -1;
-    cs->s->animSpeed = 0x10;
+    cs->s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     cs->s->palId = 0;
     cs->s->hitboxes[0].index = -1;
-    cs->s->unk10 = 0x2000;
+    cs->s->frameFlags = 0x2000;
     cs->s->graphics.dest = (void *)(OBJ_VRAM0 + 0x2BC0);
     cs->s->graphics.anim = SA2_ANIM_CRANE;
     cs->s->variant = 0;
@@ -130,16 +129,16 @@ void CreateEntity_Crane(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 
 
             if (i == 1) {
                 cs->unk4 = 4;
-                cs->s->unk1A = 0x480;
+                cs->s->oamFlags = SPRITE_OAM_ORDER(18);
 
                 cs->s->graphics.size = 0;
                 cs->s->animCursor = 0;
                 cs->s->timeUntilNextFrame = 0;
                 cs->s->prevVariant = -1;
-                cs->s->animSpeed = 0x10;
+                cs->s->animSpeed = SPRITE_ANIM_SPEED(1.0);
                 cs->s->palId = 0;
                 cs->s->hitboxes[0].index = -1;
-                cs->s->unk10 = 0x2000;
+                cs->s->frameFlags = 0x2000;
                 cs->s->graphics.dest = (void *)(OBJ_VRAM0 + 0x2B80);
                 cs->s->graphics.anim = SA2_ANIM_CRANE_PARTS;
                 cs->s->variant = SA2_ANIM_VARIANT_CRANE_PARTS_ROPE_GREY;
@@ -157,15 +156,15 @@ void CreateEntity_Crane(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 
         cs->unkC = 0;
 
         cs->unk10 = 0xC00;
-        cs->s->unk1A = 0x480;
+        cs->s->oamFlags = SPRITE_OAM_ORDER(18);
         cs->s->graphics.size = 0;
         cs->s->animCursor = 0;
         cs->s->timeUntilNextFrame = 0;
         cs->s->prevVariant = -1;
-        cs->s->animSpeed = 0x10;
+        cs->s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         cs->s->palId = 0;
         cs->s->hitboxes[0].index = -1;
-        cs->s->unk10 = 0x2000;
+        cs->s->frameFlags = 0x2000;
         cs->s->graphics.dest = (void *)(OBJ_VRAM0 + 0x2980);
         cs->s->graphics.anim = SA2_ANIM_CRANE_PARTS;
         cs->s->variant = SA2_ANIM_VARIANT_CRANE_PARTS_HOOK;
@@ -435,8 +434,7 @@ static void Task_8073E20(void)
         crane->unk1B8.unkA += r2;
 
         if (((crane->unk1B8.unk8 > 0) && (crane->unk1B8.unk8 <= crane->unk1B8.unkA))
-            || ((crane->unk1B8.unk8 < 0)
-                && (crane->unk1B8.unk8 >= crane->unk1B8.unkA))) {
+            || ((crane->unk1B8.unk8 < 0) && (crane->unk1B8.unk8 >= crane->unk1B8.unkA))) {
             u16 unk8 = crane->unk1B8.unk8;
             crane->unk1B8.unkA = unk8;
             crane->unk1B8.accelY = unk8;
@@ -492,7 +490,7 @@ static void sub_8074088(Sprite_HCCrane *crane)
 {
     s16 v;
 
-    sub_80218E4(&gPlayer);
+    Player_TransitionCancelFlyingAndBoost(&gPlayer);
     sub_8023B5C(&gPlayer, 9);
 
     gPlayer.unk16 = 6;
@@ -614,9 +612,9 @@ static void sub_80742A8(Sprite_HCCrane *crane)
                 transform.x = cs->s->x;
                 transform.y = cs->s->y;
 
-                cs->s->unk10 = gUnknown_030054B8++ | 0x00002060;
+                cs->s->frameFlags = gUnknown_030054B8++ | 0x00002060;
 
-                sub_8004860(cs->s, &transform);
+                TransformSprite(cs->s, &transform);
             }
             DisplaySprite(cs->s);
         }
@@ -632,8 +630,7 @@ static bool32 sub_807432C(Sprite_HCCrane *crane)
             s16 playerX = I(gPlayer.x) - gCamera.x;
             s16 playerY = I(gPlayer.y) - gCamera.y;
 
-            if (((screenX - 24) <= playerX) && ((screenX + 24) >= playerX)
-                && ((screenY - 24) <= playerY) && ((screenY + 24) >= playerY)) {
+            if (((screenX - 24) <= playerX) && ((screenX + 24) >= playerX) && ((screenY - 24) <= playerY) && ((screenY + 24) >= playerY)) {
                 return TRUE;
             }
         }
@@ -701,10 +698,7 @@ static void sub_8074490(Sprite_HCCrane *crane, s16 p1)
     }
 }
 
-static bool32 sub_80744D0(Sprite_HCCrane *crane, s16 p1)
-{
-    return sub_80744E0(crane, 7, p1);
-}
+static bool32 sub_80744D0(Sprite_HCCrane *crane, s16 p1) { return sub_80744E0(crane, 7, p1); }
 
 static bool32 sub_80744E0(Sprite_HCCrane *crane, u16 index, s16 p2)
 {
@@ -755,8 +749,7 @@ static bool32 sub_80745B4(Sprite_HCCrane *crane)
     screenY = crane->posY - gCamera.y;
 
     // TODO: Replace constants!
-    if (((u16)(screenX + 192) > 624) || ((screenY + 64) < -128)
-        || ((screenY - 64) > 288)) {
+    if (((u16)(screenX + 192) > 624) || ((screenY + 64) < -128) || ((screenY - 64) > 288)) {
         return TRUE;
     }
 

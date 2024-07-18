@@ -28,8 +28,7 @@ void CreateEntity_Ramp(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 s
 {
     u8 temp;
     s32 temp2;
-    struct Task *t
-        = TaskCreate(Task_Ramp, sizeof(Sprite_Ramp), 0x2010, 0, TaskDestructor_Ramp);
+    struct Task *t = TaskCreate(Task_Ramp, sizeof(Sprite_Ramp), 0x2010, 0, TaskDestructor_Ramp);
     Sprite_Ramp *ramp = TASK_DATA(t);
     Sprite *s = &ramp->s;
 
@@ -57,7 +56,7 @@ void CreateEntity_Ramp(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 s
     temp2 = temp;
 
     s->variant = temp2 & 1;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
@@ -65,10 +64,10 @@ void CreateEntity_Ramp(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 s
     s->animSpeed = 0x10;
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2200;
+    s->frameFlags = 0x2200;
 
     if (temp & 2) {
-        s->unk10 |= 0x400;
+        s->frameFlags |= 0x400;
     }
     UpdateSpriteAnimation(s);
 }
@@ -117,8 +116,7 @@ static void Task_Ramp(void)
                 s32 temp9 = I(player->x) - temp8;
                 if (temp9 > 0) {
                     if (temp9 > temp2) {
-                        if (!(player->moveState & MOVESTATE_IN_AIR)
-                            && (player->speedGroundX > Q(4))) {
+                        if (!(player->moveState & MOVESTATE_IN_AIR) && (player->speedGroundX > Q(4))) {
                             player->transition = PLTRANS_PT22;
                             player->unk6E = (ramp->unk3C & 1) * 3;
                         }
@@ -130,8 +128,7 @@ static void Task_Ramp(void)
                         s32 temp6 = I(s->hitboxes[0].top * (Q(temp9) / temp2));
 
                         if (temp4 >= temp6) {
-                            if (!(player->moveState & MOVESTATE_IN_AIR)
-                                && (player->speedGroundX > Q(4))
+                            if (!(player->moveState & MOVESTATE_IN_AIR) && (player->speedGroundX > Q(4))
                                 && (player->unk5E & gPlayerControls.jump)) {
                                 if (temp9 < (temp2 / 2)) {
                                     player->transition = PLTRANS_PT22;
@@ -159,15 +156,12 @@ static void Task_Ramp(void)
             }
         } else {
             if (var) {
-                if (((ramp->unk3C & 2) != 0 && I(player->x) < s->x)
-                    || ((ramp->unk3C & 2) == 0 && I(player->x) > s->x)) {
-                    if (!(player->moveState & MOVESTATE_IN_AIR)
-                        && player->speedGroundX > Q(4)) {
+                if (((ramp->unk3C & 2) != 0 && I(player->x) < s->x) || ((ramp->unk3C & 2) == 0 && I(player->x) > s->x)) {
+                    if (!(player->moveState & MOVESTATE_IN_AIR) && player->speedGroundX > Q(4)) {
                         player->transition = PLTRANS_PT22;
                         player->unk6E = (ramp->unk3C & 1) * 3;
                     }
-                } else if (((ramp->unk3C & 2) != 0 && I(player->x) > s->x)
-                           || ((ramp->unk3C & 2) == 0 && I(player->x) < s->x)) {
+                } else if (((ramp->unk3C & 2) != 0 && I(player->x) > s->x) || ((ramp->unk3C & 2) == 0 && I(player->x) < s->x)) {
                     player->moveState &= ~MOVESTATE_8;
                     player->unk3C = NULL;
                 }

@@ -40,8 +40,7 @@ void CreateDemoManager(void)
 {
     u8 blendCtrl = gBldRegs.bldCnt & 0xC0;
     s8 lang = gLoadedSaveGame->language;
-    struct Task *t = TaskCreate(Task_DemoManagerMain, sizeof(DemoManager), 1, 0,
-                                TaskDestructor_DemoManagerMain);
+    struct Task *t = TaskCreate(Task_DemoManagerMain, sizeof(DemoManager), 1, 0, TaskDestructor_DemoManagerMain);
     DemoManager *dm = TASK_DATA(t);
     Sprite *s;
 
@@ -50,7 +49,7 @@ void CreateDemoManager(void)
     dm->playerPressedStart = FALSE;
     dm->timeLimitDisabled = gLoadedSaveGame->timeLimitDisabled;
 
-    gStageFlags |= EXTRA_STATE__DEMO_RUNNING;
+    gStageFlags |= STAGE_FLAG__DEMO_RUNNING;
 
     s = &dm->textPressStart;
     s->x = (DISPLAY_WIDTH / 2);
@@ -66,11 +65,11 @@ void CreateDemoManager(void)
     s->timeUntilNextFrame = 0;
     s->animSpeed = 0x10;
     s->palId = 0;
-    s->unk1A = SPRITE_OAM_ORDER(1);
-    s->unk10 = 0;
+    s->oamFlags = SPRITE_OAM_ORDER(1);
+    s->frameFlags = 0;
 
     if (blendCtrl != BLDCNT_EFFECT_BLEND) {
-        s->unk10 = SPRITE_FLAG(OBJ_MODE, ST_OAM_OBJ_BLEND);
+        s->frameFlags = SPRITE_FLAG(OBJ_MODE, ST_OAM_OBJ_BLEND);
     }
     UpdateSpriteAnimation(s);
 
@@ -88,11 +87,11 @@ void CreateDemoManager(void)
     s->timeUntilNextFrame = 0;
     s->animSpeed = 0x10;
     s->palId = 0;
-    s->unk1A = SPRITE_OAM_ORDER(1);
-    s->unk10 = 0;
+    s->oamFlags = SPRITE_OAM_ORDER(1);
+    s->frameFlags = 0;
 
     if (blendCtrl != BLDCNT_EFFECT_BLEND) {
-        s->unk10 = SPRITE_FLAG(OBJ_MODE, ST_OAM_OBJ_BLEND);
+        s->frameFlags = SPRITE_FLAG(OBJ_MODE, ST_OAM_OBJ_BLEND);
     }
     UpdateSpriteAnimation(s);
 }
@@ -128,14 +127,14 @@ void Task_DemoManagerMain(void)
         CreateMusicFadeoutTask(64);
     }
 
-    if (!(gStageFlags & EXTRA_STATE__100)) {
+    if (!(gStageFlags & STAGE_FLAG__100)) {
         Sprite *s = &dm->textPressStart;
 
         if (gStageTime & 0x20) {
             if (gBldRegs.bldY != 0) {
-                s->unk10 |= SPRITE_FLAG(OBJ_MODE, ST_OAM_OBJ_BLEND);
+                s->frameFlags |= SPRITE_FLAG(OBJ_MODE, ST_OAM_OBJ_BLEND);
             } else {
-                s->unk10 &= ~SPRITE_FLAG_MASK_OBJ_MODE;
+                s->frameFlags &= ~SPRITE_FLAG_MASK_OBJ_MODE;
             }
 
             UpdateSpriteAnimation(s);
@@ -143,9 +142,9 @@ void Task_DemoManagerMain(void)
         }
 
         if (gBldRegs.bldY != 0) {
-            dm->textDemoPlay.unk10 |= SPRITE_FLAG(OBJ_MODE, ST_OAM_OBJ_BLEND);
+            dm->textDemoPlay.frameFlags |= SPRITE_FLAG(OBJ_MODE, ST_OAM_OBJ_BLEND);
         } else {
-            dm->textDemoPlay.unk10 &= ~SPRITE_FLAG_MASK_OBJ_MODE;
+            dm->textDemoPlay.frameFlags &= ~SPRITE_FLAG_MASK_OBJ_MODE;
         }
 
         DisplaySprite(&dm->textDemoPlay);
@@ -167,7 +166,7 @@ void Task_DemoManagerEndFadeout(void)
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
 
         if (!dm->playerPressedStart) {
             CreateTitleScreen();
@@ -196,13 +195,12 @@ void TaskDestructor_DemoManagerMain(struct Task *t)
     VramFree(dm->textDemoPlay.graphics.dest);
 
     gUnknown_030054E4 = 0;
-    gStageFlags &= ~EXTRA_STATE__DEMO_RUNNING;
+    gStageFlags &= ~STAGE_FLAG__DEMO_RUNNING;
 }
 
 void CreateMusicFadeoutTask(u16 factor)
 {
-    struct Task *t = TaskCreate(Task_DemoManagerMusicFadeout, sizeof(DemoMusicFadeout),
-                                0xFFFE, 0, NULL);
+    struct Task *t = TaskCreate(Task_DemoManagerMusicFadeout, sizeof(DemoMusicFadeout), 0xFFFE, 0, NULL);
     DemoMusicFadeout *mf = TASK_DATA(t);
     mf->volume = 0x100;
     mf->unk2 = (s32)mf->volume / factor;

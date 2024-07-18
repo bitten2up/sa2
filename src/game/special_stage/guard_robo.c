@@ -17,19 +17,16 @@
 void sub_80714C4(void);
 void sub_80710B0(void);
 void sub_80714C8(void);
-void sub_8071380(Sprite *s, void *vram, s16 a1, s16 a, u8 b,
-                 const struct UNK_80DF670 *c4);
-static void RenderGuardRobo(Sprite *s, s16 a1, s16 a, u8 b,
-                            const struct UNK_80DF670 *c4);
+void sub_8071380(Sprite *s, void *vram, s16 a1, s16 a, u8 b, const struct UNK_80DF670 *c4);
+static void RenderGuardRobo(Sprite *s, s16 a1, s16 a, u8 b, const struct UNK_80DF670 *c4);
 void sub_8071478(void);
 void sub_80714F4(struct SpecialStageGuardRobo *);
 void sub_807120C(struct SpecialStageGuardRobo *);
 static void SpecialStageGuardRoboOnDestroy(struct Task *);
 
 static const struct UNK_80DF670 gUnknown_080DF914[9] = {
-    { 883, 4, 64, 16, 0 }, { 883, 5, 64, 16, 0 }, { 883, 6, 64, 16, 0 },
-    { 883, 7, 64, 16, 0 }, { 883, 0, 64, 16, 0 }, { 883, 1, 64, 16, 0 },
-    { 883, 2, 64, 16, 0 }, { 883, 3, 64, 16, 0 }, SPRITE_ARRAY_END,
+    { 883, 4, 64, 16, 0 }, { 883, 5, 64, 16, 0 }, { 883, 6, 64, 16, 0 }, { 883, 7, 64, 16, 0 }, { 883, 0, 64, 16, 0 },
+    { 883, 1, 64, 16, 0 }, { 883, 2, 64, 16, 0 }, { 883, 3, 64, 16, 0 }, SPRITE_ARRAY_END,
 };
 
 typedef void (*GuardRoboStateHandler)(void);
@@ -110,8 +107,7 @@ void Task_GuardRoboMain(void)
         }
 
         if (stage->paused == FALSE) {
-            RenderGuardRobo(&guardRobo->sprite, unkCBB4.screenX, unkCBB4.screenY, temp,
-                            &guardRobo->sprites[angle >> 7]);
+            RenderGuardRobo(&guardRobo->sprite, unkCBB4.screenX, unkCBB4.screenY, temp, &guardRobo->sprites[angle >> 7]);
         }
 
         if (guardRobo->state != 2 || !(guardRobo->animFrame & 2) || stage->paused != 0) {
@@ -243,15 +239,15 @@ void sub_8071380(Sprite *s, void *vram, s16 x, s16 y, u8 b, const struct UNK_80D
     s->graphics.dest = vram;
     s->graphics.size = 0;
     s->graphics.anim = c4->anim;
-    s->unk10 = unk10;
+    s->frameFlags = unk10;
     s->x = x;
     s->y = y;
-    s->unk1A = b << 6;
+    s->oamFlags = SPRITE_OAM_ORDER(b);
     s->timeUntilNextFrame = 0;
     s->prevAnim = 0xffff;
     s->variant = c4->variant;
     s->prevVariant = 0xff;
-    s->animSpeed = c4->unk6;
+    s->animSpeed = c4->animSpeed;
     s->palId = 0;
     s->hitboxes[0].index = -1;
     UpdateSpriteAnimation(s);
@@ -267,8 +263,7 @@ void sub_8071380(Sprite *s, void *vram, s16 x, s16 y, u8 b, const struct UNK_80D
 
 struct Task *CreateSpecialStageGuardRobo(struct SpecialStage *stage)
 {
-    struct Task *t = TaskCreate(Task_GuardRoboMain, 0x58, 0xA000, 0,
-                                SpecialStageGuardRoboOnDestroy);
+    struct Task *t = TaskCreate(Task_GuardRoboMain, sizeof(struct SpecialStageGuardRobo), 0xA000, 0, SpecialStageGuardRoboOnDestroy);
     struct SpecialStageGuardRobo *guardRobo = TASK_DATA(t);
     guardRobo->stage = stage;
     GuardRoboInit(guardRobo);
@@ -327,8 +322,7 @@ void sub_80714F4(struct SpecialStageGuardRobo *guardRobo)
     }
 }
 
-static void RenderGuardRobo(Sprite *s, s16 x, s16 y, u8 b,
-                            const struct UNK_80DF670 *spriteConfig)
+static void RenderGuardRobo(Sprite *s, s16 x, s16 y, u8 b, const struct UNK_80DF670 *spriteConfig)
 {
     u32 flags = 0x107F;
     if (spriteConfig->unk7 & 1) {
@@ -340,11 +334,11 @@ static void RenderGuardRobo(Sprite *s, s16 x, s16 y, u8 b,
     }
 
     s->graphics.anim = spriteConfig->anim;
-    s->unk10 = flags;
+    s->frameFlags = flags;
     s->x = x;
     s->y = y;
-    s->unk1A = b << 6;
+    s->oamFlags = SPRITE_OAM_ORDER(b);
     s->variant = spriteConfig->variant;
-    s->animSpeed = spriteConfig->unk6;
+    s->animSpeed = spriteConfig->animSpeed;
     UpdateSpriteAnimation(s);
 }

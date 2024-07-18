@@ -45,9 +45,11 @@ typedef struct {
 // Use EBoss enum when calling with constants
 void CreateZoneBoss(u8 boss);
 void CreateBossParticleWithExplosionUpdate(ExplosionPartsInfo *p0, u8 *numCreatedParts);
+void CreateBossParticleStatic(ExplosionPartsInfo *info, u8 *numCreatedParts);
 void Task_DestroyBossParts(void);
 void sub_8039ED4(void);
 void sub_8039F14(s32 p0, s32 p1);
+void sub_8039F50(s32 p0, u8 p1);
 
 extern const u32 gTileInfoBossScrews[][3];
 

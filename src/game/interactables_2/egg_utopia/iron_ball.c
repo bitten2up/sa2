@@ -34,11 +34,9 @@ static bool32 sub_807F120(Sprite_IA95 *);
 static void TaskDestructor_Interactable095(struct Task *);
 static void DestroyInteractable095(Sprite_IA95 *);
 
-void CreateEntity_IronBall(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                           u8 spriteY)
+void CreateEntity_IronBall(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_Interactable095Main, sizeof(Sprite_IA95), 0x2010, 0,
-                                TaskDestructor_Interactable095);
+    struct Task *t = TaskCreate(Task_Interactable095Main, sizeof(Sprite_IA95), 0x2010, 0, TaskDestructor_Interactable095);
     Sprite_IA95 *ia95 = TASK_DATA(t);
     Sprite *s;
     ia95->unk44 = 0;
@@ -51,15 +49,15 @@ void CreateEntity_IronBall(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
     ia95->base.spriteY = spriteY;
 
     s = &ia95->s;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
     s->graphics.dest = VramMalloc(0x12);
     s->graphics.anim = SA2_ANIM_IRON_BALL;
     s->variant = 0;
@@ -97,18 +95,12 @@ static void sub_807EFC4(Sprite_IA95 *ia95)
 
     if (ia95->unk4C != 0) {
         s32 temp = me->d.uData[2] * 0x800;
-        ia95->unk44
-            = (temp
-               * SIN((ia95->unk4C * ((gStageTime + ia95->unk50) & 0xFF)) & ONE_CYCLE))
-            >> 0xF;
+        ia95->unk44 = (temp * SIN((ia95->unk4C * ((gStageTime + ia95->unk50) & 0xFF)) & ONE_CYCLE)) >> 0xF;
     }
 
     if (ia95->unk4E != 0) {
         s32 temp = (me->d.uData[3] * 0x800);
-        ia95->unk48
-            = (temp
-               * SIN((ia95->unk4E * ((gStageTime + ia95->unk50) & 0xFF)) & ONE_CYCLE))
-            >> 0xF;
+        ia95->unk48 = (temp * SIN((ia95->unk4E * ((gStageTime + ia95->unk50) & 0xFF)) & ONE_CYCLE)) >> 0xF;
     }
 
     ia95->unk3C = TO_WORLD_POS(ia95->base.spriteX, ia95->base.regionX) + I(ia95->unk44);
@@ -142,9 +134,9 @@ static void sub_807F0D8(Sprite_IA95 *ia95)
 {
     ia95->s.x = ia95->unk3C - gCamera.x;
     ia95->s.y = ia95->unk40 - gCamera.y;
-    ia95->s.unk10 &= ~0x400;
+    ia95->s.frameFlags &= ~0x400;
     DisplaySprite(&ia95->s);
-    ia95->s.unk10 |= 0x400;
+    ia95->s.frameFlags |= 0x400;
     DisplaySprite(&ia95->s);
 }
 

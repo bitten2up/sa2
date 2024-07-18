@@ -46,11 +46,9 @@ static const u16 sTecBasBlockSfx[] = {
     SE_TECHNO_BASE_COMMON,
 };
 
-void CreateEntity_NoteBlock(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                            u8 spriteY)
+void CreateEntity_NoteBlock(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_NoteBlock, sizeof(Sprite_TecBaseNoteBlock), 0x2010,
-                                0, TaskDestructor_NoteBlock);
+    struct Task *t = TaskCreate(Task_NoteBlock, sizeof(Sprite_TecBaseNoteBlock), 0x2010, 0, TaskDestructor_NoteBlock);
     Sprite_TecBaseNoteBlock *noteBlock = TASK_DATA(t);
     Sprite *s = &noteBlock->s;
     noteBlock->unk44 = 0;
@@ -64,15 +62,15 @@ void CreateEntity_NoteBlock(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
     noteBlock->base.spriteY = spriteY;
 
     s = &noteBlock->s;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
     s->graphics.dest = (void *)OBJ_VRAM0 + sNoteBlockAssets[noteBlock->unk4C][2] * 0x20;
     s->graphics.anim = sNoteBlockAssets[noteBlock->unk4C][0];
     s->variant = sNoteBlockAssets[noteBlock->unk4C][1];
@@ -128,8 +126,7 @@ static bool32 sub_8079AC4(Sprite_TecBaseNoteBlock *noteBlock)
         if (temp3 < 49 && temp4 < 33) {
             s16 speedGround = gPlayer.speedGroundX;
 
-            temp = sub_800CDBC(&noteBlock->s, noteBlock->unk3C, noteBlock->unk40,
-                               &gPlayer);
+            temp = sub_800CDBC(&noteBlock->s, noteBlock->unk3C, noteBlock->unk40, &gPlayer);
             if (temp == 0) {
                 return 0;
             }
@@ -219,10 +216,10 @@ static void sub_8079D30(Sprite_TecBaseNoteBlock *noteBlock)
 {
     Sprite *s = &noteBlock->s;
 
-    s->unk10 |= SPRITE_FLAG_MASK_X_FLIP;
+    s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
     DisplaySprite(s);
 
-    s->unk10 &= ~SPRITE_FLAG_MASK_X_FLIP;
+    s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
     DisplaySprite(s);
 }
 

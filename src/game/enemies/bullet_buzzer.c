@@ -30,11 +30,9 @@ typedef struct {
 
 void Task_BulletBuzzerMain(void);
 
-void CreateEntity_BulletBuzzer(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                               u8 spriteY)
+void CreateEntity_BulletBuzzer(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_BulletBuzzerMain, sizeof(Sprite_BulletBuzzer),
-                                0x4040, 0, TaskDestructor_80095E8);
+    struct Task *t = TaskCreate(Task_BulletBuzzerMain, sizeof(Sprite_BulletBuzzer), 0x4040, 0, TaskDestructor_80095E8);
     Sprite_BulletBuzzer *bbuzzer = TASK_DATA(t);
     Sprite *s = &bbuzzer->s;
     bbuzzer->base.regionX = spriteRegionX;
@@ -56,8 +54,7 @@ void CreateEntity_BulletBuzzer(MapEntity *me, u16 spriteRegionX, u16 spriteRegio
     SET_MAP_ENTITY_INITIALIZED(me);
 
     s->graphics.dest = VramMalloc(24);
-    SPRITE_INIT_WITHOUT_VRAM(s, SA2_ANIM_BULLETBUZZER, 0, 18, 2,
-                             SPRITE_FLAG_MASK_X_FLIP);
+    SPRITE_INIT_WITHOUT_VRAM(s, SA2_ANIM_BULLETBUZZER, 0, 18, 2, SPRITE_FLAG_MASK_X_FLIP);
 }
 
 void sub_8059B04(void);
@@ -111,8 +108,8 @@ void Task_BulletBuzzerMain(void)
     value = sub_8004418(I(gPlayer.y) - pos.y, I(gPlayer.x) - pos.x);
 
     if (bbuzzer->unk5E == 0) {
-        if (((u16)(value - 86) < 84 && s->unk10 & SPRITE_FLAG_MASK_X_FLIP)
-            || ((u16)(value - 342) < 84 && !(s->unk10 & SPRITE_FLAG_MASK_X_FLIP))) {
+        if (((u16)(value - 86) < 84 && s->frameFlags & SPRITE_FLAG_MASK_X_FLIP)
+            || ((u16)(value - 342) < 84 && !(s->frameFlags & SPRITE_FLAG_MASK_X_FLIP))) {
             bbuzzer->unk58 = value;
             bbuzzer->unk5D = 0;
             s->graphics.anim = SA2_ANIM_BULLETBUZZER;
@@ -149,7 +146,7 @@ void sub_8059B04(void)
         init.numTiles = 4;
         init.anim = SA2_ANIM_BUZZER_PROJ;
         init.variant = 0;
-        if (s->unk10 & SPRITE_FLAG_MASK_X_FLIP) {
+        if (s->frameFlags & SPRITE_FLAG_MASK_X_FLIP) {
             init.x = QS(pos.x + 10);
         } else {
             init.x = QS(pos.x - 10);

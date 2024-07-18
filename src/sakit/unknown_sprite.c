@@ -20,11 +20,9 @@ void sub_800A5F8(void);
 
 // Seems to create the given animation on the screen in a fixed position
 // and despawns once it leaves player range?
-struct Task *sub_800A544(u16 taskPrio, void *vramTiles, AnimId anim, u8 variant,
-                         TaskDestructor dtor)
+struct Task *sub_800A544(u16 taskPrio, void *vramTiles, AnimId anim, u8 variant, TaskDestructor dtor)
 {
-    struct Task *t
-        = TaskCreate(sub_800A5F8, sizeof(Sprite_StageSprUnknown), taskPrio, 0, dtor);
+    struct Task *t = TaskCreate(sub_800A5F8, sizeof(Sprite_StageSprUnknown), taskPrio, 0, dtor);
 
     Sprite_StageSprUnknown *su = TASK_DATA(t);
     su->x = 0;
@@ -38,7 +36,7 @@ struct Task *sub_800A544(u16 taskPrio, void *vramTiles, AnimId anim, u8 variant,
     su->s.x = 0;
     su->s.y = 0;
     su->s.graphics.dest = vramTiles;
-    su->s.unk1A = 0;
+    su->s.oamFlags = SPRITE_OAM_ORDER(0);
     su->s.graphics.size = 0;
     su->s.graphics.anim = anim;
     su->s.variant = variant;
@@ -48,7 +46,7 @@ struct Task *sub_800A544(u16 taskPrio, void *vramTiles, AnimId anim, u8 variant,
     su->s.animSpeed = 0x10;
     su->s.palId = 0;
     su->s.hitboxes[0].index = -1;
-    su->s.unk10 = 0;
+    su->s.frameFlags = 0;
 
     return t;
 }
@@ -69,8 +67,7 @@ void sub_800A5F8(void)
         su->unk40--;
     }
 
-    if (((u16)(su->s.x + 32) > (DISPLAY_WIDTH + 2 * 32))
-        || (((su->s.y - 32) > DISPLAY_HEIGHT))) {
+    if (((u16)(su->s.x + 32) > (DISPLAY_WIDTH + 2 * 32)) || (((su->s.y - 32) > DISPLAY_HEIGHT))) {
         TaskDestroy(gCurTask);
     } else if (UpdateSpriteAnimation(&su->s) == 0 && su->unk40 == 0) {
         TaskDestroy(gCurTask);

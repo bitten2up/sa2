@@ -100,7 +100,7 @@ void CreateMissingChaosEmaraldsCutScene(void)
 
     DmaFill32(3, 0, (void *)BG_VRAM, BG_VRAM_SIZE);
 
-    t = TaskCreate(Task_8094360, 0xC8, 0x3100, 0, TaskDestructor_80945A0);
+    t = TaskCreate(Task_8094360, sizeof(struct MissingChaosEmaraldsCutScene), 0x3100, 0, TaskDestructor_80945A0);
     scene = TASK_DATA(t);
 
     scene->unkBC = 0;
@@ -151,13 +151,13 @@ void CreateMissingChaosEmaraldsCutScene(void)
         }
         s->prevVariant = -1;
         s->x = (DISPLAY_WIDTH / 2);
-        s->unk1A = 0;
+        s->oamFlags = SPRITE_OAM_ORDER(0);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
-        s->unk10 = 0;
+        s->frameFlags = 0;
         s->hitboxes[0].index = -1;
         UpdateSpriteAnimation(s);
     }

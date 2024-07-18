@@ -44,22 +44,20 @@ const TileInfo sBoosterAnimationData[2][6] = {
 #define BOOSTER_SPEED 3072
 
 // Look left and accelerate
-#define BOOSTER_ACCEL_LEFT(player)                                                      \
-    (player).moveState |= MOVESTATE_FACING_LEFT;                                        \
-    if (gPlayer.speedGroundX > -BOOSTER_SPEED)                                          \
+#define BOOSTER_ACCEL_LEFT(player)                                                                                                         \
+    (player).moveState |= MOVESTATE_FACING_LEFT;                                                                                           \
+    if (gPlayer.speedGroundX > -BOOSTER_SPEED)                                                                                             \
         gPlayer.speedGroundX = -BOOSTER_SPEED;
 
 // Look right and accelerate
-#define BOOSTER_ACCEL_RIGHT(player)                                                     \
-    (player).moveState &= ~MOVESTATE_FACING_LEFT;                                       \
-    if (gPlayer.speedGroundX < BOOSTER_SPEED)                                           \
+#define BOOSTER_ACCEL_RIGHT(player)                                                                                                        \
+    (player).moveState &= ~MOVESTATE_FACING_LEFT;                                                                                          \
+    if (gPlayer.speedGroundX < BOOSTER_SPEED)                                                                                              \
         gPlayer.speedGroundX = BOOSTER_SPEED;
 
-void CreateEntity_Booster(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                          u8 spriteY)
+void CreateEntity_Booster(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_Interactable_Booster, sizeof(Sprite_Booster),
-                                0x2000, 0, TaskDestructor_80095E8);
+    struct Task *t = TaskCreate(Task_Interactable_Booster, sizeof(Sprite_Booster), 0x2000, 0, TaskDestructor_80095E8);
     Sprite_Booster *booster = TASK_DATA(t);
     Sprite *s = &booster->s;
     u32 value;
@@ -83,22 +81,22 @@ void CreateEntity_Booster(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
     s->graphics.dest = VramMalloc(sBoosterAnimationData[value][me->d.sData[0]].numTiles);
     s->graphics.anim = sBoosterAnimationData[value][me->d.sData[0]].anim;
     s->variant = sBoosterAnimationData[value][me->d.sData[0]].variant;
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
 
     if (me->d.uData[2] != 0) {
-        s->unk10 |= 0x800;
+        s->frameFlags |= 0x800;
     }
 
     if (me->d.sData[1] != 0) {
-        s->unk10 |= 0x400;
+        s->frameFlags |= 0x400;
     }
 }
 
@@ -115,9 +113,8 @@ void Task_Interactable_Booster(void)
     s->x = screenX - gCamera.x;
     s->y = screenY - gCamera.y;
 
-    if (!(gPlayer.moveState & (MOVESTATE_DEAD | MOVESTATE_IN_AIR))
-        && (sub_800C204(s, screenX, screenY, 0, &gPlayer, 0) == 1)) {
-        sub_80218E4(&gPlayer);
+    if (!(gPlayer.moveState & (MOVESTATE_DEAD | MOVESTATE_IN_AIR)) && (sub_800C204(s, screenX, screenY, 0, &gPlayer, 0) == 1)) {
+        Player_TransitionCancelFlyingAndBoost(&gPlayer);
 
         if (gPlayer.moveState & MOVESTATE_4) {
             sub_8023B5C(&gPlayer, 9);
@@ -135,28 +132,28 @@ void Task_Interactable_Booster(void)
         gPlayer.unk5A = 1;
 
         if (GRAVITY_IS_INVERTED) {
-            if ((s->unk10 & 0x800) == 0) {
-                if ((s->unk10 & 0x400) == 0) {
+            if ((s->frameFlags & 0x800) == 0) {
+                if ((s->frameFlags & 0x400) == 0) {
                     BOOSTER_ACCEL_LEFT(gPlayer);
                 } else {
                     BOOSTER_ACCEL_RIGHT(gPlayer);
                 }
             } else {
-                if ((s->unk10 & 0x400) != 0) {
+                if ((s->frameFlags & 0x400) != 0) {
                     BOOSTER_ACCEL_LEFT(gPlayer);
                 } else {
                     BOOSTER_ACCEL_RIGHT(gPlayer);
                 }
             }
         } else {
-            if ((s->unk10 & 0x800) != 0) {
-                if ((s->unk10 & 0x400) == 0) {
+            if ((s->frameFlags & 0x800) != 0) {
+                if ((s->frameFlags & 0x400) == 0) {
                     BOOSTER_ACCEL_LEFT(gPlayer);
                 } else {
                     BOOSTER_ACCEL_RIGHT(gPlayer);
                 }
             } else {
-                if ((s->unk10 & 0x400) != 0) {
+                if ((s->frameFlags & 0x400) != 0) {
                     BOOSTER_ACCEL_LEFT(gPlayer);
                 } else {
                     BOOSTER_ACCEL_RIGHT(gPlayer);

@@ -79,8 +79,7 @@ const ALIGNED(4) u16 gUnknown_080D5518[3][3] = {
     { 16, SA2_ANIM_CHAR(SA2_CHAR_ANIM_51, CHARACTER_SONIC), 3 },
 };
 
-const ALIGNED(4) s16 gUnknown_080D552C[6]
-    = { Q(2.0), Q(4.0), Q(6.0), Q(8.0), Q(10.0), 0 };
+const ALIGNED(4) s16 gUnknown_080D552C[6] = { Q(2.0), Q(4.0), Q(6.0), Q(8.0), Q(10.0), 0 };
 
 static const s8 gUnknown_080D5538[4] = { 96, 97, 98, 99 };
 
@@ -110,7 +109,6 @@ struct Task *sub_8011B88(s32 x, s32 y, u16 p2)
 
         case 1:
         case 2: {
-            // _08011BFC
             ts->playerAnim = gUnknown_080D6736[gPlayer.unk64][0];
             ts->playerVariant = gUnknown_080D6736[gPlayer.unk64][1];
 
@@ -126,8 +124,8 @@ struct Task *sub_8011B88(s32 x, s32 y, u16 p2)
     s->graphics.dest = VramMalloc(gUnknown_080D5518[p2][0]);
     s->graphics.anim = gUnknown_080D5518[p2][1];
     s->variant = gUnknown_080D5518[p2][2];
-    s->unk1A = SPRITE_OAM_ORDER(8);
-    s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+    s->oamFlags = SPRITE_OAM_ORDER(8);
+    s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
     return t;
 }
@@ -138,8 +136,7 @@ struct Task *sub_8011C98(s32 x, s32 y)
     if (IS_MULTI_PLAYER) {
         return NULL;
     } else {
-        struct Task *t = TaskCreate(Task_8012034, sizeof(TaskStrc_8011C98), 0x4001, 0,
-                                    TaskDestructor_80124B8);
+        struct Task *t = TaskCreate(Task_8012034, sizeof(TaskStrc_8011C98), 0x4001, 0, TaskDestructor_80124B8);
 
         TaskStrc_8011C98 *strc = TASK_DATA(t);
         Sprite *s = &strc->s;
@@ -156,11 +153,11 @@ struct Task *sub_8011C98(s32 x, s32 y)
         s->graphics.anim = SA2_ANIM_CHAR(SA2_CHAR_ANIM_51, CHARACTER_SONIC);
         s->variant = 3;
         s->prevVariant = -1;
-        s->unk1A = SPRITE_OAM_ORDER(17);
+        s->oamFlags = SPRITE_OAM_ORDER(17);
         s->timeUntilNextFrame = 0;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
-        s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
         return t;
     }
@@ -168,15 +165,15 @@ struct Task *sub_8011C98(s32 x, s32 y)
 
 void sub_8011D48(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     PLAYERFN_CHANGE_SHIFT_OFFSETS(p, 6, 9);
 
     p->moveState |= MOVESTATE_20000000;
 
-    if (p->unk5A == FALSE) {
+    if (!p->unk5A) {
         if (p->moveState & MOVESTATE_FACING_LEFT) {
             p->speedGroundX = -Q(3.0);
         } else {
@@ -207,7 +204,7 @@ void PlayerCB_8011DCC(Player *p)
 
     sub_8029C84(p);
 
-    if (p->unk90->s.unk10 & MOVESTATE_4000) {
+    if (p->unk90->s.frameFlags & MOVESTATE_4000) {
         if (p->moveState & MOVESTATE_IN_AIR) {
             p->unk64 = 50;
             p->transition = PLTRANS_PT5;
@@ -272,12 +269,12 @@ void PlayerCB_8011E88(Player *p)
 // for Sonic (Bound) & Amy (Mid-Air Hammer Swirl)
 void PlayerCB_8011F1C(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
     PLAYERFN_CHANGE_SHIFT_OFFSETS(p, 6, 9);
 
     p->moveState |= MOVESTATE_20000000;
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     p->unk5A = FALSE;
     p->unk64 = 36;
@@ -315,7 +312,7 @@ void PlayerCB_8011F94(Player *p)
         bounceSpeed = I(bounceImpactAccel * (COS_24_8((rot))));
         p->speedAirY = -ABS(bounceSpeed);
 
-        p->speedAirX = p->speedAirX >> 1;
+        p->speedAirX = HALVE(p->speedAirX);
 
         PLAYERFN_SET(PlayerCB_8012460);
 
@@ -335,8 +332,7 @@ void Task_8012034(void)
     Sprite *s = &strc->s;
     Vec2_32 pos;
 
-    if ((gPlayer.moveState & MOVESTATE_DEAD) || (gPlayer.speedAirY < Q(2.0))
-        || (gPlayer.unk64 != 36)) {
+    if ((gPlayer.moveState & MOVESTATE_DEAD) || (gPlayer.speedAirY < Q(2.0)) || (gPlayer.unk64 != 36)) {
         TaskDestroy(gCurTask);
     } else {
         UpdateSpriteAnimation(s);
@@ -363,7 +359,7 @@ void sub_80120C0(Player *p)
             p->moveState &= ~MOVESTATE_FACING_LEFT;
     }
 
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
     p->moveState |= MOVESTATE_IN_AIR;
     p->moveState &= ~(MOVESTATE_1000000 | MOVESTATE_20 | MOVESTATE_4);
 
@@ -384,7 +380,7 @@ void sub_80120C0(Player *p)
     m4aSongNumStart(SE_SONIC_MIDAIR_SOMERSAULT);
 
     p->unk6E = 0;
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
     p->rotation = 0;
 
     PLAYERFN_SET_AND_CALL(PlayerCB_80261D8, p);
@@ -392,11 +388,11 @@ void sub_80120C0(Player *p)
 
 void sub_8012194(Player *p)
 {
-    s16 unk30054C0 = gUnknown_030054C0.unk4;
+    s16 unk30054C0 = gHomingTarget.angle;
     s32 six = Q(6.0);
     s32 cosVal, sinVal;
 
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
     p->moveState |= (MOVESTATE_20000000 | MOVESTATE_BOOST_EFFECT_ON | MOVESTATE_IN_AIR);
     p->moveState &= ~(MOVESTATE_1000000 | MOVESTATE_20);
 
@@ -413,7 +409,7 @@ void sub_8012194(Player *p)
     p->unk70 = 0;
     p->unk71 = 0;
     p->unk6E = 0;
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
     p->rotation = 0;
     p->unk72 = GBA_FRAMES_PER_SECOND;
 
@@ -424,7 +420,7 @@ void sub_8012194(Player *p)
 
 void PlayerCB_801225C(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
     p->moveState |= (MOVESTATE_100 | MOVESTATE_IN_AIR);
     p->moveState &= ~(MOVESTATE_20000000 | MOVESTATE_1000000 | MOVESTATE_20);
 
@@ -439,54 +435,54 @@ void PlayerCB_801225C(Player *p)
     p->unk70 = 1;
     p->unk71 = 0;
     p->unk6E = 0;
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
     p->rotation = 0;
 
     PLAYERFN_SET_AND_CALL(PlayerCB_80261D8, p);
 }
 
-void Player_UpdateHomingPosition(s32 x, s32 y)
+void Player_UpdateHomingPosition(s32 qX, s32 qY)
 {
-    s32 playerX, playerY, sqPlayerX, sqPlayerY, sqDistance;
+    s32 vecTargetX, vecTargetY;
+    s32 sqTargetX, sqTargetY, sqDistance;
 
-    playerX = I(gPlayer.x - x);
-    playerY = I(gPlayer.y - y);
-    sqPlayerX = playerX * playerX;
-    sqPlayerY = playerY * playerY;
-    sqDistance = sqPlayerX + sqPlayerY; // c^2 = a^2 + b^2
+    vecTargetX = I(gPlayer.x - qX);
+    vecTargetY = I(gPlayer.y - qY);
+    sqTargetX = vecTargetX * vecTargetX;
+    sqTargetY = vecTargetY * vecTargetY;
+    sqDistance = sqTargetX + sqTargetY; // c^2 = a^2 + b^2
 
     if (gPlayer.character == CHARACTER_SONIC) {
-        if (sqDistance < gUnknown_030054C0.unk0) {
+        if (sqDistance < gHomingTarget.squarePlayerDistance) {
             if (gPlayer.moveState & MOVESTATE_FACING_LEFT) {
-                u32 value = CLAMP_SIN_PERIOD(sub_8004418(playerX, playerY) - Q(1.0));
+                u16 angle = CLAMP_SIN_PERIOD(sub_8004418(vecTargetX, vecTargetY) - (SIN_PERIOD / 4));
+                if (angle <= DEG_TO_SIN(110)) {
+                    angle = CLAMP_SIN_PERIOD((SIN_PERIOD / 2) - angle);
 
-                if (value < 313) {
-                    u32 r0 = CLAMP_SIN_PERIOD(Q(2.0) - value);
-
-                    gUnknown_030054C0.unk0 = sqDistance;
-                    gUnknown_030054C0.unk4 = r0;
+                    gHomingTarget.squarePlayerDistance = sqDistance;
+                    gHomingTarget.angle = angle;
                 }
             } else {
-                u16 value = sub_8004418(-playerY, -playerX);
-                if (value <= 312) {
-                    gUnknown_030054C0.unk0 = sqDistance;
-                    gUnknown_030054C0.unk4 = value;
+                u16 angle = sub_8004418(-vecTargetY, -vecTargetX);
+                if (angle <= DEG_TO_SIN(110)) {
+                    gHomingTarget.squarePlayerDistance = sqDistance;
+                    gHomingTarget.angle = angle;
                 }
             }
         }
     } else if (gPlayer.character == CHARACTER_CREAM) {
         struct Task *t = gCurTask;
 
-        if (sqDistance < gUnknown_03005498.someDistanceSquared) {
-            if (((gPlayer.moveState & MOVESTATE_FACING_LEFT) && (playerX >= 0))
-                || ((!(gPlayer.moveState & MOVESTATE_FACING_LEFT)) && (playerX <= 0))) {
-                gUnknown_03005498.someDistanceSquared = sqDistance;
-                gUnknown_03005498.t = t;
+        if (sqDistance < gCheeseTarget.squarePlayerDistance) {
+            if (((gPlayer.moveState & MOVESTATE_FACING_LEFT) && (vecTargetX >= 0))
+                || ((!(gPlayer.moveState & MOVESTATE_FACING_LEFT)) && (vecTargetX <= 0))) {
+                gCheeseTarget.squarePlayerDistance = sqDistance;
+                gCheeseTarget.task = t;
             }
 
             if (t->unk15) {
-                t->unk16 = I(x);
-                t->unk18 = I(y);
+                t->unk16 = I(qX);
+                t->unk18 = I(qY);
             }
         }
     }
@@ -494,7 +490,7 @@ void Player_UpdateHomingPosition(s32 x, s32 y)
 
 void PlayerCB_80123D0(Player *p)
 {
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         PLAYERFN_SET(PlayerCB_8025318);
     }
 
@@ -505,7 +501,7 @@ void PlayerCB_80123FC(Player *p)
 {
     sub_80283C4(p);
 
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         p->variant++;
 
         p->speedAirY = Q(2.0);
@@ -578,9 +574,9 @@ bool32 sub_801251C(Player *p)
 
 void sub_8012548(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     PLAYERFN_CHANGE_SHIFT_OFFSETS(p, 6, 14);
 
@@ -608,7 +604,7 @@ void sub_80125BC(Player *p)
             || ((p->unk5C & DPAD_RIGHT) && (p->moveState & MOVESTATE_FACING_LEFT))) {
             p->unk64 = 84;
         } else if (p->unk64 == 84) {
-            if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+            if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
                 p->unk64 = 83;
             }
         } else {
@@ -621,7 +617,7 @@ void sub_80125BC(Player *p)
 
 void sub_8012644(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
     if (p->moveState & MOVESTATE_4) {
         p->moveState &= ~MOVESTATE_4;
@@ -662,8 +658,7 @@ void PlayerCB_80126B0(Player *p)
             p->unk61 = 1;
         }
     } else {
-        if ((p->unk5E & gPlayerControls.jump) && (p->speedAirY >= -Q(0.75))
-            && (p->w.cf.flyingDuration != 0)) {
+        if ((p->unk5E & gPlayerControls.jump) && (p->speedAirY >= -Q(0.75)) && (p->w.cf.flyingDuration != 0)) {
             p->unk61 = 2;
         }
 
@@ -701,7 +696,7 @@ void PlayerCB_80126B0(Player *p)
 
 void PlayerCB_80127F0(Player *p)
 {
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         if (p->moveState & MOVESTATE_IN_AIR) {
             p->unk64 = 9;
             p->transition = PLTRANS_PT5;
@@ -715,9 +710,9 @@ void PlayerCB_80127F0(Player *p)
 
 void sub_8012830(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     PLAYERFN_CHANGE_SHIFT_OFFSETS(p, 6, 14);
 
@@ -730,9 +725,9 @@ void sub_8012830(Player *p)
 
 void sub_8012888(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     PLAYERFN_CHANGE_SHIFT_OFFSETS(p, 6, 14);
 
@@ -745,9 +740,9 @@ void sub_8012888(Player *p)
 
 void sub_80128E0(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     PLAYERFN_CHANGE_SHIFT_OFFSETS(p, 6, 14);
 
@@ -760,7 +755,7 @@ void sub_80128E0(Player *p)
 
 void PlayerCB_8012938(Player *p)
 {
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         if (p->moveState & MOVESTATE_IN_AIR) {
             p->unk64 = 50;
             p->transition = PLTRANS_PT5;
@@ -774,9 +769,8 @@ void PlayerCB_8012938(Player *p)
 
 void PlayerCB_8012978(Player *p)
 {
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
-        if ((p->anim == SA2_ANIM_CHAR(SA2_CHAR_ANIM_INSTA_SHIELD_1, CHARACTER_CREAM))
-            && p->variant == 0) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
+        if ((p->anim == SA2_ANIM_CHAR(SA2_CHAR_ANIM_INSTA_SHIELD_1, CHARACTER_CREAM)) && p->variant == 0) {
             p->variant++;
         }
     }
@@ -827,8 +821,8 @@ struct Task *sub_80129DC(s32 x, s32 y)
             s->variant = 1;
         }
 
-        s->unk1A = SPRITE_OAM_ORDER(8);
-        s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+        s->oamFlags = SPRITE_OAM_ORDER(8);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
         result = t;
     }
@@ -838,9 +832,9 @@ struct Task *sub_80129DC(s32 x, s32 y)
 
 void sub_8012AD0(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     p->unk64 = 91;
 
@@ -869,7 +863,7 @@ void sub_8012B44(Player *p)
             || ((p->unk5C & DPAD_RIGHT) && (p->moveState & MOVESTATE_FACING_LEFT))) {
             p->unk64 = 89;
         } else if ((p->unk64 == 89)) {
-            if ((p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER))
+            if ((p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER))
                 p->unk64 = 88;
         } else {
             p->unk64 = 88;
@@ -881,7 +875,7 @@ void sub_8012B44(Player *p)
 
 void sub_8012BC0(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
     if (p->moveState & MOVESTATE_4) {
         p->moveState &= ~MOVESTATE_4;
@@ -917,8 +911,7 @@ void PlayerCB_8012C2C(Player *p)
             p->unk61 = 1;
         }
     } else {
-        if ((p->unk5E & gPlayerControls.jump) && (p->speedAirY >= -Q(0.75))
-            && (p->w.tf.flyingDuration != 0)) {
+        if ((p->unk5E & gPlayerControls.jump) && (p->speedAirY >= -Q(0.75)) && (p->w.tf.flyingDuration != 0)) {
             p->unk61 = 2;
         }
 
@@ -958,9 +951,9 @@ void PlayerCB_8012D1C(Player *p)
 
 void sub_8012D3C(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     p->unk64 = 15;
 
@@ -991,7 +984,7 @@ void PlayerCB_8012DA4(Player *p)
 
     sub_8029C84(p);
 
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         PLAYERFN_SET(PlayerCB_8025318);
     }
 
@@ -1024,8 +1017,8 @@ struct Task *sub_8012DF8(s32 x, s32 y, u16 p2)
         s->graphics.anim = sKnucklesAnimData_FX[p2][1];
         s->variant = sKnucklesAnimData_FX[p2][2];
 
-        s->unk1A = SPRITE_OAM_ORDER(8);
-        s->unk10 = SPRITE_FLAG(PRIORITY, 2);
+        s->oamFlags = SPRITE_OAM_ORDER(8);
+        s->frameFlags = SPRITE_FLAG(PRIORITY, 2);
 
         result = t;
     }
@@ -1035,9 +1028,9 @@ struct Task *sub_8012DF8(s32 x, s32 y, u16 p2)
 
 void sub_8012EEC(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     p->unk64 = 15;
 
@@ -1071,7 +1064,7 @@ void PlayerCB_8012F6C(Player *p)
         p->speedGroundX = speed;
     }
 
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         if (p->moveState & MOVESTATE_IN_AIR) {
             p->unk64 = 50;
             p->transition = PLTRANS_PT5;
@@ -1109,7 +1102,7 @@ void PlayerCB_8013010(Player *p)
         p->speedGroundX = speed;
     }
 
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         if (p->moveState & MOVESTATE_IN_AIR) {
             p->unk64 = 50;
             p->transition = PLTRANS_PT5;
@@ -1123,9 +1116,9 @@ void PlayerCB_8013010(Player *p)
 
 void sub_8013070(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     p->unk64 = 17;
 
@@ -1257,9 +1250,7 @@ void sub_80131B4(Player *p)
                             playerBottomX -= 1;
                             playerBottomX -= p->unk16;
 
-                            if (sub_801E4E4(playerBottomY, playerBottomX, p->unk38, -8,
-                                            NULL, sub_801EE64)
-                                < 0) {
+                            if (sub_801E4E4(playerBottomY, playerBottomX, p->unk38, -8, NULL, sub_801EE64) < 0) {
                                 PLAYERFN_SET(PlayerCB_8013BD4);
                                 p->unk64 = 93;
                                 p->unk16 = 6;
@@ -1277,9 +1268,7 @@ void sub_80131B4(Player *p)
                             playerBottomX -= 1;
                             playerBottomX -= p->unk16;
 
-                            if (sub_801E4E4(playerBottomY, playerBottomX, p->unk38, +8,
-                                            NULL, sub_801EE64)
-                                < 0) {
+                            if (sub_801E4E4(playerBottomY, playerBottomX, p->unk38, +8, NULL, sub_801EE64) < 0) {
 
                                 PLAYERFN_SET(PlayerCB_8013BD4);
                                 p->unk64 = 93;
@@ -1315,8 +1304,7 @@ void sub_80131B4(Player *p)
                             playerBottomX += p->unk16;
 
                             if (sub_801E4E4(playerBottomY, // fmt
-                                            playerBottomX, p->unk38, +8, NULL,
-                                            sub_801EE64)
+                                            playerBottomX, p->unk38, +8, NULL, sub_801EE64)
                                 < 0) {
                                 PLAYERFN_SET(PlayerCB_8013BD4);
                                 p->unk64 = 93;
@@ -1804,7 +1792,7 @@ void PlayerCB_8013B6C(Player *p)
 {
     sub_8029C84(p);
 
-    if ((p->unk90->s.unk10) & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if ((p->unk90->s.frameFlags) & SPRITE_FLAG_MASK_ANIM_OVER) {
         if (p->moveState & MOVESTATE_IN_AIR) {
             p->unk64 = 50;
             p->transition = PLTRANS_PT5;
@@ -1833,7 +1821,7 @@ void PlayerCB_8013BD4(Player *p)
 
 void PlayerCB_8013BF0(Player *p)
 {
-    if ((p->unk90->s.unk10) & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if ((p->unk90->s.frameFlags) & SPRITE_FLAG_MASK_ANIM_OVER) {
         p->transition = PLTRANS_PT1;
     }
 
@@ -1923,13 +1911,13 @@ void PlayerCB_8013DA8(Player *p);
 
 void PlayerCB_8013D18(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
     PLAYERFN_CHANGE_SHIFT_OFFSETS(p, 6, 14);
 
     p->moveState |= (MOVESTATE_20000000 | MOVESTATE_100);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     p->unk64 = 106;
 
@@ -1956,7 +1944,7 @@ void PlayerCB_8013DA8(Player *p)
 {
     sub_80283C4(p);
 
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         p->unk64 = 107;
         p->speedAirX = Q(0.0);
         p->speedAirY = Q(1.0);
@@ -1991,14 +1979,14 @@ void PlayerCB_8013E34(Player *p)
     p->speedAirX = 0;
     p->speedAirY = 0;
 
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         p->transition = PLTRANS_PT1;
     }
 }
 
 void PlayerCB_8013E64(Player *p)
 {
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         p->rotation = 0;
 
         if (GRAVITY_IS_INVERTED) {
@@ -2048,9 +2036,9 @@ void PlayerCB_8013F60(Player *p);
 
 void sub_8013F04(Player *p)
 {
-    sub_80218E4(p);
+    Player_TransitionCancelFlyingAndBoost(p);
 
-    p->unk90->s.unk10 &= ~SPRITE_FLAG_MASK_ANIM_OVER;
+    p->unk90->s.frameFlags &= ~SPRITE_FLAG_MASK_ANIM_OVER;
 
     p->unk64 = 15;
 
@@ -2078,7 +2066,7 @@ void PlayerCB_8013F60(Player *p)
         p->speedGroundX = speed;
     }
 
-    if (p->unk90->s.unk10 & SPRITE_FLAG_MASK_ANIM_OVER) {
+    if (p->unk90->s.frameFlags & SPRITE_FLAG_MASK_ANIM_OVER) {
         PLAYERFN_SET(PlayerCB_8025318);
     }
 

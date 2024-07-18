@@ -43,12 +43,10 @@ static const TileInfo gUnknown_080D94BC[3] = {
     { 24, SA2_ANIM_603, 3 },
 };
 
-void CreateEntity_BouncySpring(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                               u8 spriteY)
+void CreateEntity_BouncySpring(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
     struct Task *t
-        = TaskCreate(Task_Interactable_BouncySpring, sizeof(Sprite_BouncySpring), 0x2010,
-                     0, TaskDestructor_Interactable_BouncySpring);
+        = TaskCreate(Task_Interactable_BouncySpring, sizeof(Sprite_BouncySpring), 0x2010, 0, TaskDestructor_Interactable_BouncySpring);
     Sprite_BouncySpring *spring = TASK_DATA(t);
     Sprite *s = &spring->s;
     u32 variant = 0;
@@ -77,15 +75,15 @@ void CreateEntity_BouncySpring(MapEntity *me, u16 spriteRegionX, u16 spriteRegio
         s->variant = variant;
     }
 
-    s->unk1A = SPRITE_OAM_ORDER(18);
+    s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
     s->prevVariant = -1;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = FALSE;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x2000;
+    s->frameFlags = 0x2000;
 }
 
 static void Task_Interactable_BouncySpring()
@@ -120,7 +118,7 @@ static void Task_Interactable_BouncySpring()
 
             gPlayer.unk36 = 3;
 
-            sub_80218E4(&gPlayer);
+            Player_TransitionCancelFlyingAndBoost(&gPlayer);
             sub_8023B5C(&gPlayer, 14);
 
             gPlayer.unk16 = 6;

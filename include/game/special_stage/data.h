@@ -5,9 +5,9 @@
 #include "sprite.h" // for the 'AnimId' type
 #include "constants/zones.h"
 
-#define SPRITE_ARRAY_END                                                                \
-    {                                                                                   \
-        65535, 65535, 65535,                                                            \
+#define SPRITE_ARRAY_END                                                                                                                   \
+    {                                                                                                                                      \
+        65535, 65535, 65535,                                                                                                               \
     }
 
 struct UNK_8C878E8 {
@@ -34,7 +34,7 @@ struct UNK_80DF670 {
     /* 0x00 */ AnimId anim;
     /* 0x02 */ u16 variant;
     u16 unk4;
-    u8 unk6;
+    u8 animSpeed;
     u8 unk7;
 } /* size 0x8 */;
 

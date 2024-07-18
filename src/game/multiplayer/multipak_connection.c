@@ -54,12 +54,9 @@ static void sub_805B4C0(void);
 static void sub_805B454(void);
 
 static const TileInfo gUnknown_080D9050[] = {
-    TextElement(1, LANG_DEFAULT, 0, 90, SA2_ANIM_MP_MSG),
-    TextElement(1, LANG_JAPANESE, 0, 90, SA2_ANIM_MP_MSG),
-    TextElement(1, LANG_ENGLISH, 0, 84, SA2_ANIM_MP_COMM_MSG_EN),
-    TextElement(1, LANG_GERMAN, 0, 90, SA2_ANIM_MP_COMM_MSG_DE),
-    TextElement(1, LANG_FRENCH, 0, 90, SA2_ANIM_MP_COMM_MSG_FR),
-    TextElement(1, LANG_SPANISH, 0, 90, SA2_ANIM_MP_COMM_MSG_ES),
+    TextElement(1, LANG_DEFAULT, 0, 90, SA2_ANIM_MP_MSG),         TextElement(1, LANG_JAPANESE, 0, 90, SA2_ANIM_MP_MSG),
+    TextElement(1, LANG_ENGLISH, 0, 84, SA2_ANIM_MP_COMM_MSG_EN), TextElement(1, LANG_GERMAN, 0, 90, SA2_ANIM_MP_COMM_MSG_DE),
+    TextElement(1, LANG_FRENCH, 0, 90, SA2_ANIM_MP_COMM_MSG_FR),  TextElement(1, LANG_SPANISH, 0, 90, SA2_ANIM_MP_COMM_MSG_ES),
     TextElement(1, LANG_ITALIAN, 0, 45, SA2_ANIM_MP_COMM_MSG_IT),
 };
 
@@ -115,14 +112,14 @@ void StartMultiPakConnect(void)
     s->prevVariant = -1;
     s->x = 8;
     s->y = 24;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
     UpdateSpriteAnimation(s);
 
     s = &connectScreen->s2;
@@ -133,14 +130,14 @@ void StartMultiPakConnect(void)
     s->prevVariant = -1;
     s->x = (DISPLAY_WIDTH / 2);
     s->y = 122;
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
 
     s = &connectScreen->unk6C;
     s->graphics.dest = vramAddr;
@@ -149,14 +146,14 @@ void StartMultiPakConnect(void)
     s->prevVariant = -1;
     s->x = (DISPLAY_WIDTH / 2);
     s->y = (DISPLAY_HEIGHT * (7. / 8.));
-    s->unk1A = SPRITE_OAM_ORDER(4);
+    s->oamFlags = SPRITE_OAM_ORDER(4);
     s->graphics.size = 0;
     s->animCursor = 0;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = -1;
-    s->unk10 = 0x1000;
+    s->frameFlags = 0x1000;
 
     // TODO: make macro
     background = &connectScreen->unk9C;
@@ -221,7 +218,7 @@ static void sub_805ADAC(void)
                 TasksDestroyAll();
                 gUnknown_03002AE4 = gUnknown_0300287C;
                 gUnknown_03005390 = 0;
-                gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+                PAUSE_GRAPHICS_QUEUE();
                 MultiPakCommunicationError();
                 return;
             }
@@ -235,13 +232,12 @@ static void sub_805ADAC(void)
     }
 
     recv = &gMultiSioRecv[0].pat0;
-    if (gMultiSioStatusFlags & MULTI_SIO_HARD_ERROR
-        || (r4 && !(gMultiSioStatusFlags & MULTI_SIO_RECV_ID0) && recv->unk0 != 0)) {
+    if (gMultiSioStatusFlags & MULTI_SIO_HARD_ERROR || (r4 && !(gMultiSioStatusFlags & MULTI_SIO_RECV_ID0) && recv->unk0 != 0)) {
         if (++connectScreen->unkFD >= 9) {
             TasksDestroyAll();
             gUnknown_03002AE4 = gUnknown_0300287C;
             gUnknown_03005390 = 0;
-            gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+            PAUSE_GRAPHICS_QUEUE();
             MultiPakCommunicationError();
             return;
         }
@@ -253,8 +249,7 @@ static void sub_805ADAC(void)
         data = &gMultiSioRecv[i].pat0;
         connectScreen->unkEE[i] <<= 1;
         connectScreen->unkF2[i] <<= 1;
-        if (i == SIO_MULTI_CNT->id
-            || (gMultiSioStatusFlags & MULTI_SIO_RECV_ID(i) && data->unk0 > 0x400F)) {
+        if (i == SIO_MULTI_CNT->id || (gMultiSioStatusFlags & MULTI_SIO_RECV_ID(i) && data->unk0 > 0x400F)) {
             connectScreen->unkEE[i] |= 1;
             var1++;
             var3 |= MULTI_SIO_RECV_ID(i);
@@ -283,9 +278,7 @@ static void sub_805ADAC(void)
                     bool3 = FALSE;
                 }
             } else {
-                if (connectScreen->unkF2[i] != 0
-                    || (gMultiSioStatusFlags & MULTI_SIO_RECV_ID(i)
-                        && data->unk0 < 0x4010)) {
+                if (connectScreen->unkF2[i] != 0 || (gMultiSioStatusFlags & MULTI_SIO_RECV_ID(i) && data->unk0 < 0x4010)) {
                     bool2 = TRUE;
                     bool3 = FALSE;
                 }
@@ -301,12 +294,11 @@ static void sub_805ADAC(void)
     }
 
     if (connectScreen->unkFA == 0) {
-        if (!(gMultiSioStatusFlags & MULTI_SIO_PARENT)
-            && gMultiSioStatusFlags & MULTI_SIO_RECV_ID0 && recv->unk0 > 0x4010) {
+        if (!(gMultiSioStatusFlags & MULTI_SIO_PARENT) && gMultiSioStatusFlags & MULTI_SIO_RECV_ID0 && recv->unk0 > 0x4010) {
             TasksDestroyAll();
             gUnknown_03002AE4 = gUnknown_0300287C;
             gUnknown_03005390 = 0;
-            gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+            PAUSE_GRAPHICS_QUEUE();
             MultiPakCommunicationError();
             return;
         }
@@ -366,7 +358,7 @@ static void sub_805ADAC(void)
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         MultiPakCommunicationError();
         return;
     }
@@ -415,8 +407,7 @@ static void sub_805ADAC(void)
     DisplaySprite(r4p);
 
     if (gMultiSioStatusFlags & MULTI_SIO_PARENT) {
-        if ((!bool2 && var1 > 1 && gPressedKeys & START_BUTTON)
-            || (connectScreen->unkF6 != 0 && !bool2 && var1 > 1)) {
+        if ((!bool2 && var1 > 1 && gPressedKeys & START_BUTTON) || (connectScreen->unkF6 != 0 && !bool2 && var1 > 1)) {
             send = &gMultiSioSend.pat0;
             send->unk0 = 0x4011;
             send->unk2 = var3;
@@ -501,7 +492,7 @@ static void sub_805B4C0(void)
             TasksDestroyAll();
             gUnknown_03002AE4 = gUnknown_0300287C;
             gUnknown_03005390 = 0;
-            gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+            PAUSE_GRAPHICS_QUEUE();
             MultiPakCommunicationError();
             return;
         }
@@ -562,7 +553,7 @@ static void sub_805B4C0(void)
         TasksDestroyAll();
         gUnknown_03002AE4 = gUnknown_0300287C;
         gUnknown_03005390 = 0;
-        gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+        PAUSE_GRAPHICS_QUEUE();
         MultiPakCommunicationError();
         return;
     } else {
@@ -570,7 +561,7 @@ static void sub_805B4C0(void)
             TasksDestroyAll();
             gUnknown_03002AE4 = gUnknown_0300287C;
             gUnknown_03005390 = 0;
-            gVramGraphicsCopyCursor = gVramGraphicsCopyQueueIndex;
+            PAUSE_GRAPHICS_QUEUE();
             MultiPakCommunicationError();
             return;
         }
@@ -673,7 +664,7 @@ void MultiPakCommunicationError(void)
 
     // TODO: Fix cast!
     gTilemapsRef = (struct MapHeader **)gTilemaps;
-    gUnknown_03002794 = &gSpriteTables;
+    gRefSpriteTables = &gSpriteTables;
     gMultiplayerMissingHeartbeats[0] = 0;
     gMultiplayerMissingHeartbeats[1] = 0;
     gMultiplayerMissingHeartbeats[2] = 0;

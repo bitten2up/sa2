@@ -37,12 +37,10 @@ void Task_SlidyIce(void)
     if (!(gPlayer.moveState & MOVESTATE_DEAD)) {
         s32 posX = (screenX + me->offsetX * TILE_WIDTH);
 
-        if ((posX <= I(gPlayer.x))
-            && ((posX + me->width * TILE_WIDTH) >= I(gPlayer.x))) {
+        if ((posX <= I(gPlayer.x)) && ((posX + me->width * TILE_WIDTH) >= I(gPlayer.x))) {
             s32 posY = screenY + me->offsetY * TILE_WIDTH;
 
-            if ((posY <= I(gPlayer.y))
-                && ((posY + me->height * TILE_WIDTH) >= I(gPlayer.y))) {
+            if ((posY <= I(gPlayer.y)) && ((posY + me->height * TILE_WIDTH) >= I(gPlayer.y))) {
                 gPlayer.moveState |= MOVESTATE_800;
             }
         }
@@ -58,10 +56,9 @@ void Task_SlidyIce(void)
     }
 }
 
-void CreateEntity_SlidyIce(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                           u8 spriteY)
+void CreateEntity_SlidyIce(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
-    struct Task *t = TaskCreate(Task_SlidyIce, 0xC, 0x2010, 0, NULL);
+    struct Task *t = TaskCreate(Task_SlidyIce, sizeof(Sprite_SlidyIce), 0x2010, 0, NULL);
 
     Sprite_SlidyIce *ice = TASK_DATA(t);
     ice->base.regionX = spriteRegionX;

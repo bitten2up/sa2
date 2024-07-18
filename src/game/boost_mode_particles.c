@@ -28,7 +28,7 @@ void sub_808A234(struct Task *);
 void CreateBoostModeParticles(void)
 {
     s32 i;
-    struct Task *t = TaskCreate(sub_8089E54, 0xE8, 0x5050, 0, sub_808A234);
+    struct Task *t = TaskCreate(sub_8089E54, sizeof(struct BoostModeParticles), 0x5050, 0, sub_808A234);
     struct BoostModeParticles *particles = TASK_DATA(t);
     Sprite *s = &particles->unk0;
 
@@ -38,10 +38,10 @@ void CreateBoostModeParticles(void)
     s->variant = 0;
     s->graphics.size = 0;
     s->prevVariant = -1;
-    s->unk1A = SPRITE_OAM_ORDER(8);
-    s->unk10 = 0x2000;
+    s->oamFlags = SPRITE_OAM_ORDER(8);
+    s->frameFlags = 0x2000;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     UpdateSpriteAnimation(s);
 
@@ -51,10 +51,10 @@ void CreateBoostModeParticles(void)
     s->variant = 1;
     s->graphics.size = 0;
     s->prevVariant = -1;
-    s->unk1A = SPRITE_OAM_ORDER(8);
-    s->unk10 = 0x2000;
+    s->oamFlags = SPRITE_OAM_ORDER(8);
+    s->frameFlags = 0x2000;
     s->timeUntilNextFrame = 0;
-    s->animSpeed = 0x10;
+    s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
 
     SeedRng(gPlayer.x, gCamera.x);
@@ -71,39 +71,25 @@ void CreateBoostModeParticles(void)
 #else
             temp1 = gPlayer.rotation + 0xC0;
 #endif
-            particles->unk62[i][0]
-                = ((gSineTable[((gPlayer.rotation + 0x80) & 0xff) * 4 + 0x100] >> 6)
-                   * particles->unk62[i][1])
-                >> 8;
-            particles->unk62[i][1]
-                = ((gSineTable[((gPlayer.rotation + 0x80) & 0xff) * 4] >> 6)
-                   * particles->unk62[i][1])
-                >> 8;
+            particles->unk62[i][0] = ((gSineTable[((gPlayer.rotation + 0x80) & 0xff) * 4 + 0x100] >> 6) * particles->unk62[i][1]) >> 8;
+            particles->unk62[i][1] = ((gSineTable[((gPlayer.rotation + 0x80) & 0xff) * 4] >> 6) * particles->unk62[i][1]) >> 8;
 
         } else {
             temp1 = gPlayer.rotation + 0x40;
-            particles->unk62[i][0] = ((gSineTable[(gPlayer.rotation) * 4 + 0x100] >> 6)
-                                      * particles->unk62[i][1])
-                >> 8;
-            particles->unk62[i][1]
-                = ((gSineTable[(gPlayer.rotation) * 4] >> 6) * particles->unk62[i][1])
-                >> 8;
+            particles->unk62[i][0] = ((gSineTable[(gPlayer.rotation) * 4 + 0x100] >> 6) * particles->unk62[i][1]) >> 8;
+            particles->unk62[i][1] = ((gSineTable[(gPlayer.rotation) * 4] >> 6) * particles->unk62[i][1]) >> 8;
         }
 #ifndef NON_MATCHING
         {
             register s32 ip asm("ip");
             rand = ((s32(*)(void))Random)();
             ip = 0x3ff;
-            particles->unkA2[i][0]
-                = ((gSineTable[temp1 * 4 + 0x100] >> 6) * (var = (rand & ip) + 0x200))
-                >> 8;
+            particles->unkA2[i][0] = ((gSineTable[temp1 * 4 + 0x100] >> 6) * (var = (rand & ip) + 0x200)) >> 8;
             particles->unkA2[i][1] = ((gSineTable[temp1 * 4] >> 6) * var) >> 8;
         }
 #else
         rand = Random();
-        particles->unkA2[i][0]
-            = ((gSineTable[temp1 * 4 + 0x100] >> 6) * (var = (rand & 0x3ff) + 0x200))
-            >> 8;
+        particles->unkA2[i][0] = ((gSineTable[temp1 * 4 + 0x100] >> 6) * (var = (rand & 0x3ff) + 0x200)) >> 8;
         particles->unkA2[i][1] = ((gSineTable[temp1 * 4] >> 6) * var) >> 8;
 #endif
     }
@@ -147,21 +133,16 @@ void sub_8089E54(void)
             if (gPlayer.moveState & MOVESTATE_FACING_LEFT) {
                 temp = Random();
                 temp += 64;
-                particles->unkE2
-                    = (gSineTable[((gPlayer.rotation + 0x80) & 0xFF) * 4 + 0x100] >> 6)
-                    << 2;
-                particles->unkE4
-                    = (gSineTable[((gPlayer.rotation + 0x80) & 0xFF) * 4] >> 6) << 2;
+                particles->unkE2 = (gSineTable[((gPlayer.rotation + 0x80) & 0xFF) * 4 + 0x100] >> 6) << 2;
+                particles->unkE4 = (gSineTable[((gPlayer.rotation + 0x80) & 0xFF) * 4] >> 6) << 2;
             } else {
                 temp = Random();
-                particles->unkE2 = (gSineTable[(gPlayer.rotation * 4) + 0x100] >> 6)
-                    << 2;
+                particles->unkE2 = (gSineTable[(gPlayer.rotation * 4) + 0x100] >> 6) << 2;
                 particles->unkE4 = (gSineTable[gPlayer.rotation * 4] >> 6) << 2;
             }
 
             rand = (Random() & 0x3FF);
-            particles->unkA2[i][0]
-                = ((gSineTable[temp * 4 + 0x100] >> 6) * (rand + 0x600)) >> 8;
+            particles->unkA2[i][0] = ((gSineTable[temp * 4 + 0x100] >> 6) * (rand + 0x600)) >> 8;
             particles->unkA2[i][1] = ((rand + 0x600) * (gSineTable[temp * 4] >> 6)) >> 8;
         }
 

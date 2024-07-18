@@ -28,91 +28,87 @@ static bool32 DashRing_ShouldDespawn(Sprite_DashRing *);
 static void DashRing_Despawn(Sprite_DashRing *);
 
 // type: UnkDashRingStruct
-static const u16 sAnimInfoDashRing[DASH_RING__NUM_TYPES][DASH_RING__NUM_ORIENTATIONS][2]
-                                  [6]
-    = {
-          {
-              {
-                  { SA2_ANIM_DASH_RING, 0x0002, 12, 0x0000, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING, 0x0003, 6, 0x0000, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING, 0x0004, 36, 0x0400, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING, 0x0005, 25, 0x0400, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING, 0x0000, 12, 0x0000, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING, 0x0001, 6, 0x0000, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING, 0x0004, 36, 0x0C00, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING, 0x0005, 25, 0x0C00, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING, 0x0002, 12, 0x0800, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING, 0x0003, 6, 0x0800, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING, 0x0004, 36, 0x0800, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING, 0x0005, 25, 0x0800, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING, 0x0000, 12, 0x0400, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING, 0x0001, 6, 0x0400, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING, 0x0004, 36, 0x0000, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING, 0x0005, 25, 0x0000, 0x0000, 0x0000 },
-              },
-          },
-          {
-              {
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0002, 12, 0x0000, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0003, 6, 0x0000, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0004, 36, 0x0400, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0005, 25, 0x0400, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0000, 12, 0x0000, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0001, 6, 0x0000, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0004, 36, 0x0C00, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0005, 25, 0x0C00, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0002, 12, 0x0800, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0003, 6, 0x0800, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0004, 36, 0x0800, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0005, 25, 0x0800, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0000, 12, 0x0400, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0001, 6, 0x0400, 0x0000, 0x0000 },
-              },
-              {
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0004, 36, 0x0000, 0x0000, 0x0000 },
-                  { SA2_ANIM_DASH_RING_TEC_BAS, 0x0005, 25, 0x0000, 0x0000, 0x0000 },
-              },
-          },
-      };
+static const u16 sAnimInfoDashRing[DASH_RING__NUM_TYPES][DASH_RING__NUM_ORIENTATIONS][2][6] = {
+    {
+        {
+            { SA2_ANIM_DASH_RING, 0x0002, 12, 0x0000, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING, 0x0003, 6, 0x0000, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING, 0x0004, 36, 0x0400, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING, 0x0005, 25, 0x0400, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING, 0x0000, 12, 0x0000, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING, 0x0001, 6, 0x0000, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING, 0x0004, 36, 0x0C00, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING, 0x0005, 25, 0x0C00, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING, 0x0002, 12, 0x0800, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING, 0x0003, 6, 0x0800, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING, 0x0004, 36, 0x0800, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING, 0x0005, 25, 0x0800, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING, 0x0000, 12, 0x0400, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING, 0x0001, 6, 0x0400, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING, 0x0004, 36, 0x0000, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING, 0x0005, 25, 0x0000, 0x0000, 0x0000 },
+        },
+    },
+    {
+        {
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0002, 12, 0x0000, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0003, 6, 0x0000, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0004, 36, 0x0400, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0005, 25, 0x0400, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0000, 12, 0x0000, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0001, 6, 0x0000, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0004, 36, 0x0C00, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0005, 25, 0x0C00, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0002, 12, 0x0800, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0003, 6, 0x0800, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0004, 36, 0x0800, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0005, 25, 0x0800, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0000, 12, 0x0400, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0001, 6, 0x0400, 0x0000, 0x0000 },
+        },
+        {
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0004, 36, 0x0000, 0x0000, 0x0000 },
+            { SA2_ANIM_DASH_RING_TEC_BAS, 0x0005, 25, 0x0000, 0x0000, 0x0000 },
+        },
+    },
+};
 
 // NOTE(Jace): Maybe these are UnkDashRingStruct[8]?
 static const u16 sUnknown_080DFB90[DASH_RING__NUM_ORIENTATIONS][6] = {
     { 0 }, { 0 }, { 0 }, { 0 }, { 0 }, { 0 }, { 0 }, { 0 },
 };
 
-void CreateEntity_DashRing(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
-                           u8 spriteY)
+void CreateEntity_DashRing(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
     u32 ringType = DASH_RING__TYPE_REGULAR;
 
-    struct Task *t = TaskCreate(Task_Interactable_DashRing, 0x80, 0x2010, 0,
-                                TaskDestructor_Interactable_DashRing);
+    struct Task *t = TaskCreate(Task_Interactable_DashRing, sizeof(Sprite_DashRing), 0x2010, 0, TaskDestructor_Interactable_DashRing);
 
     Sprite_DashRing *ring = TASK_DATA(t);
     ring->orientation = me->d.sData[0];
@@ -127,39 +123,37 @@ void CreateEntity_DashRing(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
 
     {
         Sprite *s = &ring->s1;
-        s->unk1A = SPRITE_OAM_ORDER(6);
+        s->oamFlags = SPRITE_OAM_ORDER(6);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
 
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = 0x2000;
+        s->frameFlags = 0x2000;
         s->graphics.anim = sAnimInfoDashRing[ringType][ring->orientation][0][0];
         s->variant = sAnimInfoDashRing[ringType][ring->orientation][0][1];
-        s->graphics.dest
-            = VramMalloc(sAnimInfoDashRing[ringType][ring->orientation][0][2]);
-        s->unk10 |= sAnimInfoDashRing[ringType][ring->orientation][0][3];
+        s->graphics.dest = VramMalloc(sAnimInfoDashRing[ringType][ring->orientation][0][2]);
+        s->frameFlags |= sAnimInfoDashRing[ringType][ring->orientation][0][3];
     }
     {
         Sprite *s = &ring->s2;
-        s->unk1A = SPRITE_OAM_ORDER(18);
+        s->oamFlags = SPRITE_OAM_ORDER(18);
         s->graphics.size = 0;
         s->animCursor = 0;
         s->timeUntilNextFrame = 0;
 
         s->prevVariant = -1;
-        s->animSpeed = 0x10;
+        s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = -1;
-        s->unk10 = 0x2000;
+        s->frameFlags = 0x2000;
         s->graphics.anim = sAnimInfoDashRing[ringType][ring->orientation][1][0];
         s->variant = sAnimInfoDashRing[ringType][ring->orientation][1][1];
-        s->graphics.dest
-            = VramMalloc(sAnimInfoDashRing[ringType][ring->orientation][1][2]);
-        s->unk10 |= sAnimInfoDashRing[ringType][ring->orientation][1][3];
+        s->graphics.dest = VramMalloc(sAnimInfoDashRing[ringType][ring->orientation][1][2]);
+        s->frameFlags |= sAnimInfoDashRing[ringType][ring->orientation][1][3];
     }
     DashRing_UpdateScreenPos(ring);
     UpdateSpriteAnimation(&ring->s1);
@@ -268,8 +262,8 @@ static bool32 DashRing_PlayerIsColliding(Sprite_DashRing *ring)
         ringScreenX2 = ringScreenX2 + ring->positions[i].x - 12;
         ringScreenY2 = ringScreenY2 + ring->positions[i].y - 12;
 
-        if ((ringScreenX2 <= playerScreenX) && ((ringScreenX2 + 24) >= playerScreenX)
-            && (ringScreenY2 <= playerScreenY) && (ringScreenY2 + 24) >= playerScreenY) {
+        if ((ringScreenX2 <= playerScreenX) && ((ringScreenX2 + 24) >= playerScreenX) && (ringScreenY2 <= playerScreenY)
+            && (ringScreenY2 + 24) >= playerScreenY) {
             return TRUE;
         }
     }
@@ -330,8 +324,7 @@ static bool32 DashRing_ShouldDespawn(Sprite_DashRing *ring)
     screenX = ring->posX - gCamera.x;
     screenY = ring->posY - gCamera.y;
 
-    if (((u16)(screenX + 140) > 520) || ((screenY + 12) < -128)
-        || ((screenY - 12) > 288)) {
+    if (((u16)(screenX + 140) > 520) || ((screenY + 12) < -128) || ((screenY - 12) > 288)) {
         return TRUE;
     }
 

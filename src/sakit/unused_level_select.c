@@ -14,8 +14,6 @@
 
 #include "constants/songs.h"
 
-const char ALIGNED(4) gUnknown_080D5128[8] = "STAGE";
-
 typedef struct {
     void *vram;
     u16 unk4;
@@ -38,8 +36,7 @@ void CreateUnusedLevelSelect(void)
         LevelSelect *levelSelect = TASK_DATA(t);
 
         gDispCnt = (DISPCNT_BG0_ON | DISPCNT_OBJ_1D_MAP | DISPCNT_MODE_0);
-        gBgCntRegs[0] = (BGCNT_SCREENBASE(31) | BGCNT_16COLOR | BGCNT_CHARBASE(1)
-                         | BGCNT_PRIORITY(2));
+        gBgCntRegs[0] = (BGCNT_SCREENBASE(31) | BGCNT_16COLOR | BGCNT_CHARBASE(1) | BGCNT_PRIORITY(2));
 
         levelSelect->unk4 = 0;
         levelSelect->levelId = 0;
@@ -95,8 +92,8 @@ static void Task_Poll(void)
             levelSelect->levelId++;
         }
 
-        numToTileIndices(digits, levelSelect->levelId);
-        sub_8004274(levelSelect->vram, Tileset_Language, 0xC, 0xE, 0, digits, 0);
+        numToASCII(digits, levelSelect->levelId);
+        RenderText(levelSelect->vram, Tileset_Language, 0xC, 0xE, 0, digits, 0);
     }
 }
 
@@ -106,8 +103,7 @@ static void Task_8009854(void)
     gBgPalette[1] = RGB_WHITE;
     gFlags |= 0x1;
 
-    levelSelect->vram += sub_8004274(levelSelect->vram, Tileset_Language, 0x6, 0xE, 0,
-                                     (const u8 *)gUnknown_080D5128, 0);
+    levelSelect->vram += RenderText(levelSelect->vram, Tileset_Language, 0x6, 0xE, 0, "STAGE", 0);
 
     gCurTask->main = Task_Poll;
     gCurTask->main();
