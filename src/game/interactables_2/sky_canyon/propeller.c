@@ -5,7 +5,7 @@
 
 #include "lib/m4a.h"
 
-#include "sakit/entities_manager.h"
+#include "game/sa1_leftovers/entities_manager.h"
 
 #include "game/entity.h"
 
@@ -16,6 +16,7 @@
 #include "game/interactables_2/sky_canyon_init.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
 
@@ -61,28 +62,28 @@ static void Task_PlayerFloating(void)
             sub_807B74C(propeller);
         }
 
-        if (gPlayer.unk5C & DPAD_RIGHT) {
+        if (gPlayer.heldInput & DPAD_RIGHT) {
             gPlayer.x += Q(0.5);
         }
 
-        if (gPlayer.unk5C & DPAD_LEFT) {
+        if (gPlayer.heldInput & DPAD_LEFT) {
             gPlayer.x -= Q(0.5);
         }
 
-        temp = sub_801F100(({ I(gPlayer.x) + 2; }) + gPlayer.unk16, I(gPlayer.y), gPlayer.unk38, +8, sub_801EB44);
+        temp = sub_801F100(({ I(gPlayer.x) + 2; }) + gPlayer.spriteOffsetX, I(gPlayer.y), gPlayer.layer, +8, sub_801EB44);
         if (temp < 0) {
             gPlayer.x += Q(temp);
         }
-        temp = sub_801F100(({ I(gPlayer.x) - 2; }) - gPlayer.unk16, I(gPlayer.y), gPlayer.unk38, -8, sub_801EB44);
+        temp = sub_801F100(({ I(gPlayer.x) - 2; }) - gPlayer.spriteOffsetX, I(gPlayer.y), gPlayer.layer, -8, sub_801EB44);
         if (temp < 0) {
             gPlayer.x -= Q(temp);
         }
 
-        temp = sub_801F100(I(gPlayer.y) + gPlayer.unk17, I(gPlayer.x), gPlayer.unk38, 8, sub_801EC3C);
+        temp = sub_801F100(I(gPlayer.y) + gPlayer.spriteOffsetY, I(gPlayer.x), gPlayer.layer, 8, sub_801EC3C);
         if (temp < 0) {
             gPlayer.y += Q(temp);
         }
-        temp = sub_801F100(I(gPlayer.y) - gPlayer.unk17, I(gPlayer.x), gPlayer.unk38, -8, sub_801EC3C);
+        temp = sub_801F100(I(gPlayer.y) - gPlayer.spriteOffsetY, I(gPlayer.x), gPlayer.layer, -8, sub_801EC3C);
         if (temp < 0) {
             gPlayer.y -= Q(temp);
         }
@@ -104,7 +105,7 @@ static void sub_807B530(void)
     } else {
         s32 temp;
         sub_807B8FC(propeller);
-        if (gPlayer.unk5C & 0x10) {
+        if (gPlayer.heldInput & 0x10) {
             gPlayer.moveState &= ~MOVESTATE_FACING_LEFT;
             propeller->unk44 += 16;
 
@@ -115,7 +116,7 @@ static void sub_807B530(void)
             }
         }
 
-        if (gPlayer.unk5C & 0x20) {
+        if (gPlayer.heldInput & 0x20) {
             gPlayer.moveState |= MOVESTATE_FACING_LEFT;
             propeller->unk44 -= 16;
             if (propeller->unk44 < -512) {
@@ -132,22 +133,22 @@ static void sub_807B530(void)
         gPlayer.y += propeller->unk46;
         propeller->unk48 -= 4;
 
-        temp = sub_801F100(({ I(gPlayer.x) + 2; }) + gPlayer.unk16, I(gPlayer.y), gPlayer.unk38, 8, sub_801EB44);
+        temp = sub_801F100(({ I(gPlayer.x) + 2; }) + gPlayer.spriteOffsetX, I(gPlayer.y), gPlayer.layer, 8, sub_801EB44);
         if (temp < 0) {
             gPlayer.x += Q(temp);
             propeller->unk44 = 32;
         }
-        temp = sub_801F100(({ I(gPlayer.x) - 2; }) - gPlayer.unk16, I(gPlayer.y), gPlayer.unk38, -8, sub_801EB44);
+        temp = sub_801F100(({ I(gPlayer.x) - 2; }) - gPlayer.spriteOffsetX, I(gPlayer.y), gPlayer.layer, -8, sub_801EB44);
         if (temp < 0) {
             gPlayer.x -= Q(temp);
             propeller->unk44 = -32;
         }
 
-        temp = sub_801F100(I(gPlayer.y) + gPlayer.unk17, I(gPlayer.x), gPlayer.unk38, 8, sub_801EC3C);
+        temp = sub_801F100(I(gPlayer.y) + gPlayer.spriteOffsetY, I(gPlayer.x), gPlayer.layer, 8, sub_801EC3C);
         if (temp < 0) {
             gPlayer.y += Q(temp);
         }
-        temp = sub_801F100(I(gPlayer.y) - gPlayer.unk17, I(gPlayer.x), gPlayer.unk38, -8, sub_801EC3C);
+        temp = sub_801F100(I(gPlayer.y) - gPlayer.spriteOffsetY, I(gPlayer.x), gPlayer.layer, -8, sub_801EC3C);
         if (temp < 0) {
             gPlayer.y -= Q(temp);
         }
@@ -245,10 +246,10 @@ static void sub_807B8FC(Sprite_Propeller *propeller)
 
     Player_TransitionCancelFlyingAndBoost(&gPlayer);
     sub_8023B5C(&gPlayer, 14);
-    gPlayer.unk16 = 6;
-    gPlayer.unk17 = 14;
+    gPlayer.spriteOffsetX = 6;
+    gPlayer.spriteOffsetY = 14;
     gPlayer.moveState |= MOVESTATE_400000;
-    gPlayer.unk64 = 44;
+    gPlayer.charState = CHARSTATE_IN_WHIRLWIND;
 }
 
 static void Render(Sprite_Propeller *propeller)
@@ -332,7 +333,7 @@ void CreateEntity_Propeller(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
     propeller->base.regionY = spriteRegionY;
     propeller->base.me = me;
     propeller->base.spriteX = me->x;
-    propeller->base.spriteY = spriteY;
+    propeller->base.id = spriteY;
     SET_MAP_ENTITY_INITIALIZED(me);
 }
 

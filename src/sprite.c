@@ -260,7 +260,7 @@ static AnimCmdResult animCmd_AddHitbox(void *cursor, Sprite *s)
     s32 hitboxId = cmd->hitbox.index % 16u;
     s->animCursor += AnimCommandSizeInWords(ACmd_Hitbox);
 
-    DmaCopy32(3, &cmd->hitbox, &s->hitboxes[hitboxId].index, 8);
+    DmaCopy32(3, &cmd->hitbox, &s->hitboxes[hitboxId].index, sizeof(Hitbox));
 
     if ((cmd->hitbox.left == 0) && (cmd->hitbox.top == 0) && (cmd->hitbox.right == 0) && (cmd->hitbox.bottom == 0)) {
         s->hitboxes[hitboxId].index = -1;
@@ -577,7 +577,7 @@ void DisplaySprite(Sprite *sprite)
                 }
 
                 // oamIndex is a byte, why are they ANDing with 0x3FFF?
-                DmaCopy16(3, &oamData[3 * ((sprDims->oamIndex & 0x3FFF) + i)], oam, 6);
+                DmaCopy16(3, &oamData[3 * ((sprDims->oamIndex & 0x3FFF) + i)], oam, sizeof(OamDataShort));
                 r7 = oam->all.attr1 & 0x1FF;
                 r5 = oam->all.attr0 & 0xFF;
                 oam->all.attr1 &= 0xFE00;
@@ -634,7 +634,7 @@ void sub_081569A0(Sprite *sprite, u16 *sp08, u8 sp0C)
 {
     vs32 x, y;
     s32 sprWidth, sprHeight;
-    u8 sp18, i;
+    u8 subframe, i;
     u32 x1, y1, sp24, sp28;
 
     if (sprite->dimensions != (void *)-1) {
@@ -675,7 +675,7 @@ void sub_081569A0(Sprite *sprite, u16 *sp08, u8 sp0C)
         sp24 = x - sprite->x;
         sp28 = y - sprite->y;
         if (x + sprWidth >= 0 && x <= DISPLAY_WIDTH && y + sprHeight >= 0 && y <= DISPLAY_HEIGHT) {
-            for (sp18 = 0; sp18 < sprDims->numSubframes; ++sp18) {
+            for (subframe = 0; subframe < sprDims->numSubframes; ++subframe) {
                 const u16 *oamData = gRefSpriteTables->oamData[sprite->graphics.anim];
                 OamData *oam = OamMalloc(GET_SPRITE_OAM_ORDER(sprite));
 
@@ -683,8 +683,9 @@ void sub_081569A0(Sprite *sprite, u16 *sp08, u8 sp0C)
                     return;
                 }
 
-                DmaCopy16(3, &oamData[3 * ((sprDims->oamIndex & 0x3FFF) + sp18)], oam,
-                          6); // excluding affine params
+                // copy excluding affine params
+                DmaCopy16(3, &oamData[3 * ((sprDims->oamIndex & 0x3FFF) + subframe)], oam, sizeof(OamDataShort));
+
                 x1 = oam->all.attr1 & 0x1FF;
                 y1 = oam->all.attr0 & 0xFF;
                 oam->all.attr1 &= 0xFE00;
@@ -733,7 +734,7 @@ void sub_081569A0(Sprite *sprite, u16 *sp08, u8 sp0C)
 
                     if (iwram_end == oam)
                         return;
-                    DmaCopy16(3, oam, r5, 6);
+                    DmaCopy16(3, oam, r5, sizeof(OamDataShort));
                     r5->all.attr1 &= 0xFE00;
                     r5->all.attr0 &= 0xFF00;
                     r5->all.attr0 += (sp08[2 * i + 1] + sp28 + y1) & 0xFF;
@@ -747,7 +748,7 @@ void sub_081569A0(Sprite *sprite, u16 *sp08, u8 sp0C)
 // The parameter to this determines the order this sprite is expected to be drawn at.
 //
 // If you have created n Sprite instances, and you want them to be drawn in a certain
-// order, you'd set their OAM order value (inside Sprite.unk1A) accordingly.
+// order, you'd set their OAM order value (inside Sprite.oamFlags) accordingly.
 // A higher value gets drawn first
 // (Higher order value == Higher Priority -> Drawn first).
 //  This only applies if these sprites all have the same priority value (0-3) in OAM.

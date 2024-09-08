@@ -11,6 +11,7 @@
 #include "game/interactables_2/music_plant/guitar_string.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
 
@@ -49,7 +50,7 @@ void CreateEntity_GuitarString(MapEntity *me, u16 spriteRegionX, u16 spriteRegio
     gs->base.regionY = spriteRegionY;
     gs->base.me = me;
     gs->base.spriteX = me->x;
-    gs->base.spriteY = spriteY;
+    gs->base.id = spriteY;
 
     s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
@@ -194,7 +195,7 @@ void sub_807608C(Sprite_GuitarString *gs)
         Player_SetMovestate_IsInScriptedSequence();
         gPlayer.moveState |= MOVESTATE_400000;
 
-        gPlayer.unk64 = 4;
+        gPlayer.charState = CHARSTATE_SPIN_ATTACK;
         gPlayer.speedAirX = 0;
         gPlayer.speedAirY = (s32)(gPlayer.speedAirY * 3) >> 1;
 

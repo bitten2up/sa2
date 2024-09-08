@@ -3,7 +3,7 @@
 #include "flags.h"
 #include "malloc_vram.h"
 
-#include "sakit/globals.h"
+#include "game/sa1_leftovers/globals.h"
 
 #include "data/sprite_data.h"
 
@@ -41,7 +41,7 @@ static Vec2_32 sPlayerPosBuffer[BE_BUFFER_SIZE] = { 0 };
 static u8 ALIGNED(4) sPlayerStateBufferIndex = 0;
 static u8 ALIGNED(4) sPlayerPosBufferIndex = 0;
 
-const u8 gUnknown_080D5674[4] = { 2, 4, 6, 0 };
+const u8 gUnknown_080D5674[3] = { 2, 4, 6 };
 
 const AnimId sCharacterPalettesBoostEffect[NUM_CHARACTERS] = {
     SA2_ANIM_CHAR(SA2_CHAR_ANIM_BOOST_PALETTE, CHARACTER_SONIC), SA2_ANIM_CHAR(SA2_CHAR_ANIM_BOOST_PALETTE, CHARACTER_CREAM),
@@ -183,7 +183,7 @@ void sub_801583C(void)
     if (IS_SINGLE_PLAYER && !gUnknown_030055BC && !IS_BOSS_STAGE(gCurrentLevel)) {
         gUnknown_030055BC = TRUE;
 
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < ARRAY_COUNT(gUnknown_080D5674); i++) {
             struct Task *t = TaskCreate(Task_80159C8, sizeof(PlayerActions), 0x4000, 0, TaskDestructor_8015B50);
             PlayerActions *actions = TASK_DATA(t);
 
@@ -206,7 +206,7 @@ void sub_801583C(void)
             s->x = 0;
             s->y = 0;
 
-            actions->transform.height = 0x100;
+            actions->transform.height = +Q(1);
         }
 
         if (s->palId != 0) {
@@ -228,7 +228,7 @@ void Task_80159C8(void)
 #endif
 
     if (!(gPlayer.moveState & MOVESTATE_4000000)) {
-        if (gPlayer.moveState & MOVESTATE_8000000) {
+        if (gPlayer.moveState & MOVESTATE_GOAL_REACHED) {
             TaskDestroy(gCurTask);
             gUnknown_030055BC = FALSE;
             return;
@@ -236,7 +236,7 @@ void Task_80159C8(void)
     }
 
     if (PLAYER_IS_ALIVE) {
-        if (gPlayer.unk5A || (gPlayer.moveState & MOVESTATE_BOOST_EFFECT_ON)) {
+        if (gPlayer.isBoosting || (gPlayer.moveState & MOVESTATE_BOOST_EFFECT_ON)) {
 #ifndef NON_MATCHING
             register PlayerState *pls asm("r0") = &actions->plState;
 #else
@@ -261,21 +261,18 @@ void Task_80159C8(void)
             UpdateSpriteAnimation(s);
 
             if (SPRITE_FLAG_GET(s, ROT_SCALE_ENABLE)) {
-                u32 moveState;
-
                 SPRITE_FLAG_CLEAR(s, ROT_SCALE);
                 s->frameFlags |= (gUnknown_030054B8++) | SPRITE_FLAG_MASK_ROT_SCALE_ENABLE;
 
                 if (actions->plState.moveState & MOVESTATE_FACING_LEFT) {
-                    transform->width = 0x100;
+                    transform->width = +Q(1);
                 } else {
-                    transform->width = 0xFF00;
+                    transform->width = -Q(1);
                 }
 
-                moveState = actions->plState.moveState & MOVESTATE_80000000;
-                actions->plState.moveState = moveState;
+                actions->plState.moveState &= MOVESTATE_80000000;
 
-                if (moveState) {
+                if (actions->plState.moveState) {
                     transform->width = -transform->width;
                 }
 

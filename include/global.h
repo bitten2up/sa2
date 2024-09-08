@@ -1,6 +1,7 @@
 #ifndef GUARD_GLOBAL_H
 #define GUARD_GLOBAL_H
 
+#include "config.h"
 #include "gba/gba.h"
 
 #define CONST_DATA __attribute__((section(".data")))
@@ -8,6 +9,14 @@
 // #include "types.h"
 // #include "variables.h"
 #include "functions.h"
+
+#if !PLATFORM_GBA
+void *Platform_malloc(int numBytes);
+void Platform_free(void *ptr);
+#define malloc(numBytes)    Platform_malloc(numBytes)
+#define calloc(count, size) Platform_malloc(count *size)
+#define free(numBytes)      Platform_free(numBytes)
+#endif
 
 #define SIO_MULTI_CNT ((volatile struct SioMultiCnt *)REG_ADDR_SIOCNT)
 
@@ -117,6 +126,7 @@ typedef void (*VoidFn)(void);
 
 // Multiplies two Q values
 #define Q_MUL(qValA, qValB)         ((qValA * qValB) >> 8)
+#define Q_SQUARE(qVal)              Q_MUL(qVal, qVal)
 #define Q_DIV(qValA, qValB)         Div((qValA << 8), qValB)
 #define Q_DIV2(qValA, qValB)        ((qValA << 8) / qValB)
 #define Q_MUL_Q_F32(qVal, floatVal) Q_MUL(qVal, Q(floatVal))
@@ -252,6 +262,7 @@ struct BlendRegs {
 
 // TODO: Should this be in a GBA-specific header file?
 #define NUM_AFFINE_BACKGROUNDS 2
+#define NUM_BACKGROUNDS        4
 
 // Values to be passed top the affine registers
 // (used by BG2/BG3 in affine screen modes)

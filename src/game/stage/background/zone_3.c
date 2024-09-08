@@ -2,7 +2,7 @@
 #include "core.h"
 #include "flags.h"
 
-#include "sakit/globals.h"
+#include "game/sa1_leftovers/globals.h"
 
 #include "game/stage/camera.h"
 #include "game/stage/background/callbacks.h"
@@ -150,7 +150,7 @@ void StageBgUpdate_Zone3Acts12(s32 a, s32 b)
     gBgScrollRegs[3][1] = r3;
 
     if (IS_SINGLE_PLAYER) {
-        if ((gPlayer.moveState & MOVESTATE_8000000) && (gSpecialRingCount >= SPECIAL_STAGE_REQUIRED_SP_RING_COUNT)) {
+        if ((gPlayer.moveState & MOVESTATE_GOAL_REACHED) && (gSpecialRingCount >= SPECIAL_STAGE_REQUIRED_SP_RING_COUNT)) {
             if (sUnknown_03000408 == 0) {
                 sUnknown_03000408 = a;
             }

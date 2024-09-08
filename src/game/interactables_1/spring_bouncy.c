@@ -7,11 +7,12 @@
 #include "game/stage/player.h"
 #include "game/stage/camera.h"
 #include "game/entity.h"
-#include "sakit/collision.h"
+#include "game/sa1_leftovers/collision.h"
 #include "sprite.h"
 #include "task.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
 #include "constants/zones.h"
@@ -55,7 +56,7 @@ void CreateEntity_BouncySpring(MapEntity *me, u16 spriteRegionX, u16 spriteRegio
     spring->base.regionY = spriteRegionY;
     spring->base.me = me;
     spring->base.spriteX = me->x;
-    spring->base.spriteY = spriteY;
+    spring->base.id = spriteY;
 
     s->x = TO_WORLD_POS(me->x, spriteRegionX);
     s->y = TO_WORLD_POS(me->y, spriteRegionY);
@@ -121,8 +122,8 @@ static void Task_Interactable_BouncySpring()
             Player_TransitionCancelFlyingAndBoost(&gPlayer);
             sub_8023B5C(&gPlayer, 14);
 
-            gPlayer.unk16 = 6;
-            gPlayer.unk17 = 14;
+            gPlayer.spriteOffsetX = 6;
+            gPlayer.spriteOffsetY = 14;
 
             gPlayer.moveState = (gPlayer.moveState | MOVESTATE_IN_AIR) & ~MOVESTATE_100;
 
@@ -140,9 +141,9 @@ static void Task_Interactable_BouncySpring()
                 spring->s.prevVariant = -1;
             }
 
-            gPlayer.unk64 = 38;
+            gPlayer.charState = CHARSTATE_SPRING_B;
             gPlayer.transition = PLTRANS_PT7;
-            gPlayer.unk66 = -1;
+            gPlayer.prevCharState = CHARSTATE_INVALID;
 
             m4aSongNumStart(SE_SPRINGY_SPRING);
 

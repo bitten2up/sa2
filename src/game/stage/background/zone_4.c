@@ -3,8 +3,8 @@
 #include "flags.h"
 #include "animation_commands_bg.h"
 
-#include "sakit/globals.h"
-#include "sakit/spot_light.h"
+#include "game/sa1_leftovers/globals.h"
+#include "game/sa1_leftovers/spot_light.h"
 
 #include "game/stage/camera.h"
 #include "game/stage/player.h"
@@ -45,7 +45,7 @@ void StageBgUpdate_Zone4Acts12(s32 camX, s32 camY)
 {
     Player *player = &gPlayer;
 
-    if ((player->moveState & MOVESTATE_8000000) && gSpecialRingCount >= SPECIAL_STAGE_REQUIRED_SP_RING_COUNT) {
+    if ((player->moveState & MOVESTATE_GOAL_REACHED) && gSpecialRingCount >= SPECIAL_STAGE_REQUIRED_SP_RING_COUNT) {
         if (sCameraShiftX == 0) {
             sCameraShiftX = camX;
         }

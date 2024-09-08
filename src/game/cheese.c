@@ -2,7 +2,7 @@
 #include "malloc_vram.h"
 #include "trig.h"
 
-#include "sakit/globals.h"
+#include "game/sa1_leftovers/globals.h"
 #include "game/cheese.h"
 #include "game/stage/camera.h"
 #include "game/multiplayer/mp_player.h"
@@ -362,7 +362,7 @@ void sub_80145D8(void)
     sub_8015118(cheese);
     cheese->unk10 = 0;
 
-    if (gCheeseTarget.squarePlayerDistance < CHEESE_DISTANCE_MAX) {
+    if (gCheeseTarget.squarePlayerDistance < SQUARE(CHEESE_DISTANCE_MAX)) {
         cheese->unk18 = gCheeseTarget.task;
 
         gCheeseTarget.task->unk15 = 1;

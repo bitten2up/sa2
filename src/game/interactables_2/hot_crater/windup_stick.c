@@ -8,6 +8,7 @@
 #include "malloc_vram.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 
 typedef struct {
@@ -62,13 +63,13 @@ static void sub_8072650(void)
     }
 
     if ((u8)(windUpStick->unk10 - 1) < 2) {
-        if (gPlayer.unk5C & 0x10) {
+        if (gPlayer.heldInput & 0x10) {
             if (sub_8072A28(windUpStick)) {
                 gPlayer.x += 0x80;
             }
         }
 
-        if (gPlayer.unk5C & 0x20) {
+        if (gPlayer.heldInput & 0x20) {
             if (sub_80729F4(windUpStick)) {
                 gPlayer.x -= 0x80;
             }
@@ -84,8 +85,8 @@ static void sub_80726E8(Sprite_WindUpStick *windUpStick)
 {
     Player_TransitionCancelFlyingAndBoost(&gPlayer);
     sub_8023B5C(&gPlayer, 0xE);
-    gPlayer.unk16 = 6;
-    gPlayer.unk17 = 14;
+    gPlayer.spriteOffsetX = 6;
+    gPlayer.spriteOffsetY = 14;
     Player_SetMovestate_IsInScriptedSequence();
     gPlayer.moveState |= MOVESTATE_400000;
     windUpStick->unk12 = (gUnknown_03005AF0.s.frameFlags & SPRITE_FLAG_MASK_PRIORITY) >> SPRITE_FLAG_SHIFT_PRIORITY;
@@ -95,23 +96,23 @@ static void sub_80726E8(Sprite_WindUpStick *windUpStick)
 
     switch (windUpStick->unk10) {
         case 1:
-            gPlayer.unk64 = 0x33;
+            gPlayer.charState = CHARSTATE_WINDUP_STICK_UPWARDS;
             gPlayer.speedAirX = 0;
             gPlayer.speedAirY -= Q(6.5);
             break;
         case 2:
 #ifndef NON_MATCHING
         {
-            register s16 *unk64 asm("r0") = &gPlayer.unk64;
-            *unk64 = 0x34;
+            register s16 *unk64 asm("r0") = &gPlayer.charState;
+            *unk64 = CHARSTATE_WINDUP_STICK_DOWNWARDS;
         }
 #else
-            gPlayer.unk64 = 0x34;
+            gPlayer.charState = CHARSTATE_WINDUP_STICK_DOWNWARDS;
 #endif
             gPlayer.speedAirX = 0;
             break;
         case 3:
-            gPlayer.unk64 = 0x35;
+            gPlayer.charState = CHARSTATE_WINDUP_STICK_SINGLE_TURN_UP;
             if (gPlayer.moveState & MOVESTATE_FACING_LEFT) {
                 gPlayer.speedGroundX -= Q(2.5);
             } else {
@@ -119,7 +120,7 @@ static void sub_80726E8(Sprite_WindUpStick *windUpStick)
             }
             break;
         case 4:
-            gPlayer.unk64 = 0x36;
+            gPlayer.charState = CHARSTATE_WINDUP_STICK_SINGLE_TURN_DOWN;
             if (gPlayer.moveState & MOVESTATE_FACING_LEFT) {
                 gPlayer.speedGroundX -= Q(1.25);
             } else {
@@ -152,18 +153,18 @@ static void sub_80727F4(Sprite_WindUpStick *windUpStick)
 
     switch (windUpStick->unk10) {
         case 1:
-            gPlayer.unk64 = 0xE;
+            gPlayer.charState = CHARSTATE_FALLING_VULNERABLE_B;
             gPlayer.transition = PLTRANS_PT7;
             break;
         case 2:
-            gPlayer.unk64 = 0xE;
+            gPlayer.charState = CHARSTATE_FALLING_VULNERABLE_B;
             gPlayer.transition = PLTRANS_PT7;
             break;
         case 3:
-            gPlayer.transition = PLTRANS_PT1;
+            gPlayer.transition = PLTRANS_TOUCH_GROUND;
             break;
         case 4:
-            gPlayer.transition = PLTRANS_PT1;
+            gPlayer.transition = PLTRANS_TOUCH_GROUND;
             gPlayer.moveState ^= 1;
             break;
     }

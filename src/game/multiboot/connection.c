@@ -19,7 +19,7 @@
 #include "game/stage/player_controls.h"
 #include "game/save.h"
 #include "game/stage/screen_fade.h"
-#include "sakit/entities_manager.h"
+#include "game/sa1_leftovers/entities_manager.h"
 #include "game/title_screen.h"
 #include "game/dummy_task.h"
 
@@ -143,7 +143,7 @@ void sub_8081200(void)
     ApplyGameStageSettings();
     gStageFlags &= ~STAGE_FLAG__ACT_START;
     gPlayer.moveState &= ~MOVESTATE_IGNORE_INPUT;
-    gPlayer.unk5C |= gPlayerControls.jump | gPlayerControls.attack;
+    gPlayer.heldInput |= gPlayerControls.jump | gPlayerControls.attack;
 }
 
 void sub_8081604(void);

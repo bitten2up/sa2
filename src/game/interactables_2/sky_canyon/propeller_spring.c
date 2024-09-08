@@ -3,7 +3,7 @@
 #include "trig.h"
 #include "lib/m4a.h"
 
-#include "sakit/entities_manager.h"
+#include "game/sa1_leftovers/entities_manager.h"
 
 #include "game/interactables_2/sky_canyon/propeller_spring.h"
 #include "game/interactables_2/sky_canyon_init.h"
@@ -104,7 +104,7 @@ static void sub_807C360(void)
 
 static void sub_807C3DC(Sprite_IA85 *ia85)
 {
-    if (gPlayer.unk5E & gPlayerControls.jump) {
+    if (gPlayer.frameInput & gPlayerControls.jump) {
         if (!(ia85->unk48 & 2)) {
             if (!(ia85->unk48 & 1)) {
                 ia85->unk48 |= 1;
@@ -138,7 +138,7 @@ static bool32 sub_807C424(Sprite_IA85 *ia85)
 
 static void sub_807C4A0(Sprite_IA85 *ia85)
 {
-    gPlayer.transition = PLTRANS_PT26;
+    gPlayer.transition = PLTRANS_PROPELLER_SPRING;
     if (ia85->unk48 & 1)
         gPlayer.speedAirY = -Q(5.5);
     else
@@ -167,7 +167,7 @@ static void sub_807C504(Sprite_IA85 *ia85)
 
 static void sub_807C52C(Sprite_IA85 *ia85)
 {
-    if (gPlayer.unk5E & gPlayerControls.jump) {
+    if (gPlayer.frameInput & gPlayerControls.jump) {
         ia85->unk48 |= 2;
     }
 }
@@ -237,7 +237,7 @@ void CreateEntity_PropellerSpring(MapEntity *me, u16 spriteRegionX, u16 spriteRe
     ia85->base.regionY = spriteRegionY;
     ia85->base.me = me;
     ia85->base.spriteX = me->x;
-    ia85->base.spriteY = spriteY;
+    ia85->base.id = spriteY;
     SET_MAP_ENTITY_INITIALIZED(me);
 }
 

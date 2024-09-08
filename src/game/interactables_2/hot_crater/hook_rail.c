@@ -12,6 +12,7 @@
 #include "game/interactables_2/hot_crater/hook_rail.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
 #include "constants/zones.h"
@@ -107,7 +108,7 @@ static void sub_8072BB8(void)
 
     if (gPlayer.timerInvulnerability == 120) {
         sub_8073088(hookRail);
-    } else if (gPlayer.unk5E & gPlayerControls.jump) {
+    } else if (gPlayer.frameInput & gPlayerControls.jump) {
         sub_807321C();
         sub_8073048(hookRail);
     } else {
@@ -141,7 +142,7 @@ static void sub_8072C90(void)
 
     if (gPlayer.timerInvulnerability == 120) {
         sub_8073088(hookRail);
-    } else if (gPlayer.unk5E & gPlayerControls.jump) {
+    } else if (gPlayer.frameInput & gPlayerControls.jump) {
         sub_807321C();
         sub_8073048(hookRail);
     } else if (gPlayer.rotation != 109 && gPlayer.rotation != 19) {
@@ -167,7 +168,7 @@ static void sub_8072D40(void)
 
     if (gPlayer.timerInvulnerability == 120) {
         sub_8073168(hookRail);
-    } else if (gPlayer.unk5E & gPlayerControls.jump) {
+    } else if (gPlayer.frameInput & gPlayerControls.jump) {
         sub_807321C();
         sub_8073148(hookRail);
     } else {
@@ -185,11 +186,11 @@ static void sub_8072D40(void)
 static void sub_8072DCC(Sprite_HookRail *hookRail)
 {
     gPlayer.moveState |= MOVESTATE_400000;
-    gPlayer.unk64 = 55;
+    gPlayer.charState = CHARSTATE_HANGING;
     Player_TransitionCancelFlyingAndBoost(&gPlayer);
     sub_8023B5C(&gPlayer, 14);
-    gPlayer.unk16 = 6;
-    gPlayer.unk17 = 14;
+    gPlayer.spriteOffsetX = 6;
+    gPlayer.spriteOffsetY = 14;
     gPlayer.moveState &= ~MOVESTATE_4;
     gPlayer.y = Q(hookRail->y + HOOK_HEIGHT);
     hookRail->grindDistance = 0;
@@ -264,7 +265,7 @@ static void sub_8072F8C(void)
 {
     Sprite_HookRail *hookRail = TASK_DATA(gCurTask);
 
-    if (IsPlayerTouching(hookRail) != PLAYER_TOUCH_DIRECTION_NONE && gPlayer.unk64 == 55) {
+    if (IsPlayerTouching(hookRail) != PLAYER_TOUCH_DIRECTION_NONE && gPlayer.charState == CHARSTATE_HANGING) {
         sub_80730BC(hookRail);
     }
 
@@ -330,7 +331,7 @@ static void sub_80730BC(Sprite_HookRail *hookRail)
 static void sub_80730F0(UNUSED Sprite_HookRail *hookRail)
 {
     gPlayer.moveState &= ~MOVESTATE_400000;
-    gPlayer.unk64 = 14;
+    gPlayer.charState = CHARSTATE_FALLING_VULNERABLE_B;
     gPlayer.transition = PLTRANS_PT5;
     if (gPlayer.rotation == 128) {
         gPlayer.rotation = 109;
@@ -360,7 +361,7 @@ static s16 ClampRailSpeed(s16 groundSpeedX)
 {
     s16 speed;
 
-    if (gPlayer.unk5A) {
+    if (gPlayer.isBoosting) {
         speed = groundSpeedX;
         if (speed > Q_8_8(BOOSTED_MAX_RAIL_SPEED)) {
             speed = Q_8_8(BOOSTED_MAX_RAIL_SPEED);
@@ -384,7 +385,7 @@ static void sub_80731D4(void)
 static void sub_807321C(void)
 {
     gPlayer.moveState &= ~MOVESTATE_400000;
-    gPlayer.transition = PLTRANS_PT3;
+    gPlayer.transition = PLTRANS_INIT_JUMP;
 }
 
 static bool32 sub_8073238(Sprite_HookRail *hookRail)

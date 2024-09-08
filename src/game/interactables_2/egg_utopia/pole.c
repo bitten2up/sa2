@@ -8,6 +8,7 @@
 #include "game/stage/camera.h"
 #include "game/interactables_2/egg_utopia/pole.h"
 
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
 
@@ -82,8 +83,8 @@ static void Task_807EA8C(void)
         gPlayer.y += Q(1);
     }
 
-    if (gPlayer.unk5E & gPlayerControls.jump) {
-        u16 leftPressed = gPlayer.unk5C & DPAD_LEFT;
+    if (gPlayer.frameInput & gPlayerControls.jump) {
+        u16 leftPressed = gPlayer.heldInput & DPAD_LEFT;
         if (leftPressed != 0) {
             leftPressed = TRUE;
         }
@@ -109,7 +110,7 @@ static void Pole_PlayerJumpsOff(Sprite_Pole *pole)
         } else {
             gPlayer.moveState &= ~MOVESTATE_FACING_LEFT;
         }
-        gPlayer.unk64 = 4;
+        gPlayer.charState = CHARSTATE_SPIN_ATTACK;
         gPlayer.transition = PLTRANS_PT5;
 
         if (pole->facingLeft) {
@@ -184,7 +185,7 @@ static void TaskDestructor_Interactable094(struct Task *t)
 static void Pole_TransitionPlayerSliding(Sprite_Pole *pole)
 {
     gPlayer.moveState |= MOVESTATE_400000;
-    gPlayer.unk64 = 66;
+    gPlayer.charState = CHARSTATE_POLE;
     gPlayer.x = Q(pole->middleX);
     gPlayer.speedGroundX = 0;
     gPlayer.speedAirX = 0;
@@ -198,7 +199,7 @@ static void sub_807ED00(Sprite_Pole *pole)
 {
     if (PLAYER_IS_ALIVE) {
         gPlayer.moveState &= ~MOVESTATE_400000;
-        gPlayer.unk64 = 14;
+        gPlayer.charState = CHARSTATE_FALLING_VULNERABLE_B;
         gPlayer.transition = PLTRANS_PT5;
         gPlayer.speedAirY = Q(1);
         m4aSongNumStop(SE_POLE_SLIDING);

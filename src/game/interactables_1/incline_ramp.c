@@ -8,6 +8,7 @@
 #include "sprite.h"
 #include "task.h"
 
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
 
@@ -31,7 +32,7 @@ static void Task_InclineRamp(void)
     if (!(moveState & MOVESTATE_DEAD) && (screenX <= I(gPlayer.x)) && ((screenX + me->d.uData[2] * TILE_WIDTH) >= I(gPlayer.x))
         && (screenY <= I(gPlayer.y)) && ((screenY + me->d.uData[3] * TILE_WIDTH) >= I(gPlayer.y)) && (!(moveState & MOVESTATE_IN_AIR))) {
         //  spriteY == me->d.uData[0]; (set in initSprite, below)
-        if (((s8)ramp->base.spriteY) == 0) {
+        if (((s8)ramp->base.id) == 0) {
             if (gPlayer.speedAirX > Q(4)) {
                 moveState &= ~MOVESTATE_8;
                 moveState |= MOVESTATE_IN_AIR;
@@ -40,8 +41,8 @@ static void Task_InclineRamp(void)
                 gPlayer.moveState = moveState;
 
                 sub_8023B5C(&gPlayer, 14);
-                gPlayer.unk16 = 6;
-                gPlayer.unk17 = 14;
+                gPlayer.spriteOffsetX = 6;
+                gPlayer.spriteOffsetY = 14;
                 gPlayer.speedAirY = Q_8_8(-3);
                 gPlayer.speedGroundX = Q_8_8(17);
                 gPlayer.speedAirX += Q_8_8(17);
@@ -49,10 +50,10 @@ static void Task_InclineRamp(void)
                 sub_8023260(&gPlayer);
                 Player_TransitionCancelFlyingAndBoost(&gPlayer);
                 sub_8023B5C(&gPlayer, 14);
-                gPlayer.unk16 = 6;
-                gPlayer.unk17 = 14;
+                gPlayer.spriteOffsetX = 6;
+                gPlayer.spriteOffsetY = 14;
 
-                gPlayer.unk64 = 39;
+                gPlayer.charState = CHARSTATE_SPRING_C;
                 gPlayer.transition = PLTRANS_PT7;
                 m4aSongNumStart(SE_SPRING);
             }
@@ -66,8 +67,8 @@ static void Task_InclineRamp(void)
                 gPlayer.moveState = moveState;
 
                 sub_8023B5C(&gPlayer, 14);
-                gPlayer.unk16 = 6;
-                gPlayer.unk17 = 14;
+                gPlayer.spriteOffsetX = 6;
+                gPlayer.spriteOffsetY = 14;
                 gPlayer.speedAirY = Q_8_8(-3);
                 gPlayer.speedGroundX = Q_8_8(-17);
                 gPlayer.speedAirX += Q_8_8(-17);
@@ -75,10 +76,10 @@ static void Task_InclineRamp(void)
                 sub_8023260(&gPlayer);
                 Player_TransitionCancelFlyingAndBoost(&gPlayer);
                 sub_8023B5C(&gPlayer, 14);
-                gPlayer.unk16 = 6;
-                gPlayer.unk17 = 14;
+                gPlayer.spriteOffsetX = 6;
+                gPlayer.spriteOffsetY = 14;
 
-                gPlayer.unk64 = 11;
+                gPlayer.charState = CHARSTATE_JUMP_2;
                 gPlayer.transition = PLTRANS_PT7;
                 m4aSongNumStart(SE_SPRING);
             }
@@ -105,7 +106,7 @@ void CreateEntity_InclineRamp(MapEntity *me, u16 spriteRegionX, u16 spriteRegion
     ramp->base.regionX = spriteRegionY;
     ramp->base.me = me;
 
-    ramp->base.spriteY = me->d.uData[0];
+    ramp->base.id = me->d.uData[0];
     ramp->base.spriteX = me->x;
     SET_MAP_ENTITY_INITIALIZED(me);
 }

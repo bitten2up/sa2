@@ -4,8 +4,8 @@
 #include "task.h"
 #include "lib/m4a.h"
 
-#include "sakit/collision.h"
-#include "sakit/entities_manager.h"
+#include "game/sa1_leftovers/collision.h"
+#include "game/sa1_leftovers/entities_manager.h"
 
 #include "game/entity.h"
 #include "game/stage/player.h"
@@ -66,7 +66,7 @@ void CreateEntity_Booster(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u
     booster->base.regionY = spriteRegionY;
     booster->base.me = me;
     booster->base.spriteX = me->x;
-    booster->base.spriteY = spriteY;
+    booster->base.id = spriteY;
 
     s->x = TO_WORLD_POS(me->x, spriteRegionX);
     s->y = TO_WORLD_POS(me->y, spriteRegionY);
@@ -118,18 +118,18 @@ void Task_Interactable_Booster(void)
 
         if (gPlayer.moveState & MOVESTATE_4) {
             sub_8023B5C(&gPlayer, 9);
-            gPlayer.unk16 = 6;
-            gPlayer.unk17 = 9;
+            gPlayer.spriteOffsetX = 6;
+            gPlayer.spriteOffsetY = 9;
         } else {
             sub_8023B5C(&gPlayer, 14);
-            gPlayer.unk16 = 6;
-            gPlayer.unk17 = 14;
+            gPlayer.spriteOffsetX = 6;
+            gPlayer.spriteOffsetY = 14;
         }
 
         m4aSongNumStart(SE_SPEED_BOOSTER);
 
         gPlayer.unk62 = 0;
-        gPlayer.unk5A = 1;
+        gPlayer.isBoosting = 1;
 
         if (GRAVITY_IS_INVERTED) {
             if ((s->frameFlags & 0x800) == 0) {

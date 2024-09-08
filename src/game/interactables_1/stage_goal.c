@@ -4,7 +4,7 @@
 
 #include "malloc_vram.h"
 
-#include "sakit/collision.h"
+#include "game/sa1_leftovers/collision.h"
 #include "game/entity.h"
 #include "game/stage/player.h"
 #include "game/stage/camera.h"
@@ -49,7 +49,7 @@ void CreateEntity_StageGoal(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY,
     stageGoal->base.regionY = spriteRegionY;
     stageGoal->base.me = me;
     stageGoal->base.spriteX = me->x;
-    stageGoal->base.spriteY = spriteY;
+    stageGoal->base.id = spriteY;
 
     s->x = TO_WORLD_POS(me->x, spriteRegionX);
     s->y = TO_WORLD_POS(me->y, spriteRegionY);
@@ -133,13 +133,13 @@ static void Task_StageGoalToggleMain(void)
     s32 y = TO_WORLD_POS(me->y, regionY);
 
     if (IS_MULTI_PLAYER) {
-        if (x <= I(gPlayer.x) && !(gPlayer.moveState & (MOVESTATE_8000000 | MOVESTATE_8))) {
-            gPlayer.transition = PLTRANS_PT10;
+        if (x <= I(gPlayer.x) && !(gPlayer.moveState & (MOVESTATE_GOAL_REACHED | MOVESTATE_8))) {
+            gPlayer.transition = PLTRANS_REACHED_GOAL;
             gStageGoalX = x;
             StageGoalToggle_HandleMultiplayerFinish();
         }
-    } else if (x <= I(gPlayer.x) && !(gPlayer.moveState & MOVESTATE_8000000)) {
-        gPlayer.transition = PLTRANS_PT10;
+    } else if (x <= I(gPlayer.x) && !(gPlayer.moveState & MOVESTATE_GOAL_REACHED)) {
+        gPlayer.transition = PLTRANS_REACHED_GOAL;
         gStageFlags |= 0x21;
         gStageGoalX = x;
 
@@ -176,7 +176,7 @@ static void StageGoalToggle_HandleMultiplayerFinish(void)
     struct UNK_3005510 *unk5510;
     u32 count = 0;
     MultiplayerPlayer *player = TASK_DATA(gMultiplayerPlayerTasks[SIO_MULTI_CNT->id]);
-    gPlayer.itemEffect &= ~PLAYER_ITEM_EFFECT__40;
+    gPlayer.itemEffect &= ~PLAYER_ITEM_EFFECT__CONFUSION;
     gPlayer.unk32 = 0;
 
     if (!(player->unk5C & 1)) {
@@ -213,7 +213,7 @@ static UNUSED void sub_8062BD0(void)
     // Required for match
     *SIO_MULTI_CNT;
 
-    gPlayer.itemEffect &= ~PLAYER_ITEM_EFFECT__40;
+    gPlayer.itemEffect &= ~PLAYER_ITEM_EFFECT__CONFUSION;
     gPlayer.unk32 = 0;
 
     for (j = 0; j < ARRAY_COUNT(gMultiplayerPlayerTasks) && mpTasks[j] != NULL; j++) {
@@ -271,7 +271,7 @@ static void sub_8062D44(void)
                     if (!(otherPlayer->unk5C & 1) && gGameMode != GAME_MODE_TEAM_PLAY) {
                         otherPlayer->unk5C |= 1;
                         gPlayer.moveState |= MOVESTATE_IGNORE_INPUT;
-                        gPlayer.unk5C = 0;
+                        gPlayer.heldInput = 0;
                     }
                 }
             }

@@ -3,7 +3,7 @@
 #include "malloc_vram.h"
 #include "task.h"
 
-#include "sakit/globals.h"
+#include "game/sa1_leftovers/globals.h"
 
 #include "game/stage/player.h"
 #include "game/stage/camera.h"
@@ -60,7 +60,7 @@ void Task_SpindashDustEffect(void)
         }
 
         cam = &gCamera;
-        offY = p->unk17;
+        offY = p->spriteOffsetY;
 
         if (GRAVITY_IS_INVERTED) {
             offY = -offY;
@@ -114,7 +114,7 @@ void Task_SpindashDustEffectBig(void)
         }
 
         cam = &gCamera;
-        offY = p->unk17;
+        offY = p->spriteOffsetY;
 
         if (GRAVITY_IS_INVERTED) {
             offY = -offY;

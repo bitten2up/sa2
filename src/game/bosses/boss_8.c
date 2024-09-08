@@ -5,13 +5,11 @@
 #include "trig.h"
 #include "bg_triangles.h"
 #include "malloc_vram.h"
-#include "gba/defines.h"
-#include "gba/io_reg.h"
 #include "lib/m4a.h"
-#include "sakit/globals.h"
-#include "sakit/camera.h"
-#include "sakit/collision.h"
-#include "sakit/player.h"
+#include "game/sa1_leftovers/globals.h"
+#include "game/sa1_leftovers/camera.h"
+#include "game/sa1_leftovers/collision.h"
+#include "game/sa1_leftovers/player.h"
 #include "game/bosses/common.h"
 #include "game/player_callbacks.h" // UpdateHomingPosition
 #include "game/cheese.h"
@@ -24,6 +22,7 @@
 #include "game/stage/screen_shake.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/move_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
@@ -252,8 +251,8 @@ static void Task_BossRunManagerMain(void)
             if (gPlayer.x < Q(42960) && gPlayer.x > Q(gUnknown_080D8808[6][0] + 30)) {
                 gPlayer.moveState |= MOVESTATE_IGNORE_INPUT;
                 gPlayer.speedGroundX = Q(5);
-                gPlayer.unk5E = 0;
-                gPlayer.unk5C = 0;
+                gPlayer.frameInput = 0;
+                gPlayer.heldInput = 0;
                 gPlayer.rotation = 0;
                 if (I(gPlayer.x) - 120 != gCamera.x) {
                     if (I(gPlayer.x) - 120 > gCamera.x) {
@@ -275,7 +274,7 @@ static void Task_BossRunManagerMain(void)
             } else {
                 r5 = gPlayer.x;
                 if (r5 > Q(42960)) {
-                    gPlayer.moveState &= ~MOVESTATE_8000000;
+                    gPlayer.moveState &= ~MOVESTATE_GOAL_REACHED;
                     gPlayer.speedGroundX = 0;
                     gPlayer.transition = 1;
                     manager->bossIndex++;
@@ -498,7 +497,7 @@ static void sub_804A070(SuperEggRoboZTowers *towers, u8 towerIndex)
         if (result != 0) {
             gPlayer.y -= Q(8);
             gPlayer.speedAirY = -Q(3.5);
-            gPlayer.unk64 = 20;
+            gPlayer.charState = CHARSTATE_HIT_AIR;
             gPlayer.transition = PLTRANS_PT6;
         }
     }
@@ -860,8 +859,8 @@ static void Task_804A9D8(void)
             }
 
             if (v >= 0 && v <= 3) {
-                gPlayer.unk64 = 70 - v;
-                gPlayer.unk66 = -1;
+                gPlayer.charState = CHARSTATE_CUTSCENE_LOOK_UP_FRAME_3 - v;
+                gPlayer.prevCharState = CHARSTATE_INVALID;
             }
         }
     }
@@ -950,11 +949,11 @@ NONMATCH("asm/non_matching/game/bosses/boss_8__Task_804AB24.inc", static void Ta
         Player_DisableInputAndBossTimer_FinalBoss();
 
         gPlayer.moveState |= MOVESTATE_IGNORE_INPUT;
-        gPlayer.unk5C = 0;
-        gPlayer.unk5E = 0;
+        gPlayer.heldInput = 0;
+        gPlayer.frameInput = 0;
 
         if (gPlayer.moveState & (MOVESTATE_8 | MOVESTATE_IN_AIR)) {
-            gPlayer.unk64 = 50;
+            gPlayer.charState = CHARSTATE_CURLED_IN_AIR;
             gPlayer.speedAirX = -Q(2);
             gPlayer.speedAirY = -Q(0);
             gPlayer.transition = PLTRANS_PT5;
@@ -2032,8 +2031,8 @@ static void Task_SuperEggRoboZMain(void)
         boss->unk14 = 300;
         gCurTask->main = Task_804A9D8;
         m4aSongNumStart(SE_260);
-        gPlayer.unk64 = 0;
-        gPlayer.transition = PLTRANS_PT1;
+        gPlayer.charState = CHARSTATE_IDLE;
+        gPlayer.transition = PLTRANS_TOUCH_GROUND;
     }
 }
 

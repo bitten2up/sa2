@@ -9,14 +9,16 @@
 #include "game/stage/camera.h"
 #include "game/stage/player_controls.h"
 #include "game/interactables_1/rotating_handle.h"
-#include "sakit/collision.h"
-#include "sakit/entities_manager.h"
+#include "game/sa1_leftovers/collision.h"
+#include "game/sa1_leftovers/entities_manager.h"
 
 #include "malloc_vram.h"
 #include "sprite.h"
 #include "task.h"
 #include "trig.h"
 
+#include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
 
@@ -28,21 +30,21 @@ typedef struct {
     u8 unk40;
 } Sprite_RotatingHandle;
 
-static void sub_805EF90(void);
-static void sub_805EA94(void);
-static void sub_805ECA0(void);
+static void Task_AfterJump(void);
+static void Task_Idle(void);
+static void Task_Rotating(void);
 
 void CreateEntity_RotatingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY, u8 spriteY)
 {
     if (me->d.sData[0] >= 0) {
-        struct Task *t = TaskCreate(sub_805EA94, sizeof(Sprite_RotatingHandle), 0x2010, 0, TaskDestructor_80095E8);
+        struct Task *t = TaskCreate(Task_Idle, sizeof(Sprite_RotatingHandle), 0x2010, 0, TaskDestructor_80095E8);
         Sprite_RotatingHandle *rotatingHandle = TASK_DATA(t);
         Sprite *s = &rotatingHandle->s;
         rotatingHandle->base.regionX = spriteRegionX;
         rotatingHandle->base.regionY = spriteRegionY;
         rotatingHandle->base.me = me;
         rotatingHandle->base.spriteX = me->x;
-        rotatingHandle->base.spriteY = spriteY;
+        rotatingHandle->base.id = spriteY;
         rotatingHandle->unk3C = 0;
         rotatingHandle->unk3E = 0;
         rotatingHandle->unk40 = 0;
@@ -52,7 +54,7 @@ void CreateEntity_RotatingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteReg
         SET_MAP_ENTITY_INITIALIZED(me);
 
         s->graphics.dest = VramMalloc(9);
-        s->graphics.anim = 546;
+        s->graphics.anim = SA2_ANIM_ROTATING_HANDLE;
         s->variant = 0;
 
         s->oamFlags = SPRITE_OAM_ORDER(18);
@@ -67,7 +69,7 @@ void CreateEntity_RotatingHandle(MapEntity *me, u16 spriteRegionX, u16 spriteReg
     }
 }
 
-static void sub_805EA94(void)
+static void Task_Idle(void)
 {
     Sprite_RotatingHandle *rotatingHandle = TASK_DATA(gCurTask);
     Sprite *s = &rotatingHandle->s;
@@ -102,22 +104,22 @@ static void sub_805EA94(void)
             gPlayer.moveState &= ~MOVESTATE_FACING_LEFT;
             if (I(gPlayer.y) > y) {
                 s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
-                gPlayer.unk64 = 0x2D;
+                gPlayer.charState = CHARSTATE_GRABBING_HANDLE_A;
                 rotatingHandle->unk40 = 0;
             } else {
                 s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
-                gPlayer.unk64 = 0x2E;
+                gPlayer.charState = CHARSTATE_GRABBING_HANDLE_B;
                 rotatingHandle->unk40 = 1;
             }
         } else {
             gPlayer.moveState |= 1;
             if (I(gPlayer.y) > y) {
                 s->frameFlags &= ~SPRITE_FLAG_MASK_X_FLIP;
-                gPlayer.unk64 = 0x2D;
+                gPlayer.charState = CHARSTATE_GRABBING_HANDLE_A;
                 rotatingHandle->unk40 = 2;
             } else {
                 s->frameFlags |= SPRITE_FLAG_MASK_X_FLIP;
-                gPlayer.unk64 = 0x2E;
+                gPlayer.charState = CHARSTATE_GRABBING_HANDLE_B;
                 rotatingHandle->unk40 = 3;
             }
         }
@@ -129,7 +131,7 @@ static void sub_805EA94(void)
         m4aSongNumStart(SE_SPEED_BOOSTER);
         gPlayer.unk62 = 0;
         gPlayer.moveState |= MOVESTATE_400000;
-        gCurTask->main = sub_805ECA0;
+        gCurTask->main = Task_Rotating;
     } else {
         if (IS_OUT_OF_CAM_RANGE(s->x, s->y)) {
             me->x = rotatingHandle->base.spriteX;
@@ -143,7 +145,7 @@ static void sub_805EA94(void)
 }
 
 // (95.57%) https://decomp.me/scratch/RaPDV
-NONMATCH("asm/non_matching/game/interactables_1/sub_805ECA0.inc", static void sub_805ECA0())
+NONMATCH("asm/non_matching/game/interactables_1/Task_Rotating.inc", static void Task_Rotating())
 {
     Sprite_RotatingHandle *rotatingHandle = TASK_DATA(gCurTask);
     Sprite *s = &rotatingHandle->s;
@@ -166,12 +168,12 @@ NONMATCH("asm/non_matching/game/interactables_1/sub_805ECA0.inc", static void su
     s->y = y - gCamera.y;
 
     if (!PLAYER_IS_ALIVE) {
-        gCurTask->main = sub_805EF90;
+        gCurTask->main = Task_AfterJump;
         DisplaySprite(s);
         return;
     }
 
-    if (gPlayer.unk5E & gPlayerControls.jump) {
+    if (gPlayer.frameInput & gPlayerControls.jump) {
 #ifndef NON_MATCHING
         register u32 temp2 asm("r4");
 #else
@@ -181,10 +183,10 @@ NONMATCH("asm/non_matching/game/interactables_1/sub_805ECA0.inc", static void su
         me->x = rotatingHandle->base.spriteX;
         Player_TransitionCancelFlyingAndBoost(&gPlayer);
         sub_8023B5C(&gPlayer, 9);
-        gPlayer.unk16 = 6;
-        gPlayer.unk17 = 9;
+        gPlayer.spriteOffsetX = 6;
+        gPlayer.spriteOffsetY = 9;
         gPlayer.moveState &= ~MOVESTATE_400000;
-        gCurTask->main = sub_805EF90;
+        gCurTask->main = Task_AfterJump;
 
         switch (rotatingHandle->unk40) {
             case 0:
@@ -228,11 +230,11 @@ NONMATCH("asm/non_matching/game/interactables_1/sub_805ECA0.inc", static void su
         }
         gPlayer.speedAirX = Div(COS(temp2) << 1, 0x11);
         gPlayer.speedAirY = Div(SIN(temp2) << 1, 0x11);
-        gPlayer.unk64 = 0x32;
+        gPlayer.charState = CHARSTATE_CURLED_IN_AIR;
         gPlayer.unk6C = 1;
     } else {
         u8 r2;
-        if (gPlayer.unk64 == 0x2D) {
+        if (gPlayer.charState == CHARSTATE_GRABBING_HANDLE_A) {
             s32 new_var;
             r2 = Div(temp, 0x56);
             new_var = 0xB;
@@ -246,7 +248,7 @@ NONMATCH("asm/non_matching/game/interactables_1/sub_805ECA0.inc", static void su
             }
         }
 
-        s->graphics.anim = 0x222;
+        s->graphics.anim = SA2_ANIM_ROTATING_HANDLE;
         s->variant = r2;
         s->prevVariant = -1;
         gPlayer.variant = r2;
@@ -268,7 +270,7 @@ NONMATCH("asm/non_matching/game/interactables_1/sub_805ECA0.inc", static void su
 }
 END_NONMATCH
 
-static void sub_805EF90(void)
+static void Task_AfterJump(void)
 {
     Sprite_RotatingHandle *rotatingHandle = TASK_DATA(gCurTask);
     Sprite *s = &rotatingHandle->s;
@@ -290,7 +292,7 @@ static void sub_805EF90(void)
         temp3 = 0xB;
     }
 
-    s->graphics.anim = 0x222;
+    s->graphics.anim = SA2_ANIM_ROTATING_HANDLE;
     s->variant = temp3;
     s->prevVariant = -1;
 
@@ -306,7 +308,7 @@ static void sub_805EF90(void)
     if (temp3 == 0) {
         rotatingHandle->unk3C = 0;
         rotatingHandle->unk3E = 0;
-        gCurTask->main = sub_805EA94;
+        gCurTask->main = Task_Idle;
     }
     UpdateSpriteAnimation(s);
     DisplaySprite(s);

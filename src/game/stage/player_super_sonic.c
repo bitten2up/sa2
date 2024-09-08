@@ -1,7 +1,7 @@
 #include "global.h"
 #include "core.h"
 #include "trig.h"
-#include "sakit/globals.h"
+#include "game/sa1_leftovers/globals.h"
 
 #include "game/stage/spawn_positions.h"
 #include "game/stage/camera.h"
@@ -16,6 +16,7 @@
 #include "lib/m4a.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/characters.h"
 #include "constants/move_states.h"
 #include "constants/songs.h"
@@ -52,7 +53,7 @@ const TileInfo gAnims_SuperSonic_080D69C8[23] = {
     { 0, SA2_ANIM_SUPER_SONIC_STOPPING_ROCKET, 6 },  { 0, SA2_ANIM_SUPER_SONIC_STOPPING_ROCKET, 7 },
     { 0, SA2_ANIM_SUPER_SONIC_STOPPING_ROCKET, 14 }, { 0, SA2_ANIM_SUPER_SONIC_STOPPING_ROCKET, 15 },
     { 0, SA2_ANIM_SUPER_SONIC_STOPPING_ROCKET, 18 }, { 0, SA2_ANIM_SUPER_SONIC_STOPPING_ROCKET, 19 },
-    { 0, SA2_ANIM_SUPER_SONIC_FROZEN, 0 },           { 0, SA2_ANIM_CHAR(SA2_CHAR_ANIM_29, CHARACTER_SONIC), 0 },
+    { 0, SA2_ANIM_SUPER_SONIC_FROZEN, 0 },           { 0, SA2_ANIM_CHAR(SA2_CHAR_ANIM_DEAD, CHARACTER_SONIC), 0 },
     { 0, SA2_ANIM_SUPER_SONIC_STOPPING_ROCKET, 2 },
 };
 
@@ -65,8 +66,8 @@ static void SuperSonicInitPlayer(void)
     p->speedAirX = 0;
     p->speedAirY = 0;
     p->speedGroundX = 0;
-    p->unk16 = 0;
-    p->unk17 = 0;
+    p->spriteOffsetX = 0;
+    p->spriteOffsetY = 0;
     // /* 0x18 */ u8 filler18[8]; // no idea what this data is and why it's not set
     p->moveState = 0;
     p->rotation = 0;
@@ -82,7 +83,7 @@ static void SuperSonicInitPlayer(void)
     p->unk34 = 0;
     p->unk36 = 0;
     p->itemEffect = 0;
-    p->unk38 = 0;
+    p->layer = 0;
     p->unk3C = NULL;
     p->unk40 = 0;
     p->unk44 = 0;
@@ -93,23 +94,23 @@ static void SuperSonicInitPlayer(void)
     p->unk54 = 0;
     p->unk56 = 0;
     p->unk58 = 0;
-    p->unk5A = 0;
+    p->isBoosting = FALSE;
     p->unk5B = 0;
-    p->unk5C = 0;
-    p->unk5E = 0;
+    p->heldInput = 0;
+    p->frameInput = 0;
     p->unk60 = 0;
     p->unk61 = 0;
     p->unk62 = 0;
     p->unk63 = 0;
-    p->unk64 = 0;
-    p->unk66 = 0;
+    p->charState = CHARSTATE_IDLE;
+    p->prevCharState = CHARSTATE_IDLE;
     p->anim = 0;
     p->variant = 0;
-    p->unk6C = 0;
+    p->unk6C = FALSE;
     p->transition = 0;
     p->unk6E = 0;
     p->prevTransition = 0;
-    p->unk70 = 0;
+    p->unk70 = FALSE;
     p->unk71 = 0;
     p->unk72 = 0;
     p->checkPointX = 0;
@@ -121,8 +122,8 @@ static void SuperSonicInitPlayer(void)
     p->unk82 = 0;
     p->defeatScoreIndex = 0;
     p->character = CHARACTER_SONIC;
-    p->unk86 = 0;
-    p->unk87 = 0;
+    p->secondsUntilDrown = 0;
+    p->framesUntilDrownCountDecrement = 0;
     p->unk88 = 0;
 }
 

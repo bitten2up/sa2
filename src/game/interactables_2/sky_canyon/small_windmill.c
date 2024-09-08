@@ -11,6 +11,7 @@
 #include "lib/m4a.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
 
@@ -54,7 +55,7 @@ void CreateEntity_SmallWindmill(MapEntity *me, u16 spriteRegionX, u16 spriteRegi
     windmill->base.regionY = spriteRegionY;
     windmill->base.me = me;
     windmill->base.spriteX = me->x;
-    windmill->base.spriteY = spriteY;
+    windmill->base.id = spriteY;
 
     s = &windmill->s;
     s->oamFlags = SPRITE_OAM_ORDER(18);
@@ -80,7 +81,7 @@ static void StartSpinSequence(Sprite_SmallWindmill *windmill)
     s8 spriteX;
     Player_SetMovestate_IsInScriptedSequence();
     gPlayer.moveState |= MOVESTATE_400000;
-    gPlayer.unk64 = 4;
+    gPlayer.charState = CHARSTATE_SPIN_ATTACK;
     m4aSongNumStart(SE_SPIN_ATTACK);
     switch (windmill->initialTouchAngle) {
         case 1:

@@ -172,7 +172,7 @@ void Task_DecompCreditsFirst()
             cred->logoFrameT0 = cred->frames;
             SPRITE_FLAG_CLEAR(&cred->sprLogoOllie, X_FLIP);
             m4aSongNumStart(SE_LONG_BRAKE);
-            cred->sprSonic.graphics.anim = SA2_ANIM_CHAR(SA2_CHAR_ANIM_BRAKE, CHARACTER_SONIC);
+            cred->sprSonic.graphics.anim = SA2_ANIM_CHAR(SA2_CHAR_ANIM_BRAKE_GOAL, CHARACTER_SONIC);
             cred->sprSonic.variant = 0;
         }
 
@@ -252,6 +252,7 @@ void TaskDestructor_DecompCredits(struct Task *t)
     gIntrTable[INTR_INDEX_HBLANK] = cred->prevHBlank;
 
     /* Initialize Titlescreen */
+    PAUSE_GRAPHICS_QUEUE();
 
     if (gFlags & FLAGS_NO_FLASH_MEMORY) {
         CreateTitleScreen();

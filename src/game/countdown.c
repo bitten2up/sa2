@@ -4,7 +4,7 @@
 #include "task.h"
 #include "malloc_vram.h"
 
-#include "sakit/globals.h"
+#include "game/sa1_leftovers/globals.h"
 
 #include "game/stage/player.h"
 #include "game/stage/camera.h"
@@ -12,6 +12,7 @@
 #include "lib/m4a.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/songs.h"
 #include "constants/text.h"
 
@@ -113,7 +114,7 @@ void sub_8036168(void)
         gPlayer.moveState &= ~MOVESTATE_IGNORE_INPUT;
         gStageFlags &= ~STAGE_FLAG__ACT_START;
         gStageFlags &= ~STAGE_FLAG__100;
-        gPlayer.unk64 = 9;
+        gPlayer.charState = CHARSTATE_WALK_A;
         if (countdown->unk6A != 0) {
             gPlayer.speedGroundX = Q_8_8(9);
         } else {

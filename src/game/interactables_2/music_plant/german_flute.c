@@ -11,6 +11,7 @@
 #include "game/interactables_2/note_particle.h"
 #include "game/interactables_2/music_plant/german_flute.h"
 
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 #include "constants/songs.h"
 
@@ -127,7 +128,7 @@ static void sub_80769E0(void)
     gPlayer.speedAirY += Q(1. / 6.);
 
     // NOTE/BUG(?): Are the first 2 parameters swapped?
-    res = sub_801F100(I(gPlayer.y) - gPlayer.unk17, I(gPlayer.x), gPlayer.unk38, -8, sub_801EC3C);
+    res = sub_801F100(I(gPlayer.y) - gPlayer.spriteOffsetY, I(gPlayer.x), gPlayer.layer, -8, sub_801EC3C);
 
     if (res < 0) {
         gPlayer.y -= Q(res);
@@ -161,19 +162,19 @@ static void Task_8076A6C(void)
     gPlayer.y += flute->unkA;
 
     // NOTE/BUG(?): Are the first 2 parameters swapped?
-    res = sub_801F100(I(gPlayer.y) - gPlayer.unk17, I(r1), gPlayer.unk38, -8, sub_801EC3C);
+    res = sub_801F100(I(gPlayer.y) - gPlayer.spriteOffsetY, I(r1), gPlayer.layer, -8, sub_801EC3C);
     if (res < 0) {
         gPlayer.y -= Q(res);
     }
 
     flute->timer++;
 
-    if (gPlayer.unk5C & 0x10) {
+    if (gPlayer.heldInput & 0x10) {
         gPlayer.x += Q(0.5);
         gPlayer.moveState &= ~MOVESTATE_FACING_LEFT;
     }
 
-    if (gPlayer.unk5C & 0x20) {
+    if (gPlayer.heldInput & 0x20) {
         gPlayer.x -= Q(0.5);
         gPlayer.moveState |= MOVESTATE_FACING_LEFT;
     }
@@ -192,10 +193,10 @@ static void sub_8076B84(Sprite_GermanFlute *flute)
     Player_TransitionCancelFlyingAndBoost(&gPlayer);
     sub_8023B5C(&gPlayer, 14);
 
-    gPlayer.unk16 = 6;
-    gPlayer.unk17 = 14;
+    gPlayer.spriteOffsetX = 6;
+    gPlayer.spriteOffsetY = 14;
     gPlayer.moveState |= MOVESTATE_400000;
-    gPlayer.unk64 = 4;
+    gPlayer.charState = CHARSTATE_SPIN_ATTACK;
     m4aSongNumStart(SE_SPIN_ATTACK);
 
     gPlayer.speedGroundX = 0;
@@ -253,7 +254,7 @@ static void sub_8076C70(Sprite_GermanFlute *flute)
 static void sub_8076C88(Sprite_GermanFlute UNUSED *flute)
 {
     gPlayer.moveState &= ~MOVESTATE_400000;
-    gPlayer.unk64 = 14;
+    gPlayer.charState = CHARSTATE_FALLING_VULNERABLE_B;
     gPlayer.transition = PLTRANS_PT5;
     gPlayer.speedAirX = 0;
     gPlayer.speedAirY = 0;
@@ -332,7 +333,7 @@ static void TaskDestructor_GermanFlute(struct Task *t) {};
 
 static void sub_8076E3C(Sprite_GermanFlute *flute)
 {
-    gPlayer.unk64 = 0x3A;
+    gPlayer.charState = CHARSTATE_FLUTE_EXHAUST;
     gPlayer.speedAirX = 0;
 
     gPlayer.speedAirY = -sFluteUpdraft[flute->kind];

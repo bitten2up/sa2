@@ -3,8 +3,6 @@
 
 #include "global.h"
 #include "core.h"
-//#include "platform.h"
-#include "gba/io_reg.h"
 
 extern void GameInit(void);
 extern void GameStart(void);
@@ -47,7 +45,45 @@ DWORD WINAPI GameThread(void *pThreadParam)
     }
 }
 
+#define DMA012_MAX_LENGTH 0x4000
+#define DMA3_MAX_LENGTH   0x10000
 void DmaSet(int dmaNum, const void *src, void *dest, u32 control)
 {
-    printf("DMA(TODO): S0x%p  0x%p -> 0x%p\n", src, dest, dest + (control & 0x1FFFFF));
+    u32 dataSize = (control & 0x1FFFF);
+    u32 dmaIs32bit = (control & (DMA_32BIT << 16));
+
+#if 0
+    // From http://problemkaputt.de/gbatek-index.htm:
+    // "a value of zero is treated as max length (ie. 4000h, or 10000h for DMA3)"
+    // But the game never calls DmaSet using a size of 0, so we don't need that.
+    if (dataSize == 0) {
+        switch (dmaNum) {
+            case 0:
+            case 1:
+            case 2: {
+                dataSize = DMA012_MAX_LENGTH;
+            } break;
+
+            case 3: {
+                dataSize = DMA3_MAX_LENGTH;
+            } break;
+        }
+    }
+#endif
+
+    if (dmaIs32bit) {
+        dataSize = dataSize * sizeof(u32);
+    } else {
+        dataSize = dataSize * sizeof(u16);
+    }
+
+    printf("DMA(TODO): S0x%p => 0x%p - 0x%p\n", src, dest, dest + dataSize);
 }
+
+void DmaStop(int dmaNum) { printf("DmaStop: %d\n", dmaNum); }
+
+void DmaWait(int dmaNum) { printf("DmaWait: %d\n", dmaNum); }
+
+void *Platform_malloc(int numBytes) { return HeapAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY, numBytes); }
+
+void Platform_free(void *ptr) { HeapFree(GetProcessHeap(), 0, ptr); }

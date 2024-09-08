@@ -10,6 +10,7 @@
 #include "malloc_vram.h"
 
 #include "constants/animations.h"
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 
 typedef struct {
@@ -40,7 +41,7 @@ void CreateEntity_TurnAroundBar(MapEntity *me, u16 spriteRegionX, u16 spriteRegi
     turnAroundBar->base.regionY = spriteRegionY;
     turnAroundBar->base.me = me;
     turnAroundBar->base.spriteX = me->x;
-    turnAroundBar->base.spriteY = spriteY;
+    turnAroundBar->base.id = spriteY;
 
     s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
@@ -82,7 +83,7 @@ static void sub_8073474(Sprite_TurnAroundBar *turnAroundBar)
     gPlayer.rotation = 0;
     gPlayer.speedAirY = 0;
     gPlayer.moveState = gPlayer.moveState ^ 1;
-    gPlayer.transition = PLTRANS_PT1;
+    gPlayer.transition = PLTRANS_TOUCH_GROUND;
 
     s->graphics.anim = 567;
     s->variant = 2;
@@ -170,7 +171,7 @@ static void sub_8073670(Sprite_TurnAroundBar *turnAroundBar)
     turnAroundBar->unk44 = Q(turnAroundBar->y) - gPlayer.y;
     gPlayer.x = Q(turnAroundBar->x);
     gPlayer.y = Q(turnAroundBar->y);
-    gPlayer.unk64 = 0x38;
+    gPlayer.charState = CHARSTATE_TURNAROUND_BAR;
 
     s->graphics.anim = SA2_ANIM_TURNAROUND_BAR;
     s->variant = 1;
@@ -233,7 +234,7 @@ static bool32 sub_8073784(Sprite_TurnAroundBar *turnAroundBar)
 
 static s16 ClampSpeed(s16 speed)
 {
-    if (gPlayer.unk5A != 0) {
+    if (gPlayer.isBoosting != 0) {
         if (speed > Q_8_8(15)) {
             speed = Q_8_8(15);
         } else if (speed < -Q_8_8(15)) {

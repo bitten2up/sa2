@@ -4,7 +4,7 @@
 #include "task.h"
 #include "lib/m4a.h"
 
-#include "sakit/globals.h"
+#include "game/sa1_leftovers/globals.h"
 
 #include "game/stage/player.h"
 #include "game/stage/camera.h"
@@ -336,9 +336,9 @@ void Task_Item_Confusion(void)
         s->frameFlags |= mpp->s.frameFlags & SPRITE_FLAG_MASK_PRIORITY;
 
         if (GRAVITY_IS_INVERTED) {
-            s->frameFlags |= MOVESTATE_800;
+            s->frameFlags |= MOVESTATE_ICE_SLIDE;
         } else {
-            s->frameFlags &= ~MOVESTATE_800;
+            s->frameFlags &= ~MOVESTATE_ICE_SLIDE;
         }
 
         UpdateSpriteAnimation(s);

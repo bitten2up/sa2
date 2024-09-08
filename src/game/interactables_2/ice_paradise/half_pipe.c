@@ -10,6 +10,7 @@
 #include "game/stage/camera.h"
 #include "game/interactables_2/ice_paradise/half_pipe.h"
 
+#include "constants/char_states.h"
 #include "constants/player_transitions.h"
 
 typedef struct {
@@ -67,8 +68,9 @@ static void Task_HalfPipeSequenceMain(void)
 
     if (!sub_80789AC(halfPipe)) {
         gPlayer.moveState &= ~MOVESTATE_8000;
-        if (gPlayer.unk64 >= 59 && gPlayer.unk64 < 62) {
-            gPlayer.unk64 = 9;
+        if (gPlayer.charState == CHARSTATE_WALLRUN_INIT || gPlayer.charState == CHARSTATE_WALLRUN_TO_WALL
+            || gPlayer.charState == CHARSTATE_WALLRUN_ON_WALL) {
+            gPlayer.charState = CHARSTATE_WALK_A;
         }
         EndHalfPipeSequence(halfPipe);
     } else {
@@ -118,13 +120,13 @@ static void UpdatePlayerPosOnHalfPipe(Sprite_IceParadiseHalfPipe *halfPipe, u16 
         r3 = sin / (halfPipe->height - halfPipe->offsetY);
 
         if (r3 < 32) {
-            gPlayer.unk64 = 9;
+            gPlayer.charState = CHARSTATE_WALK_A;
         } else if (r3 < 96) {
-            gPlayer.unk64 = 59;
+            gPlayer.charState = CHARSTATE_WALLRUN_INIT;
         } else if (r3 < 160) {
-            gPlayer.unk64 = 60;
+            gPlayer.charState = CHARSTATE_WALLRUN_TO_WALL;
         } else {
-            gPlayer.unk64 = 61;
+            gPlayer.charState = CHARSTATE_WALLRUN_ON_WALL;
         }
     }
 }
@@ -174,8 +176,8 @@ static void EndHalfPipeSequence(Sprite_IceParadiseHalfPipe *halfPipe) { gCurTask
 static bool32 sub_80789AC(Sprite_IceParadiseHalfPipe *halfPipe)
 {
     if (gPlayer.speedAirX <= -Q(2) || gPlayer.speedAirX >= Q(2.25)) {
-        if (gPlayer.unk5E & gPlayerControls.jump) {
-            gPlayer.transition = PLTRANS_PT3;
+        if (gPlayer.frameInput & gPlayerControls.jump) {
+            gPlayer.transition = PLTRANS_INIT_JUMP;
         } else {
             return PlayerWithinHalfPipe(halfPipe);
         }
@@ -204,7 +206,7 @@ static bool32 ShouldTriggerHalfPipe(Sprite_IceParadiseHalfPipe *halfPipe)
         return FALSE;
     }
 
-    if (gPlayer.unk64 != 4 && gPlayer.unk64 != 9) {
+    if (gPlayer.charState != CHARSTATE_SPIN_ATTACK && gPlayer.charState != CHARSTATE_WALK_A) {
         return FALSE;
     }
 

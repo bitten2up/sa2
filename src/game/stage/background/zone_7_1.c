@@ -4,7 +4,7 @@
 #include "flags.h"
 #include "trig.h"
 
-#include "sakit/globals.h"
+#include "game/sa1_leftovers/globals.h"
 
 #include "game/stage/player.h"
 #include "game/stage/camera.h"
@@ -64,7 +64,7 @@ NONMATCH("asm/non_matching/game/stage/background/Zone7BgUpdate_Inside.inc", void
     u8 r2;
     u8 r5;
 
-    if ((gPlayer.moveState & MOVESTATE_8000000) && (gSpecialRingCount >= SPECIAL_STAGE_REQUIRED_SP_RING_COUNT)) {
+    if ((gPlayer.moveState & MOVESTATE_GOAL_REACHED) && (gSpecialRingCount >= SPECIAL_STAGE_REQUIRED_SP_RING_COUNT)) {
         if (gBgScrollRegs[3][0] == 0)
             gBgScrollRegs[3][0] = x;
 
