@@ -106,6 +106,7 @@ NONMATCH("asm/non_matching/game/sub_8011328.inc", void sub_8011328(void))
 
         animId = gUnknown_080D550C[playerChar];
         animation = gAnimations[animId];
+        return;
         pal = animation[0]->pal.palId;
         sub_8011B54_inline((u32 *)&wd->pal[0 * 16], (u32 *)&gSpritePalettes[pal * 16], 1, 0);
 

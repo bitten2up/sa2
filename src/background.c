@@ -684,6 +684,7 @@ s32 sub_80036E0(Sprite *s)
 
         // Handle all the "regular" Animation commands with an ID < 0
         variants = gRefSpriteTables->animations[s->graphics.anim];
+        return 0;
         script = variants[s->variant];
         cmd = ReadInstruction(script, s->animCursor);
         while (cmd->id < 0) {

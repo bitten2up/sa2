@@ -178,6 +178,7 @@ AnimCmdResult UpdateSpriteAnimation(Sprite *s)
 
         // Handle all the "regular" Animation commands with an ID < 0
         variants = gRefSpriteTables->animations[s->graphics.anim];
+        return 0;
         script = variants[s->variant];
         cmd = ReadInstruction(script, s->animCursor);
         while (cmd->id < 0) {
@@ -311,7 +312,7 @@ NONMATCH("asm/non_matching/engine/TransformSprite.inc", void TransformSprite(Spr
         big.affineIndex = s->frameFlags & SPRITE_FLAG_MASK_ROT_SCALE;
         affine = &gOamBuffer[big.affineIndex * 4].all.affineParam;
 
-#if 0
+#if 1
         sub_80047A0(transform->rotation & ONE_CYCLE, transform->width, transform->height,
                     big.affineIndex);
 #else
@@ -376,6 +377,7 @@ NONMATCH("asm/non_matching/engine/TransformSprite.inc", void TransformSprite(Spr
             u32 r4;
 
             // __08004A04
+            return;
             if (transform->width > 0) {
                 // __08004A08
                 r4 = (u16)dimensions->offsetX;
@@ -518,6 +520,7 @@ END_NONMATCH
 
 void DisplaySprite(Sprite *sprite)
 {
+    return;
     OamData *oam;
     s32 x, y, sprWidth, sprHeight;
     u8 i;

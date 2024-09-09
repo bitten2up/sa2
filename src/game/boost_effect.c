@@ -158,6 +158,7 @@ void TaskDestructor_8015B50(struct Task *);
 
 static inline void sub_8015B64_inline(AnimId anim, u16 palId)
 {
+    return;
     const s32 *pAnim = (const s32 *)*gAnimations[anim];
 
     if (*pAnim++ == ANIM_CMD__GET_PALETTE) {
