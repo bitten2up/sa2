@@ -86,7 +86,7 @@ void CreateEntity_Checkpoint(MapEntity *me, u16 spriteRegionX, u16 spriteRegionY
     s->oamFlags = SPRITE_OAM_ORDER(18);
     s->graphics.size = 0;
     s->animCursor = 0;
-    s->timeUntilNextFrame = 0;
+    s->qAnimDelay = 0;
     s->prevVariant = -1;
     s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
@@ -201,7 +201,7 @@ void Task_8063228(struct Task *unused)
     u32 numColors;
     u32 offset;
 
-    if (*cmd++ == ANIM_CMD__GET_PALETTE) {
+    if (*cmd++ == ANIM_CMD__PALETTE) {
         palId = *cmd++;
         numColors = *cmd;
         offset = numColors >> 16;

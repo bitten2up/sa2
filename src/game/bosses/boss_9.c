@@ -595,7 +595,7 @@ NONMATCH("asm/non_matching/game/bosses/boss_9__CreateTrueArea53Boss.inc", void C
         s->oamFlags = SPRITE_OAM_ORDER(17);
         s->graphics.size = 0;
         s->animCursor = 0;
-        s->timeUntilNextFrame = 0;
+        s->qAnimDelay = 0;
 
         s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 6;
@@ -624,7 +624,7 @@ NONMATCH("asm/non_matching/game/bosses/boss_9__CreateTrueArea53Boss.inc", void C
             s->oamFlags = SPRITE_OAM_ORDER(16);
             s->graphics.size = 0;
             s->animCursor = 0;
-            s->timeUntilNextFrame = 0;
+            s->qAnimDelay = 0;
             s->animSpeed = SPRITE_ANIM_SPEED(1.0);
             s->palId = 6;
             s->hitboxes[0].index = HITBOX_STATE_INACTIVE;
@@ -644,7 +644,7 @@ NONMATCH("asm/non_matching/game/bosses/boss_9__CreateTrueArea53Boss.inc", void C
     s->oamFlags = SPRITE_OAM_ORDER(19);
     s->graphics.size = 0;
     s->animCursor = 0;
-    s->timeUntilNextFrame = 0;
+    s->qAnimDelay = 0;
     s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = HITBOX_STATE_INACTIVE;
@@ -662,7 +662,7 @@ NONMATCH("asm/non_matching/game/bosses/boss_9__CreateTrueArea53Boss.inc", void C
         s->oamFlags = SPRITE_OAM_ORDER(i + 20);
         s->graphics.size = 0;
         s->animCursor = 0;
-        s->timeUntilNextFrame = 0;
+        s->qAnimDelay = 0;
         s->animSpeed = SPRITE_ANIM_SPEED(1.0);
         s->palId = 0;
         s->hitboxes[0].index = HITBOX_STATE_INACTIVE;
@@ -679,7 +679,7 @@ NONMATCH("asm/non_matching/game/bosses/boss_9__CreateTrueArea53Boss.inc", void C
     s->oamFlags = SPRITE_OAM_ORDER(21);
     s->graphics.size = 0;
     s->animCursor = 0;
-    s->timeUntilNextFrame = 0;
+    s->qAnimDelay = 0;
     s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = HITBOX_STATE_INACTIVE;
@@ -696,7 +696,7 @@ NONMATCH("asm/non_matching/game/bosses/boss_9__CreateTrueArea53Boss.inc", void C
     s->oamFlags = SPRITE_OAM_ORDER(6);
     s->graphics.size = 0;
     s->animCursor = 0;
-    s->timeUntilNextFrame = 0;
+    s->qAnimDelay = 0;
     s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = HITBOX_STATE_INACTIVE;
@@ -713,7 +713,7 @@ NONMATCH("asm/non_matching/game/bosses/boss_9__CreateTrueArea53Boss.inc", void C
     s->oamFlags = SPRITE_OAM_ORDER(7);
     s->graphics.size = 0;
     s->animCursor = 0;
-    s->timeUntilNextFrame = 0;
+    s->qAnimDelay = 0;
     s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = HITBOX_STATE_INACTIVE;
@@ -730,7 +730,7 @@ NONMATCH("asm/non_matching/game/bosses/boss_9__CreateTrueArea53Boss.inc", void C
     s->oamFlags = SPRITE_OAM_ORDER(7);
     s->graphics.size = 0;
     s->animCursor = 0;
-    s->timeUntilNextFrame = 0;
+    s->qAnimDelay = 0;
     s->animSpeed = SPRITE_ANIM_SPEED(1.0);
     s->palId = 0;
     s->hitboxes[0].index = HITBOX_STATE_INACTIVE;
@@ -2413,7 +2413,7 @@ NONMATCH("asm/non_matching/game/bosses/boss_9__sub_8050104.inc", bool8 sub_80501
     u32 r2;
     s16 **ip = unk1C->unk1C;
     s16 *r4 = (s16 *)&unk1C->unk4;
-    u16 *unk3A = &unk1C->unk20;
+    u16 *unk3A = (void *)&unk1C->unk20;
     u16 sb = unk1C->unk16;
     bool8 result = FALSE;
     u16 r7;
